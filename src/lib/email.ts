@@ -25,7 +25,8 @@ interface ApplicationData {
 export async function sendApplicationNotification(data: ApplicationData): Promise<void> {
   if (!process.env.GMAIL_APP_PASSWORD) return;
 
-  const roleLabel = data.role === "mentor" ? "Mentor" : "Jurado";
+  const roleLabel =
+    data.role === "mentor" ? "Mentor" : data.role === "volunteer" ? "Voluntario" : "Jurado";
 
   const fields = Object.entries(data)
     .filter(([, v]) => v !== null && v !== undefined && v !== "")

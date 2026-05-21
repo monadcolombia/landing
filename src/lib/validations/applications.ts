@@ -237,7 +237,51 @@ export const judgeSchema = baseSchema.and(
     )
 );
 
+// Contact handle validators for volunteer
+const telegramSchema = z
+  .string()
+  .regex(/^@?[\w]{4,32}$/, "Handle de Telegram invalido (ej. @tuhandle)")
+  .or(z.literal(""))
+  .optional();
+
+const whatsappSchema = z
+  .string()
+  .regex(/^\d{10}$/, "Debe tener 10 digitos (ej. 3001234567)")
+  .or(z.literal(""))
+  .optional();
+
+// Volunteer application schema
+export const volunteerSchema = z
+  .object({
+    role: z.literal("volunteer"),
+    full_name: z
+      .string()
+      .min(2, "El nombre debe tener al menos 2 caracteres")
+      .max(100, "El nombre debe tener maximo 100 caracteres"),
+    email: z.string().email("Correo electronico invalido"),
+    telegram: telegramSchema,
+    whatsapp: whatsappSchema,
+    city: z.enum(["medellin", "bogota", "both"]),
+    volunteer_availability: z.enum(["event_day", "pre_event", "both"]),
+    volunteer_why: z
+      .string()
+      .min(20, "Cuentanos por que quieres ser voluntario (al menos 20 caracteres)")
+      .max(MAX_MEDIUM, `Maximo ${MAX_MEDIUM} caracteres`),
+  })
+  .refine(
+    (data) => {
+      const tg = (data.telegram ?? "").trim();
+      const wp = (data.whatsapp ?? "").trim();
+      return tg !== "" || wp !== "";
+    },
+    {
+      message: "Comparte tu Telegram o WhatsApp (preferiblemente Telegram)",
+      path: ["telegram"],
+    }
+  );
+
 // Inferred types
 export type MentorApplication = z.infer<typeof mentorSchema>;
 export type JudgeApplication = z.infer<typeof judgeSchema>;
-export type Application = MentorApplication | JudgeApplication;
+export type VolunteerApplication = z.infer<typeof volunteerSchema>;
+export type Application = MentorApplication | JudgeApplication | VolunteerApplication;

@@ -12,12 +12,19 @@ const STATUS_LABELS: Record<string, string> = {
 const ROLE_LABELS: Record<string, string> = {
   mentor: "Mentor",
   judge: "Jurado",
+  volunteer: "Voluntario",
+};
+
+const VOLUNTEER_AVAILABILITY_LABELS: Record<string, string> = {
+  event_day: "Solo dia del evento",
+  pre_event: "Solo pre-evento",
+  both: "Pre-evento y dia del evento",
 };
 
 export default function AdminApplicationsPage() {
   const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedRole, setSelectedRole] = useState<"all" | "mentor" | "judge">("all");
+  const [selectedRole, setSelectedRole] = useState<"all" | "mentor" | "judge" | "volunteer">("all");
   const [selectedStatus, setSelectedStatus] = useState<"all" | "pending" | "approved" | "rejected">(
     "all"
   );
@@ -72,6 +79,7 @@ export default function AdminApplicationsPage() {
     all: applications.length,
     mentor: applications.filter((a) => a.role === "mentor").length,
     judge: applications.filter((a) => a.role === "judge").length,
+    volunteer: applications.filter((a) => a.role === "volunteer").length,
     pending: applications.filter((a) => a.status === "pending").length,
   };
 
@@ -96,12 +104,15 @@ export default function AdminApplicationsPage() {
             </label>
             <select
               value={selectedRole}
-              onChange={(e) => setSelectedRole(e.target.value as "all" | "mentor" | "judge")}
+              onChange={(e) =>
+                setSelectedRole(e.target.value as "all" | "mentor" | "judge" | "volunteer")
+              }
               className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:outline-none focus:border-monad-primary"
             >
               <option value="all">Todos ({filteredCount.all})</option>
               <option value="mentor">Mentores ({filteredCount.mentor})</option>
               <option value="judge">Jurados ({filteredCount.judge})</option>
+              <option value="volunteer">Voluntarios ({filteredCount.volunteer})</option>
             </select>
           </div>
 
@@ -259,6 +270,12 @@ export default function AdminApplicationsPage() {
                 {selectedApp.instagram && (
                   <p className="text-white">Instagram: {selectedApp.instagram}</p>
                 )}
+                {selectedApp.telegram && (
+                  <p className="text-white">Telegram: {selectedApp.telegram}</p>
+                )}
+                {selectedApp.whatsapp && (
+                  <p className="text-white">WhatsApp: {selectedApp.whatsapp}</p>
+                )}
               </div>
 
               {/* Ciudad */}
@@ -382,6 +399,29 @@ export default function AdminApplicationsPage() {
                     {selectedApp.judgePreviousDetails && (
                       <p className="text-white">{selectedApp.judgePreviousDetails}</p>
                     )}
+                  </div>
+                </>
+              )}
+
+              {/* Campos de Voluntario */}
+              {selectedApp.role === "volunteer" && (
+                <>
+                  <div className="space-y-2">
+                    <h4 className="font-mono uppercase tracking-wide text-white/70 text-sm">
+                      Disponibilidad
+                    </h4>
+                    <p className="text-white">
+                      {selectedApp.volunteerAvailability
+                        ? VOLUNTEER_AVAILABILITY_LABELS[selectedApp.volunteerAvailability] ||
+                          selectedApp.volunteerAvailability
+                        : "-"}
+                    </p>
+                  </div>
+                  <div className="space-y-2">
+                    <h4 className="font-mono uppercase tracking-wide text-white/70 text-sm">
+                      Motivacion
+                    </h4>
+                    <p className="text-white">{selectedApp.volunteerWhy || "-"}</p>
                   </div>
                 </>
               )}
