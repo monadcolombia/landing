@@ -4,7 +4,7 @@ import { prisma } from "@/lib/db";
 export async function GET() {
   try {
     const applications = await prisma.application.findMany({
-      where: { status: "approved" },
+      where: { status: "approved", role: { in: ["mentor", "judge"] } },
       select: {
         id: true,
         role: true,

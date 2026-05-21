@@ -186,6 +186,14 @@ export default function Hero() {
               >
                 Aplicar como Jurado
               </motion.a>
+              <motion.a
+                href="/apply/volunteer"
+                className="border border-monad-primary/50 text-monad-primary font-medium px-6 sm:px-8 py-3 rounded-full hover:bg-monad-primary hover:text-white transition-all text-center font-mono text-sm sm:text-base"
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                Aplicar como Voluntario
+              </motion.a>
             </motion.div>
           </motion.div>
 

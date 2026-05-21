@@ -10,6 +10,7 @@ datasource db {
 enum Role {
   mentor
   judge
+  volunteer
 }
 
 enum City {
@@ -30,6 +31,12 @@ enum TechnicalLevel {
   business_focused
 }
 
+enum VolunteerAvailability {
+  event_day
+  pre_event
+  both
+}
+
 model Application {
   id        String   @id @default(uuid())
   createdAt DateTime @default(now()) @map("created_at")
@@ -42,6 +49,8 @@ model Application {
   linkedin  String?
   twitter   String?
   instagram String?
+  telegram  String?
+  whatsapp  String?
 
   city         City
   availability String?
@@ -72,6 +81,10 @@ model Application {
   judgeConflicts          String?         @map("judge_conflicts")
   judgeOtherConflicts     String?         @map("judge_other_conflicts")
   judgeWhy                String?         @map("judge_why")
+
+  // Volunteer-specific fields
+  volunteerAvailability VolunteerAvailability? @map("volunteer_availability")
+  volunteerWhy          String?                @map("volunteer_why")
 
   // Review fields
   status        ApplicationStatus @default(pending)

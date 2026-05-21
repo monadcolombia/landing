@@ -206,7 +206,7 @@ export default function JudgeApplicationPage() {
                 error={errors.city?.message}
                 options={[
                   { value: "medellin", label: "Medellin (Junio 6, 2026)" },
-                  { value: "bogota", label: "Bogota (Julio 4, 2026)" },
+                  { value: "bogota", label: "Bogota (Fecha por confirmar)" },
                   { value: "both", label: "Ambos eventos" },
                 ]}
               />
