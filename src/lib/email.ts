@@ -10,7 +10,10 @@ const X_URL = "https://x.com/MedellinBlock";
 const INSTAGRAM_URL = "https://www.instagram.com/medellinblock";
 
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  host: "smtp.gmail.com",
+  port: 587,
+  secure: false,
+  requireTLS: true,
   auth: {
     user: SENDER_EMAIL,
     pass: process.env.GMAIL_APP_PASSWORD,
