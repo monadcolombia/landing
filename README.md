@@ -22,10 +22,10 @@ Landing page for Monad Tour Colombia - MonadBlitz one-day hackathons in Medellin
 
 ## Events
 
-| City     | Date         | Registration                                   |
-| -------- | ------------ | ---------------------------------------------- |
-| Medellin | June 6, 2026 | [luma.com/o56ekpyb](https://luma.com/o56ekpyb) |
-| Bogota   | TBA          | [luma.com/gytabj8l](https://luma.com/gytabj8l) |
+| City     | Date         | Registration                          |
+| -------- | ------------ | ------------------------------------- |
+| Medellin | June 6, 2026 | [Register](https://luma.com/o56ekpyb) |
+| Bogota   | TBA          | [Register](https://luma.com/gytabj8l) |
 
 ## Tech Stack
 

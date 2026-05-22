@@ -163,7 +163,17 @@ export default function Hero() {
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.98 }}
               >
-                Unirse a la Comunidad
+                Comunidad WhatsApp
+              </motion.a>
+              <motion.a
+                href="https://t.me/monadcolombia"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="border border-white/20 text-white font-medium px-6 sm:px-8 py-3 rounded-full hover:border-monad-primary/50 transition-colors text-center font-mono text-sm sm:text-base"
+                whileHover={{ scale: 1.03 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                Comunidad Telegram
               </motion.a>
             </motion.div>
             <motion.div
@@ -171,28 +181,28 @@ export default function Hero() {
               className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start px-2 sm:px-0 mt-4"
             >
               <motion.a
-                href="/apply/mentor"
-                className="border border-monad-primary/50 text-monad-primary font-medium px-6 sm:px-8 py-3 rounded-full hover:bg-monad-primary hover:text-white transition-all text-center font-mono text-sm sm:text-base"
+                href="/apply/judge"
+                className="border border-white/20 text-white font-medium px-5 sm:px-6 py-3 rounded-full hover:border-monad-primary/50 transition-colors text-center font-mono text-xs sm:text-sm whitespace-nowrap"
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.98 }}
               >
-                Aplicar como Mentor
+                Aplica como Jurado
               </motion.a>
               <motion.a
-                href="/apply/judge"
-                className="border border-monad-primary/50 text-monad-primary font-medium px-6 sm:px-8 py-3 rounded-full hover:bg-monad-primary hover:text-white transition-all text-center font-mono text-sm sm:text-base"
+                href="/apply/mentor"
+                className="border border-white/20 text-white font-medium px-5 sm:px-6 py-3 rounded-full hover:border-monad-primary/50 transition-colors text-center font-mono text-xs sm:text-sm whitespace-nowrap"
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.98 }}
               >
-                Aplicar como Jurado
+                Aplica como Mentor
               </motion.a>
               <motion.a
                 href="/apply/volunteer"
-                className="border border-monad-primary/50 text-monad-primary font-medium px-6 sm:px-8 py-3 rounded-full hover:bg-monad-primary hover:text-white transition-all text-center font-mono text-sm sm:text-base"
+                className="border border-white/20 text-white font-medium px-5 sm:px-6 py-3 rounded-full hover:border-monad-primary/50 transition-colors text-center font-mono text-xs sm:text-sm whitespace-nowrap"
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.98 }}
               >
-                Aplicar como Voluntario
+                Aplica como Voluntario
               </motion.a>
             </motion.div>
           </motion.div>
