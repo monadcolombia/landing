@@ -75,6 +75,25 @@ export default function AdminApplicationsPage() {
     }
   };
 
+  const [resendingId, setResendingId] = useState<string | null>(null);
+
+  const resendEmail = async (id: string) => {
+    setResendingId(id);
+    try {
+      const response = await fetch(`/api/admin/applications/${id}/resend-email`, {
+        method: "POST",
+      });
+      const json = await response.json();
+      if (!response.ok) throw new Error(json.error || "Error al reenviar correo");
+      alert("Correo reenviado");
+    } catch (error) {
+      console.error("Error resending email:", error);
+      alert(error instanceof Error ? error.message : "Error al reenviar correo");
+    } finally {
+      setResendingId(null);
+    }
+  };
+
   const filteredCount = {
     all: applications.length,
     mentor: applications.filter((a) => a.role === "mentor").length,
@@ -427,7 +446,7 @@ export default function AdminApplicationsPage() {
               )}
 
               {/* Acciones */}
-              {selectedApp.status === "pending" && (
+              {selectedApp.status === "pending" ? (
                 <div className="flex gap-4 pt-6 border-t border-white/10">
                   <button
                     onClick={() => updateStatus(selectedApp.id, "approved")}
@@ -440,6 +459,16 @@ export default function AdminApplicationsPage() {
                     className="flex-1 bg-red-600 text-white px-6 py-3 rounded-full font-mono uppercase tracking-wide hover:bg-red-700 transition-colors"
                   >
                     Rechazar
+                  </button>
+                </div>
+              ) : (
+                <div className="pt-6 border-t border-white/10">
+                  <button
+                    onClick={() => resendEmail(selectedApp.id)}
+                    disabled={resendingId === selectedApp.id}
+                    className="w-full bg-white/10 text-white px-6 py-3 rounded-full font-mono uppercase tracking-wide hover:bg-white/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    {resendingId === selectedApp.id ? "Reenviando..." : "Reenviar correo"}
                   </button>
                 </div>
               )}
