@@ -14,6 +14,11 @@ const transporter = nodemailer.createTransport({
   port: 587,
   secure: false,
   requireTLS: true,
+  connectionTimeout: 10_000,
+  greetingTimeout: 10_000,
+  socketTimeout: 15_000,
+  logger: true,
+  debug: true,
   auth: {
     user: SENDER_EMAIL,
     pass: process.env.GMAIL_APP_PASSWORD,
@@ -208,18 +213,31 @@ export async function sendApplicantStatusEmail({
   role,
   status,
 }: ApplicantStatusEmail): Promise<void> {
-  if (!process.env.GMAIL_APP_PASSWORD) return;
+  console.log(`[email] sendApplicantStatusEmail start to=${to} role=${role} status=${status}`);
+
+  if (!process.env.GMAIL_APP_PASSWORD) {
+    console.error("[email] GMAIL_APP_PASSWORD missing, aborting");
+    return;
+  }
 
   const tpl =
     status === "approved" ? approvedTemplate(fullName, role) : rejectedTemplate(fullName, role);
 
-  await transporter.sendMail({
-    from: SENDER,
-    to,
-    bcc: NOTIFY_EMAIL,
-    replyTo: NOTIFY_EMAIL,
-    subject: tpl.subject,
-    text: tpl.text,
-    html: tpl.html,
-  });
+  console.log(`[email] subject="${tpl.subject}" connecting to smtp.gmail.com:587`);
+
+  try {
+    const info = await transporter.sendMail({
+      from: SENDER,
+      to,
+      bcc: NOTIFY_EMAIL,
+      replyTo: NOTIFY_EMAIL,
+      subject: tpl.subject,
+      text: tpl.text,
+      html: tpl.html,
+    });
+    console.log(`[email] sent OK messageId=${info.messageId} response=${info.response}`);
+  } catch (error) {
+    console.error("[email] SMTP send failed:", error);
+    throw error;
+  }
 }
