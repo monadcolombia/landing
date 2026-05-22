@@ -1,29 +1,15 @@
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 
-const SENDER_EMAIL = "monadblitzcolombia@gmail.com";
 const NOTIFY_EMAIL = "monadblitzcolombia@gmail.com";
-const SENDER = `MonadBlitz Colombia <${SENDER_EMAIL}>`;
+const FROM_EMAIL = process.env.RESEND_FROM || "onboarding@resend.dev";
+const SENDER = `MonadBlitz Colombia <${FROM_EMAIL}>`;
 
 const WHATSAPP_URL = "https://chat.whatsapp.com/JboPU2owNWU7ysj5TEvgyO";
 const TELEGRAM_URL = "https://t.me/monadcolombia";
 const X_URL = "https://x.com/MedellinBlock";
 const INSTAGRAM_URL = "https://www.instagram.com/medellinblock";
 
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 587,
-  secure: false,
-  requireTLS: true,
-  connectionTimeout: 10_000,
-  greetingTimeout: 10_000,
-  socketTimeout: 15_000,
-  logger: true,
-  debug: true,
-  auth: {
-    user: SENDER_EMAIL,
-    pass: process.env.GMAIL_APP_PASSWORD,
-  },
-});
+const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
 type AppRole = "mentor" | "judge" | "volunteer";
 
@@ -46,7 +32,10 @@ interface ApplicationData {
 }
 
 export async function sendApplicationNotification(data: ApplicationData): Promise<void> {
-  if (!process.env.GMAIL_APP_PASSWORD) return;
+  if (!resend) {
+    console.error("[email] RESEND_API_KEY missing, aborting notification");
+    return;
+  }
 
   const label = roleLabel(data.role);
 
@@ -58,12 +47,18 @@ export async function sendApplicationNotification(data: ApplicationData): Promis
     })
     .join("\n");
 
-  await transporter.sendMail({
+  const body = `Nueva aplicacion recibida\n\nRol: ${label}\nNombre: ${data.fullName}\nEmail: ${data.email}\nCiudad: ${data.city}\n\n--- Todos los campos ---\n${fields}`;
+
+  const result = await resend.emails.send({
     from: SENDER,
     to: NOTIFY_EMAIL,
     subject: `Nueva aplicacion de ${label}: ${data.fullName} (${data.city})`,
-    text: `Nueva aplicacion recibida\n\nRol: ${label}\nNombre: ${data.fullName}\nEmail: ${data.email}\nCiudad: ${data.city}\n\n--- Todos los campos ---\n${fields}`,
+    text: body,
   });
+  if (result.error) {
+    console.error("[email] notification send failed:", result.error);
+    throw new Error(result.error.message);
+  }
 }
 
 interface ApplicantStatusEmail {
@@ -215,29 +210,30 @@ export async function sendApplicantStatusEmail({
 }: ApplicantStatusEmail): Promise<void> {
   console.log(`[email] sendApplicantStatusEmail start to=${to} role=${role} status=${status}`);
 
-  if (!process.env.GMAIL_APP_PASSWORD) {
-    console.error("[email] GMAIL_APP_PASSWORD missing, aborting");
-    return;
+  if (!resend) {
+    console.error("[email] RESEND_API_KEY missing, aborting");
+    throw new Error("RESEND_API_KEY is not configured");
   }
 
   const tpl =
     status === "approved" ? approvedTemplate(fullName, role) : rejectedTemplate(fullName, role);
 
-  console.log(`[email] subject="${tpl.subject}" connecting to smtp.gmail.com:587`);
+  console.log(`[email] sending via Resend from=${SENDER} subject="${tpl.subject}"`);
 
-  try {
-    const info = await transporter.sendMail({
-      from: SENDER,
-      to,
-      bcc: NOTIFY_EMAIL,
-      replyTo: NOTIFY_EMAIL,
-      subject: tpl.subject,
-      text: tpl.text,
-      html: tpl.html,
-    });
-    console.log(`[email] sent OK messageId=${info.messageId} response=${info.response}`);
-  } catch (error) {
-    console.error("[email] SMTP send failed:", error);
-    throw error;
+  const result = await resend.emails.send({
+    from: SENDER,
+    to,
+    bcc: NOTIFY_EMAIL,
+    replyTo: NOTIFY_EMAIL,
+    subject: tpl.subject,
+    text: tpl.text,
+    html: tpl.html,
+  });
+
+  if (result.error) {
+    console.error("[email] Resend send failed:", result.error);
+    throw new Error(result.error.message);
   }
+
+  console.log(`[email] sent OK id=${result.data?.id}`);
 }
