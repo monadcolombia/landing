@@ -10,6 +10,7 @@ export interface City {
   description: string;
   eventType?: string;
   venue?: string;
+  venueUrl?: string;
 }
 
 export interface FooterLink {

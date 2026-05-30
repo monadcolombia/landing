@@ -56,12 +56,39 @@ export default function EventsTable() {
                   {city.confirmed ? city.date : "Próximamente"}
                 </span>
 
-                {/* City name */}
+                {/* City name + venue */}
                 <div className="flex items-center gap-3">
                   {city.confirmed && (
                     <span className="w-2 h-2 rounded-full bg-monad-primary animate-pulse-glow flex-shrink-0" />
                   )}
-                  <span className="text-lg font-heading font-bold text-white">{city.name}</span>
+                  <div className="min-w-0">
+                    <span className="text-lg font-heading font-bold text-white block leading-tight">
+                      {city.name}
+                    </span>
+                    {city.venue && city.venueUrl ? (
+                      <a
+                        href={city.venueUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 text-xs font-mono text-white/40 hover:text-monad-primary transition-colors mt-1"
+                      >
+                        <svg className="w-3 h-3" viewBox="0 0 16 16" fill="none">
+                          <path
+                            d="M8 1.5C5.5 1.5 3.5 3.5 3.5 6c0 3.5 4.5 8 4.5 8s4.5-4.5 4.5-8c0-2.5-2-4.5-4.5-4.5z"
+                            stroke="currentColor"
+                            strokeWidth="1.2"
+                            strokeLinejoin="round"
+                          />
+                          <circle cx="8" cy="6" r="1.5" stroke="currentColor" strokeWidth="1.2" />
+                        </svg>
+                        {city.venue}
+                      </a>
+                    ) : city.venue ? (
+                      <span className="text-xs font-mono text-white/40 block mt-1">
+                        {city.venue}
+                      </span>
+                    ) : null}
+                  </div>
                 </div>
 
                 {/* Event type */}
@@ -108,6 +135,27 @@ export default function EventsTable() {
                     {city.confirmed ? city.date : "Próximamente"}
                   </span>
                 </div>
+                {city.venue && city.venueUrl ? (
+                  <a
+                    href={city.venueUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-1 text-xs font-mono text-white/40 hover:text-monad-primary transition-colors"
+                  >
+                    <svg className="w-3 h-3" viewBox="0 0 16 16" fill="none">
+                      <path
+                        d="M8 1.5C5.5 1.5 3.5 3.5 3.5 6c0 3.5 4.5 8 4.5 8s4.5-4.5 4.5-8c0-2.5-2-4.5-4.5-4.5z"
+                        stroke="currentColor"
+                        strokeWidth="1.2"
+                        strokeLinejoin="round"
+                      />
+                      <circle cx="8" cy="6" r="1.5" stroke="currentColor" strokeWidth="1.2" />
+                    </svg>
+                    {city.venue}
+                  </a>
+                ) : city.venue ? (
+                  <span className="text-xs font-mono text-white/40 block">{city.venue}</span>
+                ) : null}
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-mono text-white/30">
                     {city.eventType || "MonadBlitz Hackathon"}
