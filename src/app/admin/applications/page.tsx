@@ -104,14 +104,25 @@ export default function AdminApplicationsPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center gap-3 flex-wrap">
         <h2 className="text-2xl font-bold text-white">Aplicaciones</h2>
-        <button
-          onClick={fetchApplications}
-          className="px-4 py-2 bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors"
-        >
-          Actualizar
-        </button>
+        <div className="flex gap-2">
+          <a
+            href={`/api/admin/applications/export?${new URLSearchParams({
+              ...(selectedRole !== "all" && { role: selectedRole }),
+              ...(selectedStatus !== "all" && { status: selectedStatus }),
+            }).toString()}`}
+            className="px-4 py-2 bg-monad-primary/20 border border-monad-primary/40 text-monad-primary rounded-lg hover:bg-monad-primary/30 transition-colors text-sm font-mono uppercase tracking-wide"
+          >
+            Exportar Excel
+          </a>
+          <button
+            onClick={fetchApplications}
+            className="px-4 py-2 bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors"
+          >
+            Actualizar
+          </button>
+        </div>
       </div>
 
       {/* Filtros */}

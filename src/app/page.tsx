@@ -1,8 +1,11 @@
+import AnnouncementBar from "@/components/AnnouncementBar";
 import Navbar from "@/components/Navbar";
+import EventPopup from "@/components/EventPopup";
 import Hero from "@/components/Hero";
 import Countdown from "@/components/Countdown";
 import Stats from "@/components/Stats";
 import Schedule from "@/components/Schedule";
+import Mentors from "@/components/Mentors";
 import BuildFeatures from "@/components/BuildFeatures";
 import EventsTable from "@/components/EventsTable";
 import Marquee from "@/components/Marquee";
@@ -16,7 +19,9 @@ import ScrollNav from "@/components/ScrollNav";
 export default function Home() {
   return (
     <main className="min-h-screen bg-white">
+      <AnnouncementBar />
       <Navbar />
+      <EventPopup />
       <ScrollNav />
       <Hero />
       <Countdown />
@@ -24,6 +29,7 @@ export default function Home() {
       <Stats />
       <EventsTable />
       <Schedule />
+      <Mentors />
       <BuildFeatures />
       <Gallery />
       <Highlights />

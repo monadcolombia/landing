@@ -12,7 +12,8 @@ export const CITIES: City[] = [
     registrationUrl: "https://luma.com/o56ekpyb",
     description: "La capital de la montaña abre el tour. Un día, sin límites, solo construye.",
     eventType: "MonadBlitz Hackathon",
-    venue: "Medellín, Colombia",
+    venue: "Indie Universe Hotel, Medellín",
+    venueUrl: "https://maps.app.goo.gl/7eVLjPduu39L3iB19",
   },
   {
     id: "bogota",
