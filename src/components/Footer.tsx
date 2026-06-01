@@ -85,10 +85,7 @@ export default function Footer() {
             <Link href="/terminos" className="hover:text-white/50 transition-colors">
               Términos
             </Link>
-            <Link
-              href="/admin/applications"
-              className="text-white/20 hover:text-white/60 transition-colors"
-            >
+            <Link href="/admin" className="text-white/20 hover:text-white/60 transition-colors">
               Admin
             </Link>
           </div>
