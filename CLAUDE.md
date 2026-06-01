@@ -27,8 +27,19 @@ Content is hardcoded in Spanish. No i18n.
 ## Environment Variables
 
 - `DATABASE_URL` - PostgreSQL connection
-- `ADMIN_PASSWORD` - Admin dashboard password
+- `ADMIN_PASSWORD` - Admin dashboard password (kept as fallback alongside Google login)
 - `GMAIL_APP_PASSWORD` - Gmail app password for notifications
+- `NEXT_PUBLIC_GOOGLE_CLIENT_ID` - Google OAuth client ID (public, used both client-side for the GIS button and server-side for ID token verification)
+- `ADMIN_ALLOWED_EMAILS` - Comma-separated allowlist of emails authorized to log in via Google
+
+## Admin Login
+
+Two methods, both end up setting the same `admin_session` HMAC cookie via `src/lib/admin-auth.ts`:
+
+- **Google Sign-In** (`POST /api/admin/google-login`): Google Identity Services button on the login page. Server verifies the ID token with `google-auth-library`, checks `email_verified`, and matches against `ADMIN_ALLOWED_EMAILS`.
+- **Password fallback** (`POST /api/admin/login`): the original `ADMIN_PASSWORD` flow, kept as backup.
+
+The Google project is in Testing mode, so the OAuth consent screen test-users list must include any email in `ADMIN_ALLOWED_EMAILS` (Google blocks non-test-users before the token reaches us).
 
 ## Notes
 
