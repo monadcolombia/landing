@@ -42,7 +42,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Email not authorized" }, { status: 403 });
     }
 
-    await setAdminCookie();
+    await setAdminCookie(email);
     return NextResponse.json({ success: true, email });
   } catch {
     return NextResponse.json({ error: "Login failed" }, { status: 401 });

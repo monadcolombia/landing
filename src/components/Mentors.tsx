@@ -3,52 +3,9 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import TeamMemberCard, { type TeamMember } from "./TeamMemberCard";
 
 const EASING = [0.16, 1, 0.3, 1] as const;
-
-type TeamMember = {
-  id: string;
-  role: "mentor" | "judge";
-  fullName: string;
-  city: string;
-  mentorBio: string | null;
-  mentorPrimarySkills: string[];
-  judgeBio: string | null;
-  judgeExpertiseAreas: string[];
-  judgeCurrentRole: string | null;
-  linkedin: string | null;
-  twitter: string | null;
-};
-
-function twitterHandle(raw: string | null): string | null {
-  if (!raw) return null;
-  const handle = raw
-    .replace(/^@/, "")
-    .replace(/^https?:\/\/(www\.)?(twitter|x)\.com\//i, "")
-    .replace(/\/$/, "")
-    .trim();
-  return handle || null;
-}
-
-function twitterDisplay(raw: string | null): string | null {
-  const handle = twitterHandle(raw);
-  return handle ? `@${handle}` : null;
-}
-
-function twitterHref(raw: string | null): string | null {
-  const handle = twitterHandle(raw);
-  return handle ? `https://x.com/${handle}` : null;
-}
-
-function initials(name: string): string {
-  return name
-    .split(/\s+/)
-    .map((p) => p[0])
-    .filter(Boolean)
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
-}
 
 export default function Mentors() {
   const [members, setMembers] = useState<TeamMember[]>([]);
@@ -132,93 +89,9 @@ function Group({ label, members }: { label: string; members: TeamMember[] }) {
       </p>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {members.map((m, i) => (
-          <PersonCard key={m.id} member={m} index={i} />
+          <TeamMemberCard key={m.id} member={m} index={i} theme="light" />
         ))}
       </div>
     </div>
-  );
-}
-
-function PersonCard({ member, index }: { member: TeamMember; index: number }) {
-  const isMentor = member.role === "mentor";
-  const bio = isMentor ? member.mentorBio : member.judgeBio;
-  const tags = isMentor ? member.mentorPrimarySkills : member.judgeExpertiseAreas;
-  const subtitle = !isMentor ? member.judgeCurrentRole : null;
-  const xHandle = twitterHandle(member.twitter);
-  const xHref = twitterHref(member.twitter);
-  const xLabel = twitterDisplay(member.twitter);
-
-  return (
-    <motion.article
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true }}
-      transition={{ duration: 0.5, delay: index * 0.05, ease: EASING }}
-      className="group p-5 rounded-xl border border-gray-100 bg-gray-50/40 hover:bg-white hover:border-gray-200 hover:shadow-sm transition-all duration-300 flex flex-col items-center text-center"
-    >
-      {xHandle ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={`https://unavatar.io/x/${xHandle}`}
-          alt={member.fullName}
-          width={80}
-          height={80}
-          loading="lazy"
-          className="w-20 h-20 rounded-full object-cover mb-3 ring-1 ring-gray-200 bg-gray-100"
-        />
-      ) : (
-        <div className="w-20 h-20 rounded-full mb-3 ring-1 ring-gray-200 bg-gray-100 flex items-center justify-center text-gray-400 font-heading font-bold">
-          {initials(member.fullName)}
-        </div>
-      )}
-      <div className="flex items-center justify-center gap-2 mb-1">
-        <h3 className="font-heading font-bold text-gray-900 leading-tight">{member.fullName}</h3>
-        <span className="text-[10px] font-mono uppercase tracking-wide px-2 py-0.5 rounded-full bg-monad-primary/10 text-monad-primary border border-monad-primary/20 flex-shrink-0">
-          {isMentor ? "Mentor" : "Jurado"}
-        </span>
-      </div>
-      {subtitle && <p className="text-xs text-gray-400 mb-3 truncate max-w-full">{subtitle}</p>}
-
-      {bio && <p className="text-sm text-gray-500 mb-3 line-clamp-3">{bio}</p>}
-
-      {tags && tags.length > 0 && (
-        <div className="flex flex-wrap justify-center gap-1.5 mb-3">
-          {tags.slice(0, 4).map((t) => (
-            <span
-              key={t}
-              className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-white text-gray-500 border border-gray-200"
-            >
-              {t}
-            </span>
-          ))}
-        </div>
-      )}
-
-      <div className="flex flex-wrap items-center justify-center gap-3 mt-auto pt-2 text-xs text-gray-400">
-        {member.linkedin && (
-          <a
-            href={member.linkedin}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-monad-primary transition-colors"
-          >
-            LinkedIn
-          </a>
-        )}
-        {xHref && xLabel && (
-          <a
-            href={xHref}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="hover:text-monad-primary transition-colors"
-          >
-            {xLabel}
-          </a>
-        )}
-        <span className="capitalize text-gray-300">
-          {member.city === "both" ? "Ambas ciudades" : member.city}
-        </span>
-      </div>
-    </motion.article>
   );
 }
