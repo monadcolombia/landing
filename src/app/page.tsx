@@ -5,6 +5,7 @@ import Hero from "@/components/Hero";
 import Countdown from "@/components/Countdown";
 import Stats from "@/components/Stats";
 import Schedule from "@/components/Schedule";
+import Organizers from "@/components/Organizers";
 import Mentors from "@/components/Mentors";
 import BuildFeatures from "@/components/BuildFeatures";
 import EventsTable from "@/components/EventsTable";
@@ -29,6 +30,7 @@ export default function Home() {
       <Stats />
       <EventsTable />
       <Schedule />
+      <Organizers />
       <Mentors />
       <BuildFeatures />
       <Gallery />
