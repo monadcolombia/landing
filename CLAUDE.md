@@ -32,7 +32,8 @@ Content is hardcoded in Spanish. No i18n.
 - `RESEND_API_KEY` - Resend API key for transactional email
 - `RESEND_FROM` - Optional sender address (defaults to `onboarding@resend.dev`)
 - `NEXT_PUBLIC_GOOGLE_CLIENT_ID` - Google OAuth client ID (public, used both client-side for the GIS button and server-side for ID token verification)
-- `ADMIN_ALLOWED_EMAILS` - Comma-separated allowlist of emails authorized to log in via Google
+- `ADMIN_ALLOWED_EMAILS` - Comma-separated allowlist of emails authorized to log in via Google (read access)
+- `ADMIN_FULL_ACCESS_EMAILS` - Subset of `ADMIN_ALLOWED_EMAILS` with write permissions (approve/reject/withdraw/reactivate/resend). Emails not listed here can only view applications.
 
 ## Admin Login
 
