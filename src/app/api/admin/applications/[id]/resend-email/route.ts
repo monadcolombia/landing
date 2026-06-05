@@ -22,9 +22,9 @@ export async function POST(_request: Request, { params }: { params: Promise<{ id
     return NextResponse.json({ error: "Application not found" }, { status: 404 });
   }
 
-  if (app.status !== "approved" && app.status !== "rejected" && app.status !== "withdrawn") {
+  if (app.status !== "approved" && app.status !== "rejected") {
     return NextResponse.json(
-      { error: "Application status must be approved, rejected or withdrawn to send an email" },
+      { error: "Application status must be approved or rejected to send an email" },
       { status: 400 }
     );
   }
