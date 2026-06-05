@@ -1,17 +1,25 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import type { Application } from "@prisma/client";
 
 const STATUS_LABELS: Record<string, string> = {
   pending: "Pendiente",
   approved: "Aprobado",
   rejected: "Rechazado",
-  withdrawn: "Retirado",
 };
 
-type StatusFilter = "all" | "pending" | "approved" | "rejected" | "withdrawn";
-type ActionStatus = "approved" | "rejected" | "withdrawn";
+type RoleFilter = "all" | "mentor" | "judge" | "volunteer";
+type StatusFilter = "all" | "pending" | "approved" | "rejected";
+type ActionStatus = "approved" | "rejected";
+
+type Stats = {
+  total: number;
+  status: { pending: number; approved: number; rejected: number };
+  role: { mentor: number; judge: number; volunteer: number };
+  confirmed: number;
+  unconfirmed: number;
+};
 
 const ROLE_LABELS: Record<string, string> = {
   mentor: "Mentor",
@@ -28,10 +36,12 @@ const VOLUNTEER_AVAILABILITY_LABELS: Record<string, string> = {
 export default function AdminApplicationsPage() {
   const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedRole, setSelectedRole] = useState<"all" | "mentor" | "judge" | "volunteer">("all");
+  const [selectedRole, setSelectedRole] = useState<RoleFilter>("all");
   const [selectedStatus, setSelectedStatus] = useState<StatusFilter>("all");
   const [selectedApp, setSelectedApp] = useState<Application | null>(null);
   const [canWrite, setCanWrite] = useState(false);
+  const [stats, setStats] = useState<Stats | null>(null);
+  const [resendingId, setResendingId] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/admin/verify")
@@ -40,17 +50,24 @@ export default function AdminApplicationsPage() {
       .catch(() => setCanWrite(false));
   }, []);
 
-  const fetchApplications = async () => {
+  const fetchStats = useCallback(async () => {
+    try {
+      const r = await fetch("/api/admin/applications/stats");
+      if (!r.ok) return;
+      setStats(await r.json());
+    } catch {
+      // ignore
+    }
+  }, []);
+
+  const fetchApplications = useCallback(async () => {
     setLoading(true);
     try {
       const params = new URLSearchParams();
       if (selectedRole !== "all") params.append("role", selectedRole);
       if (selectedStatus !== "all") params.append("status", selectedStatus);
-
       const response = await fetch(`/api/admin/applications?${params}`);
-
       if (!response.ok) throw new Error("Error al cargar aplicaciones");
-
       const { data } = await response.json();
       setApplications(data || []);
     } catch (error) {
@@ -59,12 +76,12 @@ export default function AdminApplicationsPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [selectedRole, selectedStatus]);
 
   useEffect(() => {
     fetchApplications();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [selectedRole, selectedStatus]);
+    fetchStats();
+  }, [fetchApplications, fetchStats]);
 
   const updateStatus = async (id: string, status: ActionStatus) => {
     try {
@@ -73,10 +90,8 @@ export default function AdminApplicationsPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ status }),
       });
-
       if (!response.ok) throw new Error("Error al actualizar estado");
-
-      await fetchApplications();
+      await Promise.all([fetchApplications(), fetchStats()]);
       setSelectedApp(null);
       alert(`Aplicación ${STATUS_LABELS[status]?.toLowerCase() || status} exitosamente`);
     } catch (error) {
@@ -85,7 +100,22 @@ export default function AdminApplicationsPage() {
     }
   };
 
-  const [resendingId, setResendingId] = useState<string | null>(null);
+  const setConfirmed = async (id: string, confirmed: boolean) => {
+    try {
+      const response = await fetch(`/api/admin/applications/${id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ confirmed }),
+      });
+      if (!response.ok) throw new Error("Error al actualizar confirmacion");
+      const { data } = await response.json();
+      await Promise.all([fetchApplications(), fetchStats()]);
+      if (selectedApp?.id === id) setSelectedApp(data);
+    } catch (error) {
+      console.error("Error updating confirmed:", error);
+      alert("Error al actualizar confirmacion");
+    }
+  };
 
   const resendEmail = async (id: string) => {
     setResendingId(id);
@@ -104,21 +134,14 @@ export default function AdminApplicationsPage() {
     }
   };
 
-  const filteredCount = {
-    all: applications.length,
-    mentor: applications.filter((a) => a.role === "mentor").length,
-    judge: applications.filter((a) => a.role === "judge").length,
-    volunteer: applications.filter((a) => a.role === "volunteer").length,
-    pending: applications.filter((a) => a.status === "pending").length,
-  };
-
   return (
     <div className="space-y-6">
       {!canWrite && (
         <div className="bg-orange-500/10 border border-orange-500/30 text-orange-300 rounded-lg px-4 py-3 text-sm font-mono">
-          Solo lectura. No tienes permisos para aprobar, rechazar, retirar o reenviar correos.
+          Solo lectura. No tienes permisos para aprobar, rechazar, confirmar o reenviar correos.
         </div>
       )}
+
       <div className="flex justify-between items-center gap-3 flex-wrap">
         <h2 className="text-2xl font-bold text-white">Aplicaciones</h2>
         <div className="flex gap-2">
@@ -132,13 +155,30 @@ export default function AdminApplicationsPage() {
             Exportar Excel
           </a>
           <button
-            onClick={fetchApplications}
+            onClick={() => {
+              fetchApplications();
+              fetchStats();
+            }}
             className="px-4 py-2 bg-white/10 text-white rounded-lg hover:bg-white/20 transition-colors"
           >
             Actualizar
           </button>
         </div>
       </div>
+
+      {stats && (
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
+          <Tile label="Total" value={stats.total} />
+          <Tile label="Pendientes" value={stats.status.pending} tone="yellow" />
+          <Tile
+            label="Confirmados"
+            value={stats.confirmed}
+            sub={`/ ${stats.status.approved} aprobados`}
+            tone="green"
+          />
+          <Tile label="Rechazados" value={stats.status.rejected} tone="red" />
+        </div>
+      )}
 
       {/* Filtros */}
       <div className="bg-white/5 border border-white/10 rounded-lg p-6 space-y-4">
@@ -149,15 +189,15 @@ export default function AdminApplicationsPage() {
             </label>
             <select
               value={selectedRole}
-              onChange={(e) =>
-                setSelectedRole(e.target.value as "all" | "mentor" | "judge" | "volunteer")
-              }
+              onChange={(e) => setSelectedRole(e.target.value as RoleFilter)}
               className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:outline-none focus:border-monad-primary"
             >
-              <option value="all">Todos ({filteredCount.all})</option>
-              <option value="mentor">Mentores ({filteredCount.mentor})</option>
-              <option value="judge">Jurados ({filteredCount.judge})</option>
-              <option value="volunteer">Voluntarios ({filteredCount.volunteer})</option>
+              <option value="all">Todos {stats ? `(${stats.total})` : ""}</option>
+              <option value="mentor">Mentores {stats ? `(${stats.role.mentor})` : ""}</option>
+              <option value="judge">Jurados {stats ? `(${stats.role.judge})` : ""}</option>
+              <option value="volunteer">
+                Voluntarios {stats ? `(${stats.role.volunteer})` : ""}
+              </option>
             </select>
           </div>
 
@@ -170,11 +210,14 @@ export default function AdminApplicationsPage() {
               onChange={(e) => setSelectedStatus(e.target.value as StatusFilter)}
               className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:outline-none focus:border-monad-primary"
             >
-              <option value="all">Todos</option>
-              <option value="pending">Pendientes ({filteredCount.pending})</option>
-              <option value="approved">Aprobados</option>
-              <option value="rejected">Rechazados</option>
-              <option value="withdrawn">Retirados</option>
+              <option value="all">Todos {stats ? `(${stats.total})` : ""}</option>
+              <option value="pending">Pendientes {stats ? `(${stats.status.pending})` : ""}</option>
+              <option value="approved">
+                Aprobados {stats ? `(${stats.status.approved})` : ""}
+              </option>
+              <option value="rejected">
+                Rechazados {stats ? `(${stats.status.rejected})` : ""}
+              </option>
             </select>
           </div>
         </div>
@@ -191,24 +234,13 @@ export default function AdminApplicationsPage() {
             <table className="w-full">
               <thead className="bg-white/5 border-b border-white/10">
                 <tr>
-                  <th className="px-6 py-3 text-left text-xs font-mono uppercase tracking-wider text-white/70">
-                    Nombre
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-mono uppercase tracking-wider text-white/70">
-                    Rol
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-mono uppercase tracking-wider text-white/70">
-                    Ciudad
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-mono uppercase tracking-wider text-white/70">
-                    Estado
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-mono uppercase tracking-wider text-white/70">
-                    Fecha
-                  </th>
-                  <th className="px-6 py-3 text-left text-xs font-mono uppercase tracking-wider text-white/70">
-                    Acciones
-                  </th>
+                  <Th>Nombre</Th>
+                  <Th>Rol</Th>
+                  <Th>Ciudad</Th>
+                  <Th>Estado</Th>
+                  <Th>Confirmado</Th>
+                  <Th>Fecha</Th>
+                  <Th>Acciones</Th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-white/10">
@@ -228,19 +260,14 @@ export default function AdminApplicationsPage() {
                       {app.city === "both" ? "Ambas" : app.city}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
-                      <span
-                        className={`px-2 py-1 text-xs rounded-full ${
-                          app.status === "approved"
-                            ? "bg-green-500/20 text-green-400"
-                            : app.status === "rejected"
-                              ? "bg-red-500/20 text-red-400"
-                              : app.status === "withdrawn"
-                                ? "bg-orange-500/20 text-orange-400"
-                                : "bg-yellow-500/20 text-yellow-400"
-                        }`}
-                      >
-                        {STATUS_LABELS[app.status] || app.status}
-                      </span>
+                      <StatusBadge status={app.status} />
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm">
+                      {app.status === "approved" ? (
+                        <ConfirmedBadge confirmed={app.confirmed} />
+                      ) : (
+                        <span className="text-white/30">—</span>
+                      )}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-white/70">
                       {new Date(app.createdAt).toLocaleDateString("es-CO")}
@@ -479,6 +506,7 @@ export default function AdminApplicationsPage() {
                     Solo lectura. Pide a un admin con permisos completos que realice esta accion.
                   </p>
                 )}
+
                 {canWrite && selectedApp.status === "pending" && (
                   <>
                     <button
@@ -497,28 +525,40 @@ export default function AdminApplicationsPage() {
                 )}
 
                 {canWrite && selectedApp.status === "approved" && (
-                  <button
-                    onClick={() => {
-                      if (
-                        confirm(
-                          "¿Confirmas que esta persona se retira del evento? Se le enviara un correo."
-                        )
-                      ) {
-                        updateStatus(selectedApp.id, "withdrawn");
-                      }
-                    }}
-                    className="flex-1 min-w-[140px] bg-orange-600 text-white px-6 py-3 rounded-full font-mono uppercase tracking-wide hover:bg-orange-700 transition-colors"
-                  >
-                    Retirar
-                  </button>
+                  <>
+                    <button
+                      onClick={() => setConfirmed(selectedApp.id, !selectedApp.confirmed)}
+                      className={`flex-1 min-w-[140px] text-white px-6 py-3 rounded-full font-mono uppercase tracking-wide transition-colors ${
+                        selectedApp.confirmed
+                          ? "bg-white/10 hover:bg-white/20"
+                          : "bg-green-600 hover:bg-green-700"
+                      }`}
+                    >
+                      {selectedApp.confirmed ? "Marcar no confirmado" : "Marcar confirmado"}
+                    </button>
+                    <button
+                      onClick={() => {
+                        if (
+                          confirm(
+                            "¿Rechazar esta aplicacion ya aprobada? El aplicante recibira el correo de rechazo y desaparece del sitio publico."
+                          )
+                        ) {
+                          updateStatus(selectedApp.id, "rejected");
+                        }
+                      }}
+                      className="flex-1 min-w-[140px] bg-red-600 text-white px-6 py-3 rounded-full font-mono uppercase tracking-wide hover:bg-red-700 transition-colors"
+                    >
+                      Rechazar
+                    </button>
+                  </>
                 )}
 
-                {canWrite && selectedApp.status === "withdrawn" && (
+                {canWrite && selectedApp.status === "rejected" && (
                   <button
                     onClick={() => {
                       if (
                         confirm(
-                          "¿Reactivar esta persona? Volvera a aparecer en el sitio y se le enviara el correo de aprobacion."
+                          "¿Reactivar esta aplicacion? Pasa a aprobado y se le enviara el correo de aprobacion. El estado de confirmacion arranca en false."
                         )
                       ) {
                         updateStatus(selectedApp.id, "approved");
@@ -526,7 +566,7 @@ export default function AdminApplicationsPage() {
                     }}
                     className="flex-1 min-w-[140px] bg-green-600 text-white px-6 py-3 rounded-full font-mono uppercase tracking-wide hover:bg-green-700 transition-colors"
                   >
-                    Reactivar
+                    Reactivar (aprobar)
                   </button>
                 )}
 
@@ -544,6 +584,70 @@ export default function AdminApplicationsPage() {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+function Th({ children }: { children: React.ReactNode }) {
+  return (
+    <th className="px-6 py-3 text-left text-xs font-mono uppercase tracking-wider text-white/70">
+      {children}
+    </th>
+  );
+}
+
+function StatusBadge({ status }: { status: string }) {
+  const tone =
+    status === "approved"
+      ? "bg-green-500/20 text-green-400"
+      : status === "rejected"
+        ? "bg-red-500/20 text-red-400"
+        : "bg-yellow-500/20 text-yellow-400";
+  return (
+    <span className={`px-2 py-1 text-xs rounded-full ${tone}`}>
+      {STATUS_LABELS[status] || status}
+    </span>
+  );
+}
+
+function ConfirmedBadge({ confirmed }: { confirmed: boolean }) {
+  return (
+    <span
+      className={`inline-flex items-center gap-1 px-2 py-1 text-xs rounded-full ${
+        confirmed
+          ? "bg-green-500/20 text-green-400"
+          : "bg-white/5 text-white/40 border border-white/10"
+      }`}
+    >
+      {confirmed ? "✓ Confirmado" : "○ No confirmado"}
+    </span>
+  );
+}
+
+function Tile({
+  label,
+  value,
+  sub,
+  tone = "neutral",
+}: {
+  label: string;
+  value: number;
+  sub?: string;
+  tone?: "neutral" | "yellow" | "green" | "red";
+}) {
+  const accent =
+    tone === "yellow"
+      ? "text-yellow-400"
+      : tone === "green"
+        ? "text-green-400"
+        : tone === "red"
+          ? "text-red-400"
+          : "text-white";
+  return (
+    <div className="bg-white/5 border border-white/10 rounded-lg p-4">
+      <div className="text-[10px] font-mono uppercase tracking-wide text-white/50">{label}</div>
+      <div className={`text-2xl font-bold mt-1 ${accent}`}>{value}</div>
+      {sub && <div className="text-xs text-white/40 mt-0.5">{sub}</div>}
     </div>
   );
 }

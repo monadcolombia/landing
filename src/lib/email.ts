@@ -65,7 +65,7 @@ interface ApplicantStatusEmail {
   to: string;
   fullName: string;
   role: AppRole;
-  status: "approved" | "rejected" | "withdrawn";
+  status: "approved" | "rejected";
 }
 
 const socialsHtml = `
@@ -202,43 +202,6 @@ function rejectedTemplate(fullName: string, role: AppRole) {
   };
 }
 
-function withdrawnTemplate(fullName: string, role: AppRole) {
-  const label = roleLabel(role);
-  const firstName = fullName.split(" ")[0];
-  const REAPPLY_URL = `https://monadcolombia.xyz/apply/${role}`;
-
-  const text = [
-    `Hola ${firstName},`,
-    "",
-    `Confirmamos que tu participacion como ${label} en MonadBlitz Colombia fue removida segun lo solicitado. Gracias por avisarnos a tiempo.`,
-    "",
-    `Si tu disponibilidad cambia y quieres volver, puedes escribirnos a este mismo correo o aplicar de nuevo aqui: ${REAPPLY_URL}`,
-    "",
-    stayConnectedText,
-    "",
-    "MonadBlitz Colombia",
-  ].join("\n");
-
-  const html = `<!doctype html><html><body style="margin:0;padding:0;background:#f8fafc;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Helvetica,Arial,sans-serif">
-  <div style="max-width:560px;margin:0 auto;padding:32px 24px;background:#ffffff">
-    <p style="margin:0 0 12px;color:#0f172a;font-size:16px">Hola ${firstName},</p>
-    <p style="margin:0 0 16px;color:#334155;font-size:15px;line-height:1.6">
-      Confirmamos que tu participacion como ${label} en MonadBlitz Colombia fue removida segun lo solicitado. Gracias por avisarnos a tiempo.
-    </p>
-    <p style="margin:0 0 16px;color:#334155;font-size:15px;line-height:1.6">
-      Si tu disponibilidad cambia y quieres volver, puedes <a href="mailto:${NOTIFY_EMAIL}" style="color:#6E54FF">escribirnos</a> o <a href="${REAPPLY_URL}" style="color:#6E54FF">aplicar de nuevo</a>.
-    </p>
-    ${stayConnectedHtml}
-    <p style="margin:24px 0 0;color:#0f172a;font-size:14px;font-weight:600">MonadBlitz Colombia</p>
-  </div></body></html>`;
-
-  return {
-    subject: `Tu participacion como ${label} fue removida - MonadBlitz Colombia`,
-    text,
-    html,
-  };
-}
-
 export async function sendApplicantStatusEmail({
   to,
   fullName,
@@ -253,11 +216,7 @@ export async function sendApplicantStatusEmail({
   }
 
   const tpl =
-    status === "approved"
-      ? approvedTemplate(fullName, role)
-      : status === "withdrawn"
-        ? withdrawnTemplate(fullName, role)
-        : rejectedTemplate(fullName, role);
+    status === "approved" ? approvedTemplate(fullName, role) : rejectedTemplate(fullName, role);
 
   console.log(`[email] sending via Resend from=${SENDER} subject="${tpl.subject}"`);
 

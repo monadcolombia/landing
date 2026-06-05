@@ -23,7 +23,6 @@ enum ApplicationStatus {
   pending
   approved
   rejected
-  withdrawn
 }
 
 enum TechnicalLevel {
@@ -89,6 +88,7 @@ model Application {
 
   // Review fields
   status        ApplicationStatus @default(pending)
+  confirmed     Boolean           @default(false)
   reviewedAt    DateTime?         @map("reviewed_at")
   reviewedBy    String?           @map("reviewed_by")
   reviewerNotes String?           @map("reviewer_notes")

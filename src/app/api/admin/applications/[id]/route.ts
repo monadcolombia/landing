@@ -3,6 +3,13 @@ import { prisma } from "@/lib/db";
 import { isAdminAuthenticated, isAdminWriter } from "@/lib/admin-auth";
 import { sendApplicantStatusEmail } from "@/lib/email";
 
+const VALID_STATUSES = ["approved", "rejected"] as const;
+type ValidStatus = (typeof VALID_STATUSES)[number];
+
+function isValidStatus(s: unknown): s is ValidStatus {
+  return typeof s === "string" && (VALID_STATUSES as readonly string[]).includes(s);
+}
+
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   if (!(await isAdminAuthenticated())) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -15,14 +22,19 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 
   try {
     const body = await request.json();
-    const { status, reviewer_notes } = body;
+    const { status, confirmed, reviewer_notes } = body;
 
-    const validStatuses = ["approved", "rejected", "withdrawn"] as const;
-    if (!validStatuses.includes(status)) {
+    if (status !== undefined && !isValidStatus(status)) {
       return NextResponse.json(
-        { error: "Invalid status. Must be 'approved', 'rejected' or 'withdrawn'" },
+        { error: "Invalid status. Must be 'approved' or 'rejected'" },
         { status: 400 }
       );
+    }
+    if (confirmed !== undefined && typeof confirmed !== "boolean") {
+      return NextResponse.json({ error: "Invalid confirmed flag" }, { status: 400 });
+    }
+    if (status === undefined && confirmed === undefined && reviewer_notes === undefined) {
+      return NextResponse.json({ error: "Nothing to update" }, { status: 400 });
     }
 
     const existing = await prisma.application.findUnique({
@@ -34,16 +46,20 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
       return NextResponse.json({ error: "Application not found" }, { status: 404 });
     }
 
-    const data = await prisma.application.update({
-      where: { id },
-      data: {
-        status,
-        reviewerNotes: reviewer_notes,
-        reviewedAt: new Date(),
-      },
-    });
+    const updates: {
+      status?: ValidStatus;
+      confirmed?: boolean;
+      reviewerNotes?: string;
+      reviewedAt?: Date;
+    } = {};
+    if (status !== undefined) updates.status = status;
+    if (confirmed !== undefined) updates.confirmed = confirmed;
+    if (reviewer_notes !== undefined) updates.reviewerNotes = reviewer_notes;
+    if (status !== undefined) updates.reviewedAt = new Date();
 
-    if (existing.status !== status) {
+    const data = await prisma.application.update({ where: { id }, data: updates });
+
+    if (status !== undefined && existing.status !== status) {
       sendApplicantStatusEmail({
         to: data.email,
         fullName: data.fullName,
