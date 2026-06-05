@@ -11,12 +11,15 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const role = searchParams.get("role") as Role | null;
   const status = searchParams.get("status") as ApplicationStatus | null;
+  const confirmedRaw = searchParams.get("confirmed");
+  const confirmed = confirmedRaw === "true" ? true : confirmedRaw === "false" ? false : undefined;
 
   try {
     const data = await prisma.application.findMany({
       where: {
         ...(role && { role }),
         ...(status && { status }),
+        ...(confirmed !== undefined && { confirmed }),
       },
       orderBy: { createdAt: "desc" },
     });
