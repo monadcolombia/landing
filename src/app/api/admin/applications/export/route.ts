@@ -118,11 +118,14 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const role = searchParams.get("role") as Role | null;
   const status = searchParams.get("status") as ApplicationStatus | null;
+  const confirmedRaw = searchParams.get("confirmed");
+  const confirmed = confirmedRaw === "true" ? true : confirmedRaw === "false" ? false : undefined;
 
   const apps = await prisma.application.findMany({
     where: {
       ...(role && { role }),
       ...(status && { status }),
+      ...(confirmed !== undefined && { confirmed }),
     },
     orderBy: { createdAt: "desc" },
   });
@@ -171,7 +174,9 @@ export async function GET(request: Request) {
   const buffer = await workbook.xlsx.writeBuffer();
 
   const today = new Date().toISOString().slice(0, 10);
-  const filenameParts = ["applications", role ?? "all", status ?? "all", today];
+  const confirmedPart =
+    confirmed === true ? "confirmed" : confirmed === false ? "unconfirmed" : "all";
+  const filenameParts = ["applications", role ?? "all", status ?? "all", confirmedPart, today];
   const filename = `${filenameParts.join("-")}.xlsx`;
 
   return new NextResponse(buffer as unknown as BodyInit, {

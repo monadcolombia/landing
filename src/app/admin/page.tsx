@@ -11,6 +11,7 @@ const STATUS_LABELS: Record<string, string> = {
 
 type RoleFilter = "all" | "mentor" | "judge" | "volunteer";
 type StatusFilter = "all" | "pending" | "approved" | "rejected";
+type ConfirmedFilter = "all" | "true" | "false";
 type ActionStatus = "approved" | "rejected";
 
 type Stats = {
@@ -38,6 +39,7 @@ export default function AdminApplicationsPage() {
   const [loading, setLoading] = useState(true);
   const [selectedRole, setSelectedRole] = useState<RoleFilter>("all");
   const [selectedStatus, setSelectedStatus] = useState<StatusFilter>("all");
+  const [selectedConfirmed, setSelectedConfirmed] = useState<ConfirmedFilter>("all");
   const [selectedApp, setSelectedApp] = useState<Application | null>(null);
   const [canWrite, setCanWrite] = useState(false);
   const [stats, setStats] = useState<Stats | null>(null);
@@ -66,6 +68,7 @@ export default function AdminApplicationsPage() {
       const params = new URLSearchParams();
       if (selectedRole !== "all") params.append("role", selectedRole);
       if (selectedStatus !== "all") params.append("status", selectedStatus);
+      if (selectedConfirmed !== "all") params.append("confirmed", selectedConfirmed);
       const response = await fetch(`/api/admin/applications?${params}`);
       if (!response.ok) throw new Error("Error al cargar aplicaciones");
       const { data } = await response.json();
@@ -76,7 +79,7 @@ export default function AdminApplicationsPage() {
     } finally {
       setLoading(false);
     }
-  }, [selectedRole, selectedStatus]);
+  }, [selectedRole, selectedStatus, selectedConfirmed]);
 
   useEffect(() => {
     fetchApplications();
@@ -149,6 +152,7 @@ export default function AdminApplicationsPage() {
             href={`/api/admin/applications/export?${new URLSearchParams({
               ...(selectedRole !== "all" && { role: selectedRole }),
               ...(selectedStatus !== "all" && { status: selectedStatus }),
+              ...(selectedConfirmed !== "all" && { confirmed: selectedConfirmed }),
             }).toString()}`}
             className="px-4 py-2 bg-monad-primary/20 border border-monad-primary/40 text-monad-primary rounded-lg hover:bg-monad-primary/30 transition-colors text-sm font-mono uppercase tracking-wide"
           >
@@ -182,7 +186,7 @@ export default function AdminApplicationsPage() {
 
       {/* Filtros */}
       <div className="bg-white/5 border border-white/10 rounded-lg p-6 space-y-4">
-        <div className="grid md:grid-cols-2 gap-4">
+        <div className="grid md:grid-cols-3 gap-4">
           <div>
             <label className="block text-sm font-mono uppercase tracking-wide text-white/90 mb-2">
               Rol
@@ -217,6 +221,23 @@ export default function AdminApplicationsPage() {
               </option>
               <option value="rejected">
                 Rechazados {stats ? `(${stats.status.rejected})` : ""}
+              </option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-mono uppercase tracking-wide text-white/90 mb-2">
+              Confirmacion
+            </label>
+            <select
+              value={selectedConfirmed}
+              onChange={(e) => setSelectedConfirmed(e.target.value as ConfirmedFilter)}
+              className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:outline-none focus:border-monad-primary"
+            >
+              <option value="all">Todos {stats ? `(${stats.total})` : ""}</option>
+              <option value="true">Confirmados {stats ? `(${stats.confirmed})` : ""}</option>
+              <option value="false">
+                No confirmados {stats ? `(${stats.total - stats.confirmed})` : ""}
               </option>
             </select>
           </div>
