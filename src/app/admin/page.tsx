@@ -7,7 +7,11 @@ const STATUS_LABELS: Record<string, string> = {
   pending: "Pendiente",
   approved: "Aprobado",
   rejected: "Rechazado",
+  withdrawn: "Retirado",
 };
+
+type StatusFilter = "all" | "pending" | "approved" | "rejected" | "withdrawn";
+type ActionStatus = "approved" | "rejected" | "withdrawn";
 
 const ROLE_LABELS: Record<string, string> = {
   mentor: "Mentor",
@@ -25,10 +29,16 @@ export default function AdminApplicationsPage() {
   const [applications, setApplications] = useState<Application[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedRole, setSelectedRole] = useState<"all" | "mentor" | "judge" | "volunteer">("all");
-  const [selectedStatus, setSelectedStatus] = useState<"all" | "pending" | "approved" | "rejected">(
-    "all"
-  );
+  const [selectedStatus, setSelectedStatus] = useState<StatusFilter>("all");
   const [selectedApp, setSelectedApp] = useState<Application | null>(null);
+  const [canWrite, setCanWrite] = useState(false);
+
+  useEffect(() => {
+    fetch("/api/admin/verify")
+      .then((res) => res.json())
+      .then((data) => setCanWrite(Boolean(data.canWrite)))
+      .catch(() => setCanWrite(false));
+  }, []);
 
   const fetchApplications = async () => {
     setLoading(true);
@@ -56,7 +66,7 @@ export default function AdminApplicationsPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedRole, selectedStatus]);
 
-  const updateStatus = async (id: string, status: "approved" | "rejected") => {
+  const updateStatus = async (id: string, status: ActionStatus) => {
     try {
       const response = await fetch(`/api/admin/applications/${id}`, {
         method: "PATCH",
@@ -104,6 +114,11 @@ export default function AdminApplicationsPage() {
 
   return (
     <div className="space-y-6">
+      {!canWrite && (
+        <div className="bg-orange-500/10 border border-orange-500/30 text-orange-300 rounded-lg px-4 py-3 text-sm font-mono">
+          Solo lectura. No tienes permisos para aprobar, rechazar, retirar o reenviar correos.
+        </div>
+      )}
       <div className="flex justify-between items-center gap-3 flex-wrap">
         <h2 className="text-2xl font-bold text-white">Aplicaciones</h2>
         <div className="flex gap-2">
@@ -152,15 +167,14 @@ export default function AdminApplicationsPage() {
             </label>
             <select
               value={selectedStatus}
-              onChange={(e) =>
-                setSelectedStatus(e.target.value as "all" | "pending" | "approved" | "rejected")
-              }
+              onChange={(e) => setSelectedStatus(e.target.value as StatusFilter)}
               className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:outline-none focus:border-monad-primary"
             >
               <option value="all">Todos</option>
               <option value="pending">Pendientes ({filteredCount.pending})</option>
               <option value="approved">Aprobados</option>
               <option value="rejected">Rechazados</option>
+              <option value="withdrawn">Retirados</option>
             </select>
           </div>
         </div>
@@ -220,7 +234,9 @@ export default function AdminApplicationsPage() {
                             ? "bg-green-500/20 text-green-400"
                             : app.status === "rejected"
                               ? "bg-red-500/20 text-red-400"
-                              : "bg-yellow-500/20 text-yellow-400"
+                              : app.status === "withdrawn"
+                                ? "bg-orange-500/20 text-orange-400"
+                                : "bg-yellow-500/20 text-yellow-400"
                         }`}
                       >
                         {STATUS_LABELS[app.status] || app.status}
@@ -457,32 +473,73 @@ export default function AdminApplicationsPage() {
               )}
 
               {/* Acciones */}
-              {selectedApp.status === "pending" ? (
-                <div className="flex gap-4 pt-6 border-t border-white/10">
+              <div className="flex flex-wrap gap-3 pt-6 border-t border-white/10">
+                {!canWrite && (
+                  <p className="w-full text-sm text-white/50 italic">
+                    Solo lectura. Pide a un admin con permisos completos que realice esta accion.
+                  </p>
+                )}
+                {canWrite && selectedApp.status === "pending" && (
+                  <>
+                    <button
+                      onClick={() => updateStatus(selectedApp.id, "approved")}
+                      className="flex-1 min-w-[140px] bg-green-600 text-white px-6 py-3 rounded-full font-mono uppercase tracking-wide hover:bg-green-700 transition-colors"
+                    >
+                      Aprobar
+                    </button>
+                    <button
+                      onClick={() => updateStatus(selectedApp.id, "rejected")}
+                      className="flex-1 min-w-[140px] bg-red-600 text-white px-6 py-3 rounded-full font-mono uppercase tracking-wide hover:bg-red-700 transition-colors"
+                    >
+                      Rechazar
+                    </button>
+                  </>
+                )}
+
+                {canWrite && selectedApp.status === "approved" && (
                   <button
-                    onClick={() => updateStatus(selectedApp.id, "approved")}
-                    className="flex-1 bg-green-600 text-white px-6 py-3 rounded-full font-mono uppercase tracking-wide hover:bg-green-700 transition-colors"
+                    onClick={() => {
+                      if (
+                        confirm(
+                          "¿Confirmas que esta persona se retira del evento? Se le enviara un correo."
+                        )
+                      ) {
+                        updateStatus(selectedApp.id, "withdrawn");
+                      }
+                    }}
+                    className="flex-1 min-w-[140px] bg-orange-600 text-white px-6 py-3 rounded-full font-mono uppercase tracking-wide hover:bg-orange-700 transition-colors"
                   >
-                    Aprobar
+                    Retirar
                   </button>
+                )}
+
+                {canWrite && selectedApp.status === "withdrawn" && (
                   <button
-                    onClick={() => updateStatus(selectedApp.id, "rejected")}
-                    className="flex-1 bg-red-600 text-white px-6 py-3 rounded-full font-mono uppercase tracking-wide hover:bg-red-700 transition-colors"
+                    onClick={() => {
+                      if (
+                        confirm(
+                          "¿Reactivar esta persona? Volvera a aparecer en el sitio y se le enviara el correo de aprobacion."
+                        )
+                      ) {
+                        updateStatus(selectedApp.id, "approved");
+                      }
+                    }}
+                    className="flex-1 min-w-[140px] bg-green-600 text-white px-6 py-3 rounded-full font-mono uppercase tracking-wide hover:bg-green-700 transition-colors"
                   >
-                    Rechazar
+                    Reactivar
                   </button>
-                </div>
-              ) : (
-                <div className="pt-6 border-t border-white/10">
+                )}
+
+                {canWrite && selectedApp.status !== "pending" && (
                   <button
                     onClick={() => resendEmail(selectedApp.id)}
                     disabled={resendingId === selectedApp.id}
-                    className="w-full bg-white/10 text-white px-6 py-3 rounded-full font-mono uppercase tracking-wide hover:bg-white/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex-1 min-w-[140px] bg-white/10 text-white px-6 py-3 rounded-full font-mono uppercase tracking-wide hover:bg-white/20 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {resendingId === selectedApp.id ? "Reenviando..." : "Reenviar correo"}
                   </button>
-                </div>
-              )}
+                )}
+              </div>
             </div>
           </div>
         </div>

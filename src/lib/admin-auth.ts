@@ -59,9 +59,30 @@ export async function clearAdminCookie(): Promise<void> {
   cookieStore.delete(COOKIE_NAME);
 }
 
-export async function isAdminAuthenticated(): Promise<boolean> {
+export async function getAdminEmail(): Promise<string | null> {
   const cookieStore = await cookies();
   const token = cookieStore.get(COOKIE_NAME)?.value;
-  if (!token) return false;
-  return verifyToken(token) !== null;
+  if (!token) return null;
+  const payload = verifyToken(token);
+  return payload?.email ?? null;
+}
+
+export async function isAdminAuthenticated(): Promise<boolean> {
+  return (await getAdminEmail()) !== null;
+}
+
+function fullAccessEmails(): Set<string> {
+  const raw = process.env.ADMIN_FULL_ACCESS_EMAILS || "";
+  return new Set(
+    raw
+      .split(",")
+      .map((e) => e.trim().toLowerCase())
+      .filter(Boolean)
+  );
+}
+
+export async function isAdminWriter(): Promise<boolean> {
+  const email = await getAdminEmail();
+  if (!email) return false;
+  return fullAccessEmails().has(email.toLowerCase());
 }

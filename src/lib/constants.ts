@@ -57,7 +57,6 @@ export const PARTNER_CATEGORIES: PartnerCategory[] = [
       { name: "UdeA", logo: "/images/partners/universities/udea.png" },
       { name: "ITM", logo: "/images/partners/universities/itm.png" },
       { name: "Tecnologico de Antioquia", logo: "/images/partners/universities/tdea.png" },
-      { name: "CESDE", logo: "/images/partners/universities/cesde.png" },
     ],
   },
   {
@@ -68,6 +67,11 @@ export const PARTNER_CATEGORIES: PartnerCategory[] = [
       { name: "Criptoprofesor", logo: "/images/partners/communities/criptoprofesor.png" },
       { name: "Ultravioleta DAO", logo: "/images/partners/communities/ultravioleta-dao.svg" },
     ],
+  },
+  {
+    title: "MEDIA PARTNERS",
+    subtitle: "Medios que cubren y amplifican el evento",
+    partners: [{ name: "Blockvoz", logo: "/images/partners/media/blockvoz.png" }],
   },
 ];
 

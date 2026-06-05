@@ -1,11 +1,14 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { isAdminAuthenticated } from "@/lib/admin-auth";
+import { isAdminAuthenticated, isAdminWriter } from "@/lib/admin-auth";
 import { sendApplicantStatusEmail } from "@/lib/email";
 
 export async function PATCH(request: Request, { params }: { params: Promise<{ id: string }> }) {
   if (!(await isAdminAuthenticated())) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  if (!(await isAdminWriter())) {
+    return NextResponse.json({ error: "Forbidden: read-only access" }, { status: 403 });
   }
 
   const { id } = await params;
@@ -14,10 +17,10 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     const body = await request.json();
     const { status, reviewer_notes } = body;
 
-    const validStatuses = ["approved", "rejected"] as const;
+    const validStatuses = ["approved", "rejected", "withdrawn"] as const;
     if (!validStatuses.includes(status)) {
       return NextResponse.json(
-        { error: "Invalid status. Must be 'approved' or 'rejected'" },
+        { error: "Invalid status. Must be 'approved', 'rejected' or 'withdrawn'" },
         { status: 400 }
       );
     }

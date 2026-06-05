@@ -1,11 +1,14 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { isAdminAuthenticated } from "@/lib/admin-auth";
+import { isAdminAuthenticated, isAdminWriter } from "@/lib/admin-auth";
 import { sendApplicantStatusEmail } from "@/lib/email";
 
 export async function POST(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   if (!(await isAdminAuthenticated())) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  if (!(await isAdminWriter())) {
+    return NextResponse.json({ error: "Forbidden: read-only access" }, { status: 403 });
   }
 
   const { id } = await params;
@@ -19,9 +22,9 @@ export async function POST(_request: Request, { params }: { params: Promise<{ id
     return NextResponse.json({ error: "Application not found" }, { status: 404 });
   }
 
-  if (app.status !== "approved" && app.status !== "rejected") {
+  if (app.status !== "approved" && app.status !== "rejected" && app.status !== "withdrawn") {
     return NextResponse.json(
-      { error: "Application status must be approved or rejected to send an email" },
+      { error: "Application status must be approved, rejected or withdrawn to send an email" },
       { status: 400 }
     );
   }

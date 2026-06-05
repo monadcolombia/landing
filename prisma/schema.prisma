@@ -23,6 +23,7 @@ enum ApplicationStatus {
   pending
   approved
   rejected
+  withdrawn
 }
 
 enum TechnicalLevel {
