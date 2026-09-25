@@ -1,12 +1,72 @@
 "use client";
 
-import { useState } from "react";
+import { Component, useState, type ReactNode } from "react";
 import { motion } from "framer-motion";
-import { Tweet } from "react-tweet";
+import { EmbeddedTweet, TweetSkeleton, useTweet } from "react-tweet";
+import type { Tweet } from "react-tweet/api";
 
 const INITIAL_COUNT = 3;
 
 const EASING = [0.16, 1, 0.3, 1] as const;
+
+// Syndication omits empty entity lists. react-tweet's enrichTweet iterates them
+// and throws, which takes down the whole page because nothing catches it.
+function entityLists(entities: Tweet["entities"] | undefined): Tweet["entities"] {
+  return {
+    hashtags: entities?.hashtags ?? [],
+    urls: entities?.urls ?? [],
+    user_mentions: entities?.user_mentions ?? [],
+    symbols: entities?.symbols ?? [],
+    media: entities?.media,
+  };
+}
+
+function withEntityArrays(tweet: Tweet): Tweet {
+  return {
+    ...tweet,
+    entities: entityLists(tweet.entities),
+    quoted_tweet: tweet.quoted_tweet
+      ? { ...tweet.quoted_tweet, entities: entityLists(tweet.quoted_tweet.entities) }
+      : undefined,
+  };
+}
+
+class TweetBoundary extends Component<
+  { children: ReactNode; fallback: ReactNode },
+  { failed: boolean }
+> {
+  state = { failed: false };
+  static getDerivedStateFromError() {
+    return { failed: true };
+  }
+  render() {
+    return this.state.failed ? this.props.fallback : this.props.children;
+  }
+}
+
+function tweetFallback(id: string) {
+  return (
+    <a
+      href={`https://x.com/i/status/${id}`}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="flex min-h-40 items-center justify-center rounded-xl border border-white/10 px-4 text-sm text-white/60 hover:text-white"
+    >
+      Ver en X
+    </a>
+  );
+}
+
+function HighlightTweet({ id }: { id: string }) {
+  const { data, error, isLoading } = useTweet(id);
+  if (isLoading) return <TweetSkeleton />;
+  if (error || !data) return tweetFallback(id);
+  return (
+    <TweetBoundary fallback={tweetFallback(id)}>
+      <EmbeddedTweet tweet={withEntityArrays(data)} />
+    </TweetBoundary>
+  );
+}
 
 /**
  * Curated tweets from MonadBlitz events around the world.
@@ -86,7 +146,7 @@ export default function Highlights() {
               transition={{ duration: 0.5, delay: i * 0.08, ease: EASING }}
               className="tweet-card [&_.react-tweet-theme]:!bg-transparent [&_article]:!border-white/10 [&_article]:!rounded-xl"
             >
-              <Tweet id={tweet.id} />
+              <HighlightTweet id={tweet.id} />
             </motion.div>
           ))}
         </div>
