@@ -2,17 +2,13 @@
 
 import { useSyncExternalStore } from "react";
 import { motion } from "framer-motion";
-import { CITIES } from "@/lib/constants";
+import { getUpcomingCity } from "@/lib/constants";
 
 interface TimeLeft {
   days: number;
   hours: number;
   minutes: number;
   seconds: number;
-}
-
-function getNextEvent() {
-  return CITIES.find((c) => c.confirmed && c.dateISO);
 }
 
 function calculateTimeLeft(targetDate: string): TimeLeft {
@@ -97,7 +93,7 @@ function getStore(targetDate: string | null) {
 }
 
 export default function Countdown() {
-  const event = getNextEvent();
+  const event = getUpcomingCity();
   const store = getStore(event?.dateISO ?? null);
 
   const timeLeftJson = useSyncExternalStore(

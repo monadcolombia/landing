@@ -50,7 +50,7 @@ export default function EventsTable() {
               className="event-row border-t border-white/10 py-5 sm:py-6 px-2 sm:px-4 rounded-lg transition-all duration-300"
             >
               {/* Desktop layout */}
-              <div className="hidden sm:grid grid-cols-[140px_1fr_1fr_auto] gap-4 items-center">
+              <div className="hidden sm:grid grid-cols-[180px_1fr_1fr_auto] gap-4 items-center">
                 {/* Date */}
                 <span className="text-sm font-mono text-white/50">
                   {city.confirmed ? city.date : "Próximamente"}

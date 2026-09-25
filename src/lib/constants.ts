@@ -2,15 +2,15 @@ import { City, Partner, PartnerCategory, FAQItem, FooterLink } from "./types";
 
 export const CITIES: City[] = [
   {
-    id: "medellin",
-    name: "Medellín",
+    id: "medellin-v2",
+    name: "Medellín V2",
     lat: 6.2442,
     lng: -75.5812,
-    date: "6 de Junio, 2026",
-    dateISO: "2026-06-06",
+    date: "17 de Octubre, 2026",
+    dateISO: "2026-10-17",
     confirmed: true,
-    registrationUrl: "https://luma.com/o56ekpyb",
-    description: "La capital de la montaña abre el tour. Un día, sin límites, solo construye.",
+    registrationUrl: "https://luma.com/f6xhhyld",
+    description: "Segunda edición en Medellín. Un día, sin límites, solo construye.",
     eventType: "MonadBlitz Hackathon",
     venue: "Indie Universe Hotel, Medellín",
     venueUrl: "https://maps.app.goo.gl/7eVLjPduu39L3iB19",
@@ -27,6 +27,20 @@ export const CITIES: City[] = [
     description: "La capital se prende. Llega, construye, shippea.",
     eventType: "MonadBlitz Hackathon",
     venue: "Bogotá, Colombia",
+  },
+  {
+    id: "medellin",
+    name: "Medellín",
+    lat: 6.2442,
+    lng: -75.5812,
+    date: "6 de Junio, 2026",
+    dateISO: "2026-06-06",
+    confirmed: true,
+    registrationUrl: "https://luma.com/o56ekpyb",
+    description: "La capital de la montaña abre el tour. Un día, sin límites, solo construye.",
+    eventType: "MonadBlitz Hackathon",
+    venue: "Indie Universe Hotel, Medellín",
+    venueUrl: "https://maps.app.goo.gl/7eVLjPduu39L3iB19",
   },
 ];
 
@@ -161,3 +175,18 @@ export const SOCIAL_LINKS = [
   { label: "X", href: "https://x.com/monad_xyz" },
   { label: "Discord", href: "https://discord.gg/monad" },
 ];
+
+function todayInColombia(): string {
+  return new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString().slice(0, 10);
+}
+
+export function getUpcomingCity(): City | undefined {
+  const today = todayInColombia();
+  return CITIES.filter((city) => city.confirmed && city.dateISO && city.dateISO >= today).sort(
+    (a, b) => (a.dateISO ?? "").localeCompare(b.dateISO ?? "")
+  )[0];
+}
+
+export function registrationUrl(): string {
+  return getUpcomingCity()?.registrationUrl ?? "https://luma.com/f6xhhyld";
+}

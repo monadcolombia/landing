@@ -29,7 +29,10 @@ export default function MapColombia() {
         url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
         attribution=""
       />
-      {CITIES.map((city) => (
+      {CITIES.filter(
+        (city, index, all) =>
+          all.findIndex((other) => other.lat === city.lat && other.lng === city.lng) === index
+      ).map((city) => (
         <CircleMarker
           key={city.id}
           center={[city.lat, city.lng]}

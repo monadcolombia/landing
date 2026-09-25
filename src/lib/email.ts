@@ -1,4 +1,5 @@
 import { Resend } from "resend";
+import { registrationUrl } from "./constants";
 
 const NOTIFY_EMAIL = "monadblitzcolombia@gmail.com";
 const FROM_EMAIL = process.env.RESEND_FROM || "onboarding@resend.dev";
@@ -159,7 +160,7 @@ function approvedTemplate(fullName: string, role: AppRole) {
 function rejectedTemplate(fullName: string, role: AppRole) {
   const label = roleLabel(role);
   const firstName = fullName.split(" ")[0];
-  const HACKER_URL = "https://lu.ma/medellinblockchain";
+  const HACKER_URL = registrationUrl();
   const VOLUNTEER_URL = "https://monadcolombia.xyz/apply/volunteer";
 
   const altCtaText =

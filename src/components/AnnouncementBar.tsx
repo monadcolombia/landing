@@ -2,6 +2,7 @@
 
 import { useEffect, useSyncExternalStore } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { getUpcomingCity, registrationUrl } from "@/lib/constants";
 
 const STORAGE_KEY = "monad-banner-dismissed-until";
 const DISMISS_DAYS = 7;
@@ -62,11 +63,13 @@ export default function AnnouncementBar() {
           aria-label="Anuncio del proximo evento"
         >
           <div className="max-w-7xl mx-auto w-full flex items-center justify-center gap-3 sm:gap-4 text-[11px] sm:text-xs font-mono">
-            <span className="hidden sm:inline whitespace-nowrap">6 Jun 2026</span>
+            <span className="hidden sm:inline whitespace-nowrap">
+              {getUpcomingCity()?.date ?? "17 de Octubre, 2026"}
+            </span>
             <span className="hidden sm:inline text-white/60">·</span>
             <span className="whitespace-nowrap truncate">Indie Universe Hotel, Medellin</span>
             <a
-              href="https://lu.ma/medellinblockchain"
+              href={registrationUrl()}
               target="_blank"
               rel="noopener noreferrer"
               className="font-bold uppercase tracking-wide underline underline-offset-2 hover:no-underline whitespace-nowrap"

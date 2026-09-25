@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
+import { getUpcomingCity, registrationUrl } from "@/lib/constants";
 
 const STORAGE_KEY = "monad-popup-seen";
 const SHOW_AFTER_MS = 4000;
@@ -76,9 +77,11 @@ export default function EventPopup() {
               {"// PROXIMO MONADBLITZ"}
             </p>
             <h3 className="text-3xl sm:text-4xl font-extrabold font-heading text-gray-900 leading-tight">
-              Medellin
+              {getUpcomingCity()?.name ?? "Medellín V2"}
             </h3>
-            <p className="text-sm font-mono text-gray-500 mt-2 mb-6">6 de Junio, 2026</p>
+            <p className="text-sm font-mono text-gray-500 mt-2 mb-6">
+              {getUpcomingCity()?.date ?? "17 de Octubre, 2026"}
+            </p>
 
             <div className="space-y-3 mb-6">
               <div className="flex items-start gap-3">
@@ -142,7 +145,7 @@ export default function EventPopup() {
             </div>
 
             <a
-              href="https://lu.ma/medellinblockchain"
+              href={registrationUrl()}
               target="_blank"
               rel="noopener noreferrer"
               onClick={close}

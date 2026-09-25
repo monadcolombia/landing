@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import { motion, useScroll, useTransform } from "framer-motion";
 import Image from "next/image";
 import ConcentricCircles from "./ConcentricCircles";
+import { registrationUrl } from "@/lib/constants";
 
 const MapColombia = dynamic(() => import("./MapColombia"), {
   ssr: false,
@@ -146,7 +147,7 @@ export default function Hero() {
               className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start px-2 sm:px-0"
             >
               <motion.a
-                href="https://lu.ma/medellinblockchain"
+                href={registrationUrl()}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="bg-monad-primary text-white font-bold px-6 sm:px-8 py-3 rounded-full hover:brightness-110 transition-all text-center font-mono uppercase tracking-wide btn-glow text-sm sm:text-base"
