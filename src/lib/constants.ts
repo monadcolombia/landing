@@ -47,6 +47,7 @@ export const PARTNER_CATEGORIES: PartnerCategory[] = [
     partners: [
       { name: "DevLabX3", logo: "/images/partners/sponsors/devlabx3.svg" },
       { name: "Monad Foundation", logo: "/images/partners/sponsors/monad-foundation.png" },
+      { name: "Moncrear", logo: "/images/partners/sponsors/moncrear.png" },
     ],
   },
   {
