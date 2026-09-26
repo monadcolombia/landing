@@ -11,19 +11,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
       priority: 1,
     },
     {
-      url: `${baseUrl}/apply/mentor`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/apply/judge`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/apply/volunteer`,
+      url: `${baseUrl}/apply`,
       lastModified: new Date(),
       changeFrequency: "monthly",
       priority: 0.7,

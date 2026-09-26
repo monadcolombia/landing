@@ -39,7 +39,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 
     const existing = await prisma.application.findUnique({
       where: { id },
-      select: { status: true },
+      select: { status: true, edition: true },
     });
 
     if (!existing) {
@@ -54,6 +54,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
     } = {};
     if (status !== undefined) updates.status = status;
     if (confirmed !== undefined) updates.confirmed = confirmed;
+    else if (status === "approved") updates.confirmed = false;
     if (reviewer_notes !== undefined) updates.reviewerNotes = reviewer_notes;
     if (status !== undefined) updates.reviewedAt = new Date();
 
@@ -65,6 +66,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
         fullName: data.fullName,
         role: data.role,
         status,
+        edition: data.edition,
       }).catch((err) => console.error("Applicant status email failed:", err));
     }
 

@@ -14,6 +14,7 @@ export async function GET() {
         role: true,
         fullName: true,
         city: true,
+        edition: true,
         mentorBio: true,
         mentorPrimarySkills: true,
         judgeBio: true,
@@ -22,7 +23,7 @@ export async function GET() {
         linkedin: true,
         twitter: true,
       },
-      orderBy: { createdAt: "asc" },
+      orderBy: [{ edition: "desc" }, { createdAt: "asc" }],
     });
 
     return NextResponse.json({ data: applications });

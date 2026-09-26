@@ -139,8 +139,8 @@ export default function Hero() {
               variants={fadeUp}
               className="text-base sm:text-lg text-white/60 max-w-md mx-auto lg:mx-0 mb-8 px-2 sm:px-0"
             >
-              Un día. Sin límites. Solo construye. Hackathons de un día en Medellín y Bogotá. Si
-              puedes shippear, este es tu lugar.
+              Un día. Sin límites. Solo construye. Hackathon de un día en Medellín. Si puedes
+              shippear, este es tu lugar.
             </motion.p>
             <motion.div
               variants={fadeUp}
@@ -182,28 +182,12 @@ export default function Hero() {
               className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start px-2 sm:px-0 mt-4"
             >
               <motion.a
-                href="/apply/judge"
+                href="/apply"
                 className="border border-white/20 text-white font-medium px-5 sm:px-6 py-3 rounded-full hover:border-monad-primary/50 transition-colors text-center font-mono text-xs sm:text-sm whitespace-nowrap"
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.98 }}
               >
-                Aplica como Jurado
-              </motion.a>
-              <motion.a
-                href="/apply/mentor"
-                className="border border-white/20 text-white font-medium px-5 sm:px-6 py-3 rounded-full hover:border-monad-primary/50 transition-colors text-center font-mono text-xs sm:text-sm whitespace-nowrap"
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                Aplica como Mentor
-              </motion.a>
-              <motion.a
-                href="/apply/volunteer"
-                className="border border-white/20 text-white font-medium px-5 sm:px-6 py-3 rounded-full hover:border-monad-primary/50 transition-colors text-center font-mono text-xs sm:text-sm whitespace-nowrap"
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                Aplica como Voluntario
+                Aplica al equipo
               </motion.a>
             </motion.div>
           </motion.div>

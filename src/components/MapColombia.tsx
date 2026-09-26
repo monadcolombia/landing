@@ -21,13 +21,12 @@ export default function MapColombia() {
       zoomControl={false}
       dragging={false}
       doubleClickZoom={false}
-      attributionControl={false}
       className="h-full w-full rounded-xl"
-      style={{ background: "transparent" }}
+      style={{ background: "#1a1a1a" }}
     >
       <TileLayer
-        url="https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png"
-        attribution=""
+        url="https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}"
+        attribution="Esri, HERE, Garmin, FAO, NOAA, USGS, OpenStreetMap"
       />
       {CITIES.filter(
         (city, index, all) =>

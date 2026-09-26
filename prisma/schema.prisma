@@ -19,6 +19,11 @@ enum City {
   both
 }
 
+enum Edition {
+  v1
+  v2
+}
+
 enum ApplicationStatus {
   pending
   approved
@@ -53,6 +58,7 @@ model Application {
   whatsapp  String?
 
   city         City
+  edition      Edition @default(v2)
   availability String?
 
   // Mentor-specific fields
@@ -93,8 +99,9 @@ model Application {
   reviewedBy    String?           @map("reviewed_by")
   reviewerNotes String?           @map("reviewer_notes")
 
-  @@unique([email, role])
+  @@unique([email, role, edition])
   @@index([status])
+  @@index([edition])
   @@index([createdAt(sort: Desc)])
   @@index([role])
   @@index([email])

@@ -9,6 +9,7 @@ export type TeamMember = {
   role: "mentor" | "judge";
   fullName: string;
   city: string;
+  edition: "v1" | "v2";
   mentorBio: string | null;
   mentorPrimarySkills: string[];
   judgeBio: string | null;
@@ -148,6 +149,8 @@ export default function TeamMemberCard({ member, index, theme }: Props) {
           </a>
         )}
         <span className={`capitalize ${s.city}`}>
+          {member.edition === "v1" ? "V1" : "V2"}
+          {" · "}
           {member.city === "both" ? "Ambas ciudades" : member.city}
         </span>
       </div>

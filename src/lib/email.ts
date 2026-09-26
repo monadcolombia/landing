@@ -26,6 +26,7 @@ interface ApplicationData {
   email: string;
   phone?: string | null;
   city: string;
+  edition?: string;
   linkedin?: string | null;
   twitter?: string | null;
   instagram?: string | null;
@@ -48,12 +49,13 @@ export async function sendApplicationNotification(data: ApplicationData): Promis
     })
     .join("\n");
 
-  const body = `Nueva aplicacion recibida\n\nRol: ${label}\nNombre: ${data.fullName}\nEmail: ${data.email}\nCiudad: ${data.city}\n\n--- Todos los campos ---\n${fields}`;
+  const edition = data.edition === "v1" ? "V1" : "V2";
+  const body = `Nueva aplicacion recibida\n\nEdicion: ${edition}\nRol: ${label}\nNombre: ${data.fullName}\nEmail: ${data.email}\nCiudad: ${data.city}\n\n--- Todos los campos ---\n${fields}`;
 
   const result = await resend.emails.send({
     from: SENDER,
     to: NOTIFY_EMAIL,
-    subject: `Nueva aplicacion de ${label}: ${data.fullName} (${data.city})`,
+    subject: `Nueva aplicacion ${edition} de ${label}: ${data.fullName} (${data.city})`,
     text: body,
   });
   if (result.error) {
@@ -67,6 +69,7 @@ interface ApplicantStatusEmail {
   fullName: string;
   role: AppRole;
   status: "approved" | "rejected";
+  edition?: "v1" | "v2";
 }
 
 const socialsHtml = `
@@ -107,13 +110,20 @@ const joinHtml = `
 
 const joinText = `Unete a los grupos:\n- Telegram: ${TELEGRAM_URL}\n- WhatsApp: ${WHATSAPP_URL}`;
 
-function approvedTemplate(fullName: string, role: AppRole) {
+function eventName(edition?: "v1" | "v2"): string {
+  return edition === "v1"
+    ? "MonadBlitz Medellin (6 de junio de 2026)"
+    : "MonadBlitz Medellin V2 (17 de octubre de 2026)";
+}
+
+function approvedTemplate(fullName: string, role: AppRole, edition?: "v1" | "v2") {
   const label = roleLabel(role);
+  const event = eventName(edition);
   const firstName = fullName.split(" ")[0];
   const intro =
     role === "volunteer"
-      ? "Que bueno tenerte en el equipo. Tu apoyo hace posible MonadBlitz."
-      : `Tu aplicacion como ${label} fue aprobada. Nos emociona contar contigo en MonadBlitz Colombia.`;
+      ? `Que bueno tenerte en el equipo de ${event}. Tu apoyo hace posible el hackathon.`
+      : `Tu aplicacion como ${label} para ${event} fue aprobada. Nos emociona contar contigo.`;
 
   const text = [
     `Hola ${firstName},`,
@@ -151,17 +161,18 @@ function approvedTemplate(fullName: string, role: AppRole) {
   </div></body></html>`;
 
   return {
-    subject: `Tu aplicacion como ${label} fue aprobada - MonadBlitz Colombia`,
+    subject: `Tu aplicacion como ${label} fue aprobada - ${event}`,
     text,
     html,
   };
 }
 
-function rejectedTemplate(fullName: string, role: AppRole) {
+function rejectedTemplate(fullName: string, role: AppRole, edition?: "v1" | "v2") {
   const label = roleLabel(role);
+  const event = eventName(edition);
   const firstName = fullName.split(" ")[0];
   const HACKER_URL = registrationUrl();
-  const VOLUNTEER_URL = "https://monadcolombia.xyz/apply/volunteer";
+  const VOLUNTEER_URL = "https://monadcolombia.xyz/apply?role=volunteer";
 
   const altCtaText =
     role === "volunteer"
@@ -176,7 +187,7 @@ function rejectedTemplate(fullName: string, role: AppRole) {
   const text = [
     `Hola ${firstName},`,
     "",
-    `Gracias por aplicar como ${label} a MonadBlitz Colombia. Esta vez no pudimos avanzar con tu aplicacion, pero valoramos mucho tu interes.`,
+    `Gracias por aplicar como ${label} a ${event}. Esta vez no pudimos avanzar con tu aplicacion, pero valoramos mucho tu interes.`,
     "",
     altCtaText,
     "",
@@ -189,7 +200,7 @@ function rejectedTemplate(fullName: string, role: AppRole) {
   <div style="max-width:560px;margin:0 auto;padding:32px 24px;background:#ffffff">
     <p style="margin:0 0 12px;color:#0f172a;font-size:16px">Hola ${firstName},</p>
     <p style="margin:0 0 16px;color:#334155;font-size:15px;line-height:1.6">
-      Gracias por aplicar como ${label} a MonadBlitz Colombia. Esta vez no pudimos avanzar con tu aplicacion, pero valoramos mucho tu interes.
+      Gracias por aplicar como ${label} a ${event}. Esta vez no pudimos avanzar con tu aplicacion, pero valoramos mucho tu interes.
     </p>
     <p style="margin:0 0 16px;color:#334155;font-size:15px;line-height:1.6">${altCtaHtml}</p>
     ${stayConnectedHtml}
@@ -197,7 +208,7 @@ function rejectedTemplate(fullName: string, role: AppRole) {
   </div></body></html>`;
 
   return {
-    subject: `Tu aplicacion como ${label} en MonadBlitz Colombia`,
+    subject: `Tu aplicacion como ${label} en ${event}`,
     text,
     html,
   };
@@ -208,6 +219,7 @@ export async function sendApplicantStatusEmail({
   fullName,
   role,
   status,
+  edition,
 }: ApplicantStatusEmail): Promise<void> {
   console.log(`[email] sendApplicantStatusEmail start to=${to} role=${role} status=${status}`);
 
@@ -217,7 +229,9 @@ export async function sendApplicantStatusEmail({
   }
 
   const tpl =
-    status === "approved" ? approvedTemplate(fullName, role) : rejectedTemplate(fullName, role);
+    status === "approved"
+      ? approvedTemplate(fullName, role, edition)
+      : rejectedTemplate(fullName, role, edition);
 
   console.log(`[email] sending via Resend from=${SENDER} subject="${tpl.subject}"`);
 

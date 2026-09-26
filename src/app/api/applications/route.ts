@@ -3,7 +3,13 @@ import { prisma } from "@/lib/db";
 import { rateLimit } from "@/lib/rate-limit";
 import { sendApplicationNotification } from "@/lib/email";
 import { mentorSchema, judgeSchema, volunteerSchema } from "@/lib/validations/applications";
-import type { Role, City, TechnicalLevel, VolunteerAvailability } from "@prisma/client";
+import {
+  Prisma,
+  type Role,
+  type City,
+  type TechnicalLevel,
+  type VolunteerAvailability,
+} from "@prisma/client";
 
 export async function POST(request: Request) {
   const ip = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || "unknown";
@@ -41,6 +47,7 @@ export async function POST(request: Request) {
         telegram: isVolunteer ? validated.telegram || null : null,
         whatsapp: isVolunteer ? validated.whatsapp || null : null,
         city: validated.city as City,
+        edition: "v2",
         ...(validated.role === "mentor" && {
           mentorPrimarySkills: validated.mentor_primary_skills,
           mentorMonadExperience: validated.mentor_monad_experience,
@@ -79,6 +86,7 @@ export async function POST(request: Request) {
     sendApplicationNotification({
       ...validated,
       fullName: validated.full_name,
+      edition: "v2",
     }).catch((err) => console.error("Email notification failed:", err));
 
     return NextResponse.json(
@@ -87,6 +95,13 @@ export async function POST(request: Request) {
     );
   } catch (error) {
     console.error("Application submission error:", error);
+
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+      return NextResponse.json(
+        { error: "Ya existe una aplicacion de este rol con este correo para MonadBlitz V2." },
+        { status: 409 }
+      );
+    }
 
     if (error instanceof Error) {
       return NextResponse.json(

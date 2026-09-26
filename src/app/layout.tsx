@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://monadcolombia.xyz"),
   title: "Monad Tour Colombia 2026 | Hackathons MonadBlitz",
   description:
-    "Recorre Colombia con Monad. Hackathons, workshops y comunidad blockchain en Medellín y Bogotá.",
+    "Recorre Colombia con Monad. Hackathon, workshops y comunidad blockchain en Medellín.",
   keywords: [
     "Monad",
     "blockchain",
@@ -23,7 +23,6 @@ export const metadata: Metadata = {
     "Web3",
     "crypto",
     "Medellín",
-    "Bogotá",
     "developers",
     "smart contracts",
   ],
@@ -44,7 +43,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Monad Tour Colombia 2026 | Hackathons MonadBlitz",
     description:
-      "Recorre Colombia con Monad. Hackathons, workshops y comunidad blockchain en Medellín y Bogotá.",
+      "Recorre Colombia con Monad. Hackathon, workshops y comunidad blockchain en Medellín.",
     type: "website",
     locale: "es_CO",
     url: "https://monadcolombia.xyz",
@@ -54,7 +53,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "Monad Tour Colombia 2026 | Hackathons MonadBlitz",
     description:
-      "Recorre Colombia con Monad. Hackathons, workshops y comunidad blockchain en Medellín y Bogotá.",
+      "Recorre Colombia con Monad. Hackathon, workshops y comunidad blockchain en Medellín.",
     creator: "@monad_xyz",
   },
 };

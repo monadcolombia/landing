@@ -3,7 +3,7 @@ import ExcelJS from "exceljs";
 import { prisma } from "@/lib/db";
 import { isAdminAuthenticated } from "@/lib/admin-auth";
 import { TECHNICAL_SKILLS, NON_TECHNICAL_SKILLS } from "@/lib/validations/applications";
-import type { Role, ApplicationStatus, Application } from "@prisma/client";
+import type { Role, ApplicationStatus, Application, Edition } from "@prisma/client";
 
 const EXPERTISE_AREAS = [
   "DeFi",
@@ -34,6 +34,7 @@ const COLUMNS: ColumnSpec[] = [
   { key: "id", label: "ID", width: 38 },
   { key: "createdAt", label: "Creada", width: 22 },
   { key: "role", label: "Rol", width: 12 },
+  { key: "edition", label: "Edicion", width: 10 },
   { key: "status", label: "Estado", width: 12 },
   { key: "fullName", label: "Nombre", width: 24 },
   { key: "email", label: "Email", width: 28 },
@@ -120,12 +121,16 @@ export async function GET(request: Request) {
   const status = searchParams.get("status") as ApplicationStatus | null;
   const confirmedRaw = searchParams.get("confirmed");
   const confirmed = confirmedRaw === "true" ? true : confirmedRaw === "false" ? false : undefined;
+  const editionParam = searchParams.get("edition");
+  const edition: Edition | undefined =
+    editionParam === "v1" || editionParam === "v2" ? editionParam : undefined;
 
   const apps = await prisma.application.findMany({
     where: {
       ...(role && { role }),
       ...(status && { status }),
       ...(confirmed !== undefined && { confirmed }),
+      ...(edition && { edition }),
     },
     orderBy: { createdAt: "desc" },
   });
@@ -176,7 +181,14 @@ export async function GET(request: Request) {
   const today = new Date().toISOString().slice(0, 10);
   const confirmedPart =
     confirmed === true ? "confirmed" : confirmed === false ? "unconfirmed" : "all";
-  const filenameParts = ["applications", role ?? "all", status ?? "all", confirmedPart, today];
+  const filenameParts = [
+    "applications",
+    edition ?? "all",
+    role ?? "all",
+    status ?? "all",
+    confirmedPart,
+    today,
+  ];
   const filename = `${filenameParts.join("-")}.xlsx`;
 
   return new NextResponse(buffer as unknown as BodyInit, {

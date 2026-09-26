@@ -30,7 +30,7 @@ export default function EventsTable() {
             La comunidad Monad está onchain - y en persona.
           </h2>
           <p className="text-base sm:text-lg text-white/50 mt-4 max-w-xl">
-            Hackathons MonadBlitz en Medellín y Bogotá. Encuentra el evento más cercano.
+            Hackathons MonadBlitz en Medellín.
           </p>
         </motion.div>
 

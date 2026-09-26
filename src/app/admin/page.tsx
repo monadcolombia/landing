@@ -12,6 +12,7 @@ const STATUS_LABELS: Record<string, string> = {
 type RoleFilter = "all" | "mentor" | "judge" | "volunteer";
 type StatusFilter = "all" | "pending" | "approved" | "rejected";
 type ConfirmedFilter = "all" | "true" | "false";
+type EditionFilter = "all" | "v1" | "v2";
 type ActionStatus = "approved" | "rejected";
 
 type Stats = {
@@ -28,6 +29,11 @@ const ROLE_LABELS: Record<string, string> = {
   volunteer: "Voluntario",
 };
 
+const EDITION_LABELS: Record<string, string> = {
+  v1: "V1",
+  v2: "V2",
+};
+
 const VOLUNTEER_AVAILABILITY_LABELS: Record<string, string> = {
   event_day: "Solo dia del evento",
   pre_event: "Solo pre-evento",
@@ -40,6 +46,7 @@ export default function AdminApplicationsPage() {
   const [selectedRole, setSelectedRole] = useState<RoleFilter>("all");
   const [selectedStatus, setSelectedStatus] = useState<StatusFilter>("all");
   const [selectedConfirmed, setSelectedConfirmed] = useState<ConfirmedFilter>("all");
+  const [selectedEdition, setSelectedEdition] = useState<EditionFilter>("all");
   const [selectedApp, setSelectedApp] = useState<Application | null>(null);
   const [canWrite, setCanWrite] = useState(false);
   const [stats, setStats] = useState<Stats | null>(null);
@@ -54,13 +61,15 @@ export default function AdminApplicationsPage() {
 
   const fetchStats = useCallback(async () => {
     try {
-      const r = await fetch("/api/admin/applications/stats");
+      const params = new URLSearchParams();
+      if (selectedEdition !== "all") params.set("edition", selectedEdition);
+      const r = await fetch(`/api/admin/applications/stats?${params}`);
       if (!r.ok) return;
       setStats(await r.json());
     } catch {
       // ignore
     }
-  }, []);
+  }, [selectedEdition]);
 
   const fetchApplications = useCallback(async () => {
     setLoading(true);
@@ -69,6 +78,7 @@ export default function AdminApplicationsPage() {
       if (selectedRole !== "all") params.append("role", selectedRole);
       if (selectedStatus !== "all") params.append("status", selectedStatus);
       if (selectedConfirmed !== "all") params.append("confirmed", selectedConfirmed);
+      if (selectedEdition !== "all") params.append("edition", selectedEdition);
       const response = await fetch(`/api/admin/applications?${params}`);
       if (!response.ok) throw new Error("Error al cargar aplicaciones");
       const { data } = await response.json();
@@ -79,7 +89,7 @@ export default function AdminApplicationsPage() {
     } finally {
       setLoading(false);
     }
-  }, [selectedRole, selectedStatus, selectedConfirmed]);
+  }, [selectedRole, selectedStatus, selectedConfirmed, selectedEdition]);
 
   useEffect(() => {
     fetchApplications();
@@ -153,6 +163,7 @@ export default function AdminApplicationsPage() {
               ...(selectedRole !== "all" && { role: selectedRole }),
               ...(selectedStatus !== "all" && { status: selectedStatus }),
               ...(selectedConfirmed !== "all" && { confirmed: selectedConfirmed }),
+              ...(selectedEdition !== "all" && { edition: selectedEdition }),
             }).toString()}`}
             className="px-4 py-2 bg-monad-primary/20 border border-monad-primary/40 text-monad-primary rounded-lg hover:bg-monad-primary/30 transition-colors text-sm font-mono uppercase tracking-wide"
           >
@@ -186,7 +197,7 @@ export default function AdminApplicationsPage() {
 
       {/* Filtros */}
       <div className="bg-white/5 border border-white/10 rounded-lg p-6 space-y-4">
-        <div className="grid md:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-sm font-mono uppercase tracking-wide text-white/90 mb-2">
               Rol
@@ -227,6 +238,21 @@ export default function AdminApplicationsPage() {
 
           <div>
             <label className="block text-sm font-mono uppercase tracking-wide text-white/90 mb-2">
+              Edicion
+            </label>
+            <select
+              value={selectedEdition}
+              onChange={(e) => setSelectedEdition(e.target.value as EditionFilter)}
+              className="w-full px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-white focus:outline-none focus:border-monad-primary"
+            >
+              <option value="all">Todas</option>
+              <option value="v1">V1 (6 de junio)</option>
+              <option value="v2">V2 (17 de octubre)</option>
+            </select>
+          </div>
+
+          <div>
+            <label className="block text-sm font-mono uppercase tracking-wide text-white/90 mb-2">
               Confirmacion
             </label>
             <select
@@ -257,6 +283,7 @@ export default function AdminApplicationsPage() {
                 <tr>
                   <Th>Nombre</Th>
                   <Th>Rol</Th>
+                  <Th>Edicion</Th>
                   <Th>Ciudad</Th>
                   <Th>Estado</Th>
                   <Th>Confirmado</Th>
@@ -276,6 +303,9 @@ export default function AdminApplicationsPage() {
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-white/70">
                       {ROLE_LABELS[app.role] || app.role}
+                    </td>
+                    <td className="px-6 py-4 whitespace-nowrap text-sm text-white/70">
+                      {EDITION_LABELS[app.edition] || app.edition}
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-white/70 capitalize">
                       {app.city === "both" ? "Ambas" : app.city}
@@ -327,6 +357,8 @@ export default function AdminApplicationsPage() {
                 <h3 className="text-2xl font-bold text-white">{selectedApp.fullName}</h3>
                 <p className="text-white/70">
                   Aplicación de {ROLE_LABELS[selectedApp.role] || selectedApp.role}
+                  {" · "}
+                  {EDITION_LABELS[selectedApp.edition] || selectedApp.edition}
                 </p>
               </div>
               <button
