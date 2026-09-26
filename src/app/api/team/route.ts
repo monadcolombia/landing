@@ -7,6 +7,7 @@ export async function GET() {
       where: {
         status: "approved",
         confirmed: true,
+        edition: "v2",
         role: { in: ["mentor", "judge"] },
       },
       select: {

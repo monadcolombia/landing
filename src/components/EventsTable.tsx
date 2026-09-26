@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { CITIES } from "@/lib/constants";
+import { CITIES, isUpcoming } from "@/lib/constants";
 import ConcentricCircles from "./ConcentricCircles";
 
 const EASING = [0.16, 1, 0.3, 1] as const;
@@ -58,7 +58,7 @@ export default function EventsTable() {
 
                 {/* City name + venue */}
                 <div className="flex items-center gap-3">
-                  {city.confirmed && (
+                  {isUpcoming(city) && (
                     <span className="w-2 h-2 rounded-full bg-monad-primary animate-pulse-glow flex-shrink-0" />
                   )}
                   <div className="min-w-0">
@@ -97,7 +97,7 @@ export default function EventsTable() {
                 </span>
 
                 {/* CTA */}
-                {city.confirmed ? (
+                {isUpcoming(city) ? (
                   <a
                     href={city.registrationUrl || "#"}
                     target="_blank"
@@ -117,7 +117,7 @@ export default function EventsTable() {
                   </a>
                 ) : (
                   <span className="inline-flex items-center border border-white/15 text-white/30 rounded-full px-5 py-2 text-[10px] sm:text-xs font-mono uppercase tracking-[2px]">
-                    Próximamente
+                    {city.dateISO ? "Realizado" : "Próximamente"}
                   </span>
                 )}
               </div>
@@ -126,7 +126,7 @@ export default function EventsTable() {
               <div className="sm:hidden space-y-2">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
-                    {city.confirmed && (
+                    {isUpcoming(city) && (
                       <span className="w-2 h-2 rounded-full bg-monad-primary animate-pulse-glow flex-shrink-0" />
                     )}
                     <span className="text-lg font-heading font-bold text-white">{city.name}</span>
@@ -160,7 +160,7 @@ export default function EventsTable() {
                   <span className="text-xs font-mono text-white/30">
                     {city.eventType || "MonadBlitz Hackathon"}
                   </span>
-                  {city.confirmed && (
+                  {isUpcoming(city) ? (
                     <a
                       href={city.registrationUrl || "#"}
                       target="_blank"
@@ -169,6 +169,10 @@ export default function EventsTable() {
                     >
                       Regístrate
                     </a>
+                  ) : (
+                    <span className="text-xs font-mono text-white/30 uppercase tracking-wider">
+                      {city.dateISO ? "Realizado" : "Próximamente"}
+                    </span>
                   )}
                 </div>
               </div>

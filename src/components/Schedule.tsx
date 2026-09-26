@@ -240,7 +240,7 @@ export default function Schedule() {
             {"// PREMIOS"}
           </p>
           <h3 className="text-2xl sm:text-3xl font-extrabold font-heading text-gray-900 mb-2">
-            $2,000 USD en premios por ciudad
+            $2,000 USD en premios
           </h3>
           <p className="text-sm text-gray-500 mb-8">
             Jurado tecnico decide los ganadores. El voto de los demas participantes en la app de

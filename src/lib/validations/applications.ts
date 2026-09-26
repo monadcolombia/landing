@@ -66,7 +66,9 @@ const baseSchema = z
     linkedin: linkedinSchema,
     twitter: twitterSchema,
     instagram: instagramSchema,
-    city: z.enum(["medellin", "bogota", "both"]),
+    city: z.literal("medellin", {
+      message: "El registro abierto es Medellín, 17 de octubre de 2026",
+    }),
   })
   .refine(
     (data) => {
@@ -261,7 +263,9 @@ export const volunteerSchema = z
     email: z.string().email("Correo electronico invalido"),
     telegram: telegramSchema,
     whatsapp: whatsappSchema,
-    city: z.enum(["medellin", "bogota", "both"]),
+    city: z.literal("medellin", {
+      message: "El registro abierto es Medellín, 17 de octubre de 2026",
+    }),
     volunteer_availability: z.enum(["event_day", "pre_event", "both"]),
     volunteer_why: z
       .string()

@@ -1,7 +1,7 @@
-import { CITIES } from "@/lib/constants";
+import { CITIES, isUpcoming } from "@/lib/constants";
 
 export default function EventSchema() {
-  const confirmedEvents = CITIES.filter((c) => c.confirmed && c.dateISO);
+  const confirmedEvents = CITIES.filter((c) => isUpcoming(c));
 
   const eventSchemas = confirmedEvents.map((city) => ({
     "@context": "https://schema.org",

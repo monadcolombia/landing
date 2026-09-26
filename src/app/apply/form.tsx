@@ -267,7 +267,6 @@ export default function ApplyForm() {
           {role === "mentor" && (
             <>
               <ContactFields register={register} errors={errors} kind="social" />
-              <CityField register={register} errors={errors} />
               <section className="space-y-6">
                 <h2 className="text-xl font-bold text-white border-b border-white/10 pb-3">
                   Experiencia
@@ -377,7 +376,6 @@ export default function ApplyForm() {
           {role === "judge" && (
             <>
               <ContactFields register={register} errors={errors} kind="social" />
-              <CityField register={register} errors={errors} />
               <section className="space-y-6">
                 <h2 className="text-xl font-bold text-white border-b border-white/10 pb-3">
                   Perfil profesional
@@ -570,7 +568,6 @@ export default function ApplyForm() {
           {role === "volunteer" && (
             <>
               <ContactFields register={register} errors={errors} kind="chat" />
-              <CityField register={register} errors={errors} />
               <section className="space-y-6">
                 <h2 className="text-xl font-bold text-white border-b border-white/10 pb-3">
                   Disponibilidad
@@ -699,30 +696,6 @@ function ContactFields({
           />
         </>
       )}
-    </section>
-  );
-}
-
-function CityField({
-  register,
-  errors,
-}: {
-  register: ReturnType<typeof useForm<ApplyFormValues>>["register"];
-  errors: ReturnType<typeof useForm<ApplyFormValues>>["formState"]["errors"];
-}) {
-  return (
-    <section className="space-y-6">
-      <h2 className="text-xl font-bold text-white border-b border-white/10 pb-3">Ciudad</h2>
-      <FormSelect
-        label="En qué ciudad puedes asistir?"
-        required
-        {...register("city")}
-        error={errors.city?.message}
-        options={[{ value: "medellin", label: "Medellín (17 de octubre, 2026)" }]}
-      />
-      <p className="text-sm text-white/50">
-        El evento es de un solo día. Se requiere disponibilidad completa.
-      </p>
     </section>
   );
 }

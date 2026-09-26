@@ -30,9 +30,9 @@ export default function TerminosPage() {
           <section>
             <h2 className="text-xl font-bold text-white mb-3">2. Descripción del Evento</h2>
             <p>
-              MonadBlitz es una serie de hackathons de un día realizados en ciudades de Colombia.
-              Los participantes desarrollan proyectos blockchain durante el evento, con el apoyo de
-              mentores y la evaluación de jurados seleccionados.
+              MonadBlitz Medellín es un hackathon de un día. La próxima edición es el 17 de octubre
+              de 2026. Los participantes desarrollan proyectos blockchain durante el evento, con el
+              apoyo de mentores y la evaluación de jurados seleccionados.
             </p>
           </section>
 

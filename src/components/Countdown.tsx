@@ -176,7 +176,7 @@ export default function Countdown() {
           {/* Urgency */}
           {!isOver && (
             <p className="mt-6 text-xs font-mono text-monad-dark/50 uppercase tracking-wide">
-              Cupos limitados - 100 por ciudad
+              Cupos limitados - 100 lugares
             </p>
           )}
 

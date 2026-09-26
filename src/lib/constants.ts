@@ -100,7 +100,7 @@ export const FAQ_ITEMS: FAQItem[] = [
   {
     question: "¿Hay premios?",
     answer:
-      "Sí. Cada MonadBlitz tiene un prize pool de $2,000 USD por ciudad: $1,000 para el 1er lugar, $700 para el 2do y $300 para el 3ro.",
+      "Sí. El prize pool es de $2,000 USD: $1,000 para el 1er lugar, $700 para el 2do y $300 para el 3ro.",
   },
   {
     question: "¿El evento es en español o inglés?",
@@ -165,10 +165,13 @@ function todayInColombia(): string {
   return new Date(Date.now() - 5 * 60 * 60 * 1000).toISOString().slice(0, 10);
 }
 
+export function isUpcoming(city: { confirmed: boolean; dateISO: string | null }): boolean {
+  return Boolean(city.confirmed && city.dateISO && city.dateISO >= todayInColombia());
+}
+
 export function getUpcomingCity(): City | undefined {
-  const today = todayInColombia();
-  return CITIES.filter((city) => city.confirmed && city.dateISO && city.dateISO >= today).sort(
-    (a, b) => (a.dateISO ?? "").localeCompare(b.dateISO ?? "")
+  return CITIES.filter((city) => isUpcoming(city)).sort((a, b) =>
+    (a.dateISO ?? "").localeCompare(b.dateISO ?? "")
   )[0];
 }
 
