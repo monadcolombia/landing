@@ -184,6 +184,7 @@ export default function ApplyForm() {
   });
 
   const role = watch("role");
+  const selectedRole = ROLES.find((item) => item.value === role);
   const watchMonadExperience = watch("mentor_monad_experience");
   const watchMentorPrevious = watch("mentor_previous_experience");
   const watchMentorBio = watch("mentor_bio");
@@ -239,11 +240,11 @@ export default function ApplyForm() {
   }
 
   return (
-    <div className="min-h-screen bg-monad-dark py-16 sm:py-20 px-4">
+    <div className="min-h-screen bg-monad-dark py-8 sm:py-20 px-4">
       <div className="max-w-3xl mx-auto">
-        <div className="text-center mb-10">
-          <h1 className="text-3xl sm:text-5xl font-bold text-white mb-4">Colabora</h1>
-          <p className="text-white/70 text-base sm:text-lg">
+        <div className="text-center mb-6 sm:mb-10">
+          <h1 className="text-3xl sm:text-5xl font-bold text-white mb-3 sm:mb-4">Colabora</h1>
+          <p className="text-white/70 text-base sm:text-lg leading-relaxed">
             Buscamos mentores, jurados y voluntarios para MonadBlitz Medellín V2, el 17 de octubre
             de 2026. Ningún rol es pago: es una colaboración voluntaria. Si ya colaboraste en junio,
             puedes volver a postularte.
@@ -255,37 +256,27 @@ export default function ApplyForm() {
           className="bg-white/5 border border-white/10 rounded-2xl p-5 sm:p-8 space-y-8"
         >
           <section className="space-y-3">
-            <h2 className="text-xl font-bold text-white border-b border-white/10 pb-3">Rol</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-              {ROLES.map((item) => {
-                const selected = role === item.value;
-                return (
-                  <button
-                    key={item.value}
-                    type="button"
-                    onClick={() => setValue("role", item.value, { shouldValidate: false })}
-                    className={`text-left rounded-2xl px-4 py-4 transition-colors ${
-                      selected
-                        ? "bg-monad-primary text-white"
-                        : "border border-white/15 text-white/80 hover:border-monad-primary/60"
-                    }`}
-                  >
-                    <span className="block font-mono text-sm uppercase tracking-wide">
-                      {item.label}
-                    </span>
-                    <span
-                      className={`mt-2 block text-sm font-sans normal-case tracking-normal leading-snug ${
-                        selected ? "text-white/85" : "text-white/55"
-                      }`}
-                    >
-                      {item.description}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-            <p className="text-sm text-white/60">Ninguno de estos roles es pago.</p>
-            {errors.role?.message && <p className="text-red-500 text-sm">{errors.role.message}</p>}
+            <FormSelect
+              label="Elige un rol"
+              required
+              value={role}
+              onChange={(event) => {
+                const next = event.target.value;
+                if (next === "mentor" || next === "judge" || next === "volunteer") {
+                  setValue("role", next, { shouldValidate: true });
+                }
+              }}
+              error={errors.role?.message}
+              options={ROLES.map((item) => ({ value: item.value, label: item.label }))}
+            />
+            {selectedRole && (
+              <div className="rounded-xl border border-white/10 bg-black/20 px-4 py-3">
+                <p className="text-base leading-relaxed text-white/85">
+                  {selectedRole.description}
+                </p>
+                <p className="mt-2 text-sm text-white/60">Este rol no es pago.</p>
+              </div>
+            )}
           </section>
 
           {role === "mentor" && (
