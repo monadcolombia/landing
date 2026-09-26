@@ -5,7 +5,7 @@ import { motion } from "framer-motion";
 import { EmbeddedTweet, TweetSkeleton, useTweet } from "react-tweet";
 import type { Tweet } from "react-tweet/api";
 
-const INITIAL_COUNT = 3;
+const INITIAL_COUNT = 4;
 
 const EASING = [0.16, 1, 0.3, 1] as const;
 
@@ -77,36 +77,13 @@ function HighlightTweet({ id }: { id: string }) {
  * 3. Add it below with a label
  */
 const HIGHLIGHT_TWEETS = [
-  // Mexico Blitz events (most relevant for Colombia tour)
-  {
-    id: "2049177585527951710",
-    label: "Mobil3 - Monad Blitz Mexico",
-  },
-  {
-    id: "2046340216953401418",
-    label: "Mobil3 - Monad Blitz Mexico",
-  },
-  {
-    id: "2039140846994620794",
-    label: "Mobil3 - Monad Blitz Mexico",
-  },
-  {
-    id: "2027880102546321727",
-    label: "Mobil3 - Monad Blitz Mexico",
-  },
-  // Global Blitz events
-  {
-    id: "2028534499458404671",
-    label: "Monad Blitz Denver - Highlights",
-  },
-  {
-    id: "1972727436501807574",
-    label: "Monad Blitz Bangkok",
-  },
-  {
-    id: "1994672137949647177",
-    label: "Monad Blitz Shanghai",
-  },
+  { id: "2064370221058568234", label: "Recap Monad Blitz Medellín" },
+  { id: "2064481863033311374", label: "Ganadores Medellín" },
+  { id: "2064104613020582172", label: "Equipos Medellín" },
+  { id: "2064056162417303775", label: "Mentores y staff Medellín" },
+  { id: "2049177585527951710", label: "Monad Blitz México" },
+  { id: "2028534499458404671", label: "Monad Blitz Denver" },
+  { id: "1972727436501807574", label: "Monad Blitz Bangkok" },
 ];
 
 export default function Highlights() {
@@ -128,10 +105,11 @@ export default function Highlights() {
             {"// HIGHLIGHTS"}
           </p>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold font-heading text-white max-w-3xl">
-            Lo que pasa en un Blitz
+            Lo que pasó en Medellín
           </h2>
-          <p className="text-base sm:text-lg text-white/50 mt-4 max-w-xl">
-            Recaps, fotos y videos de los MonadBlitz alrededor del mundo.
+          <p className="text-base sm:text-lg text-white/50 mt-4 max-w-xl leading-relaxed">
+            Recap, ganadores y equipos del 6 de junio, publicados por @MedellinBlock. El botón de
+            abajo abre Blitz de otras ciudades.
           </p>
         </motion.div>
 
@@ -157,7 +135,7 @@ export default function Highlights() {
               onClick={() => setShowAll(true)}
               className="px-8 py-3 border border-white/20 text-white/70 rounded-full font-mono text-sm uppercase tracking-wide hover:bg-white/5 hover:text-white transition-all"
             >
-              Ver más ({HIGHLIGHT_TWEETS.length - INITIAL_COUNT} más)
+              Blitz de otras ciudades
             </button>
           </div>
         )}

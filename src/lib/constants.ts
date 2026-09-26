@@ -157,7 +157,8 @@ export const FOOTER_NAV: Record<string, { title: string; links: FooterLink[] }> 
 };
 
 export const SOCIAL_LINKS = [
-  { label: "X", href: "https://x.com/monad_xyz" },
+  { label: "X", href: "https://x.com/MedellinBlock" },
+  { label: "Instagram", href: "https://www.instagram.com/medellinblock" },
   { label: "Discord", href: "https://discord.gg/monad" },
 ];
 

@@ -21,44 +21,34 @@ const USE_PLACEHOLDERS = false;
 
 const GALLERY_IMAGES: GalleryImage[] = [
   {
-    src: "/images/gallery/monadblitz-06.jpg",
-    alt: "MonadBlitz CDMX - hackathon en Ciudad de Mexico",
-    city: "CDMX",
+    src: "/images/gallery/medellin-v1-01.webp",
+    alt: "Builders trabajando en MonadBlitz Medellín, 6 de junio de 2026",
+    city: "Medellín",
   },
   {
-    src: "/images/gallery/monadblitz-07.jpg",
-    alt: "MonadBlitz Guadalajara - builders y comunidad con bandera de Mexico",
-    city: "Guadalajara",
+    src: "/images/gallery/medellin-v1-02.webp",
+    alt: "Equipos hackeando en Indie Universe durante MonadBlitz Medellín",
+    city: "Medellín",
   },
   {
-    src: "/images/gallery/monadblitz-08.jpg",
-    alt: "MonadBlitz Monterrey - ganadores del hackathon",
-    city: "Monterrey",
+    src: "/images/gallery/medellin-v1-03.webp",
+    alt: "Equipo revisando código en MonadBlitz Medellín",
+    city: "Medellín",
   },
   {
-    src: "/images/gallery/monadblitz-01.jpg",
-    alt: "MonadBlitz Shanghai - equipos trabajando en el hackathon",
-    city: "Shanghai",
+    src: "/images/gallery/medellin-v1-04.webp",
+    alt: "Equipo presentando su proyecto en MonadBlitz Medellín",
+    city: "Medellín",
   },
   {
-    src: "/images/gallery/monadblitz-02.jpg",
-    alt: "MonadBlitz Shanghai - builders en el evento",
-    city: "Shanghai",
+    src: "/images/gallery/medellin-v1-05.webp",
+    alt: "Cierre de MonadBlitz Medellín con los hoodies del evento",
+    city: "Medellín",
   },
   {
-    src: "/images/gallery/monadblitz-03.jpg",
-    alt: "MonadBlitz Shanghai - presentaciones y demos",
-    city: "Shanghai",
-  },
-  {
-    src: "/images/gallery/monadblitz-04.jpg",
-    alt: "Monad 101 - comunidad y networking",
-    city: "Asia Tour",
-  },
-  {
-    src: "/images/gallery/monadblitz-05.jpg",
-    alt: "Monad 101 - participantes del evento",
-    city: "Asia Tour",
+    src: "/images/gallery/medellin-v1-06.webp",
+    alt: "Equipo de MonadBlitz Medellín frente al backdrop de la ciudad",
+    city: "Medellín",
   },
 ];
 
@@ -89,11 +79,30 @@ export default function Gallery() {
             {"// GALERÍA"}
           </p>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold font-heading text-white max-w-3xl">
-            MonadBlitz alrededor del mundo
+            Así fue Medellín
           </h2>
-          <p className="text-base sm:text-lg text-white/50 mt-4 max-w-xl">
-            Momentos de los eventos pasados en CDMX, Guadalajara, Monterrey y más ciudades.
+          <p className="text-base sm:text-lg text-white/50 mt-4 max-w-xl leading-relaxed">
+            La edición del 6 de junio de 2026. Ganaron Vertex, MonadRoad y Lorentz. Mención de honor
+            para TrustLayer.
           </p>
+          <div className="mt-4 flex flex-wrap gap-3">
+            <a
+              href="https://www.instagram.com/medellinblock"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex min-h-11 items-center rounded-full border border-white/20 px-4 text-xs font-mono uppercase tracking-wide text-white/80 hover:border-monad-primary/60 hover:text-white"
+            >
+              Ver en Instagram
+            </a>
+            <a
+              href="https://x.com/MedellinBlock"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex min-h-11 items-center rounded-full border border-white/20 px-4 text-xs font-mono uppercase tracking-wide text-white/80 hover:border-monad-primary/60 hover:text-white"
+            >
+              Ver en X
+            </a>
+          </div>
         </motion.div>
 
         {/* Image grid */}
@@ -153,9 +162,9 @@ export default function Gallery() {
                     sizes="(max-width: 768px) 50vw, 33vw"
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                  <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-2 sm:p-3">
                     {img.city && (
-                      <span className="absolute bottom-3 left-3 text-[10px] font-mono uppercase tracking-[2px] text-white/80 bg-black/30 backdrop-blur-sm px-2.5 py-1 rounded-full">
+                      <span className="text-[10px] font-mono uppercase tracking-[2px] text-white/90">
                         {img.city}
                       </span>
                     )}
