@@ -98,7 +98,7 @@ export async function POST(request: Request) {
 
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
       return NextResponse.json(
-        { error: "Ya existe una aplicacion de este rol con este correo para MonadBlitz V2." },
+        { error: "Ya existe una postulacion de este rol con este correo para MonadBlitz V2." },
         { status: 409 }
       );
     }

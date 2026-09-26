@@ -32,7 +32,7 @@ export default function PrivacidadPage() {
           <section>
             <h2 className="text-xl font-bold text-white mb-3">2. Consentimiento</h2>
             <p>
-              Al enviar un formulario de registro o aplicacion en este sitio, autorizas de manera
+              Al enviar un formulario de registro o postulacion en este sitio, autorizas de manera
               libre, previa, expresa e informada el tratamiento de tus datos personales conforme a
               los fines descritos en esta politica. Puedes retirar tu consentimiento en cualquier
               momento contactando al equipo organizador.
@@ -42,8 +42,8 @@ export default function PrivacidadPage() {
           <section>
             <h2 className="text-xl font-bold text-white mb-3">3. Informacion que Recopilamos</h2>
             <p>
-              Al registrarte o aplicar como mentor/jurado en los eventos MonadBlitz Hackathon,
-              recopilamos la siguiente informacion:
+              Al registrarte al hackathon o postularte como mentor, jurado o voluntario, recopilamos
+              la siguiente informacion:
             </p>
             <ul className="list-disc list-inside mt-3 space-y-1">
               <li>Nombre completo</li>
@@ -52,7 +52,7 @@ export default function PrivacidadPage() {
               <li>Perfiles de redes sociales: LinkedIn, Twitter/X, Instagram (opcionales)</li>
               <li>Ciudad de participación</li>
               <li>
-                Información profesional relacionada con tu aplicación (habilidades, experiencia,
+                Información profesional relacionada con tu postulación (habilidades, experiencia,
                 bio)
               </li>
             </ul>
@@ -63,7 +63,7 @@ export default function PrivacidadPage() {
             <p>Utilizamos tu información personal para:</p>
             <ul className="list-disc list-inside mt-3 space-y-1">
               <li>Gestionar tu registro y participación en los eventos MonadBlitz</li>
-              <li>Evaluar aplicaciones de mentores y jurados</li>
+              <li>Evaluar postulaciones de mentores, jurados y voluntarios</li>
               <li>Comunicarnos contigo sobre el evento (logística, actualizaciones, resultados)</li>
               <li>Mejorar la organización de futuros eventos</li>
             </ul>

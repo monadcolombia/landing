@@ -59,10 +59,23 @@ type ApplyFormValues = {
   volunteer_why: string;
 };
 
-const ROLES: { value: ApplyRole; label: string }[] = [
-  { value: "mentor", label: "Mentor" },
-  { value: "judge", label: "Jurado" },
-  { value: "volunteer", label: "Voluntario" },
+const ROLES: { value: ApplyRole; label: string; description: string }[] = [
+  {
+    value: "mentor",
+    label: "Mentor",
+    description:
+      "Acompañas a los equipos durante el hackathon y resuelves dudas técnicas, de producto o de pitch.",
+  },
+  {
+    value: "judge",
+    label: "Jurado",
+    description: "Evalúas los proyectos al final del día y ayudas a elegir a los ganadores.",
+  },
+  {
+    value: "volunteer",
+    label: "Voluntario",
+    description: "Apoyas la logística antes del evento y durante el día del hackathon.",
+  },
 ];
 
 const ROLE_LABEL: Record<ApplyRole, string> = {
@@ -189,13 +202,13 @@ export default function ApplyForm() {
       });
       if (!response.ok) {
         const error = await response.json();
-        throw new Error(error.error || "Error al enviar la aplicación");
+        throw new Error(error.error || "Error al enviar la postulación");
       }
       if (data.role) setSentRole(data.role);
       setIsSuccess(true);
     } catch (error) {
       console.error("Submission error:", error);
-      alert(error instanceof Error ? error.message : "Error al enviar la aplicación");
+      alert(error instanceof Error ? error.message : "Error al enviar la postulación");
     } finally {
       setIsSubmitting(false);
     }
@@ -209,10 +222,10 @@ export default function ApplyForm() {
           animate={{ opacity: 1, scale: 1 }}
           className="max-w-md w-full bg-white/5 border border-white/10 rounded-2xl p-6 sm:p-8 text-center"
         >
-          <h2 className="text-2xl font-bold text-white mb-2">Aplicación enviada</h2>
+          <h2 className="text-2xl font-bold text-white mb-2">Postulación enviada</h2>
           <p className="text-white/70 mb-6">
-            Gracias por aplicar como {ROLE_LABEL[sentRole]}. Revisaremos tu aplicación y te
-            contactaremos pronto.
+            Gracias por postularte como {ROLE_LABEL[sentRole]}. Es un rol voluntario, sin pago.
+            Revisaremos tu postulación y te contactaremos pronto.
           </p>
           <Link
             href="/"
@@ -229,10 +242,11 @@ export default function ApplyForm() {
     <div className="min-h-screen bg-monad-dark py-16 sm:py-20 px-4">
       <div className="max-w-3xl mx-auto">
         <div className="text-center mb-10">
-          <h1 className="text-3xl sm:text-5xl font-bold text-white mb-4">Aplica al equipo</h1>
+          <h1 className="text-3xl sm:text-5xl font-bold text-white mb-4">Colabora</h1>
           <p className="text-white/70 text-base sm:text-lg">
-            Registro abierto para MonadBlitz Medellín V2, 17 de octubre de 2026. Elige el rol y
-            completa solo lo que aplica. Si ya aplicaste en junio, puedes volver a aplicar.
+            Buscamos mentores, jurados y voluntarios para MonadBlitz Medellín V2, el 17 de octubre
+            de 2026. Ningún rol es pago: es una colaboración voluntaria. Si ya colaboraste en junio,
+            puedes volver a postularte.
           </p>
         </div>
 
@@ -242,7 +256,7 @@ export default function ApplyForm() {
         >
           <section className="space-y-3">
             <h2 className="text-xl font-bold text-white border-b border-white/10 pb-3">Rol</h2>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               {ROLES.map((item) => {
                 const selected = role === item.value;
                 return (
@@ -250,17 +264,27 @@ export default function ApplyForm() {
                     key={item.value}
                     type="button"
                     onClick={() => setValue("role", item.value, { shouldValidate: false })}
-                    className={`min-h-11 rounded-full px-4 py-3 font-mono text-sm uppercase tracking-wide transition-colors ${
+                    className={`text-left rounded-2xl px-4 py-4 transition-colors ${
                       selected
                         ? "bg-monad-primary text-white"
                         : "border border-white/15 text-white/80 hover:border-monad-primary/60"
                     }`}
                   >
-                    {item.label}
+                    <span className="block font-mono text-sm uppercase tracking-wide">
+                      {item.label}
+                    </span>
+                    <span
+                      className={`mt-2 block text-sm font-sans normal-case tracking-normal leading-snug ${
+                        selected ? "text-white/85" : "text-white/55"
+                      }`}
+                    >
+                      {item.description}
+                    </span>
                   </button>
                 );
               })}
             </div>
+            <p className="text-sm text-white/60">Ninguno de estos roles es pago.</p>
             {errors.role?.message && <p className="text-red-500 text-sm">{errors.role.message}</p>}
           </section>
 
@@ -611,7 +635,7 @@ export default function ApplyForm() {
               disabled={isSubmitting}
               className="w-full bg-monad-primary text-white font-bold px-8 py-4 rounded-full font-mono uppercase tracking-wide hover:brightness-110 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              {isSubmitting ? "Enviando..." : "Enviar aplicación"}
+              {isSubmitting ? "Enviando..." : "Enviar postulación"}
             </button>
           )}
         </form>

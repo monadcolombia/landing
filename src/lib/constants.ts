@@ -144,7 +144,7 @@ export const FOOTER_NAV: Record<string, { title: string; links: FooterLink[] }> 
       { label: "DeltaV", href: "https://deltav.monad.xyz/" },
       { label: "Monad Momentum", href: "https://momentum.monad.xyz/" },
       { label: "Monad Madness", href: "https://madness.monad.xyz/" },
-      { label: "Aplicar al equipo", href: "/apply" },
+      { label: "Colabora", href: "/apply" },
     ],
   },
   comunidad: {

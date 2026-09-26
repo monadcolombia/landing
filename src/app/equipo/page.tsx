@@ -63,7 +63,7 @@ export default function EquipoPage() {
             <div className="text-center py-8">
               <p className="text-white/50 text-lg mb-2">Pronto anunciaremos mentores y jurados</p>
               <p className="text-white/30 text-sm">
-                Estamos revisando aplicaciones. Vuelve pronto.
+                Estamos revisando postulaciones. Vuelve pronto.
               </p>
             </div>
           ) : (
