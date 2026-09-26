@@ -26,16 +26,4 @@ export const ORGANIZERS: Organizer[] = [
     image: "/images/organizers/DianaMonclou.jpg",
     twitter: "https://x.com/DianaMonclou",
   },
-  {
-    name: "Waira",
-    role: "Diseño & Redes",
-    image: "/images/organizers/WairaT.jpg",
-    twitter: "https://x.com/WairaT",
-  },
-  {
-    name: "DevLabs",
-    role: "Ruta Universidades & Equipo Técnico",
-    image: "/images/organizers/devlabx3.jpg",
-    twitter: "https://x.com/devlabx3",
-  },
 ];
