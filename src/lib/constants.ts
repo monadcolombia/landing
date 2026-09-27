@@ -77,8 +77,8 @@ export const PARTNER_CATEGORIES: PartnerCategory[] = [
 ];
 
 export const PAST_PARTNERS: PartnerCategory = {
-  title: "HAN CONFIADO EN NOSOTROS",
-  subtitle: "Organizaciones que acompañaron ediciones anteriores.",
+  title: "EDICIONES ANTERIORES",
+  subtitle: "Logos de ediciones pasadas.",
   partners: [
     { name: "DevLabX3", logo: "/images/partners/sponsors/devlabx3.svg" },
     { name: "Monad Foundation", logo: "/images/partners/sponsors/monad-foundation.png" },
