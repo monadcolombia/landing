@@ -49,9 +49,7 @@ function PartnerRow({
                     alt=""
                     width={180}
                     height={40}
-                    className={`${logo} w-auto object-contain opacity-80 hover:opacity-100 transition-opacity duration-300 ${
-                      partner.preserveColor ? "" : "brightness-0 invert"
-                    }`}
+                    className={`${logo} w-auto object-contain opacity-80 hover:opacity-100 transition-opacity duration-300 brightness-0 invert`}
                   />
                   {partner.logo.includes("ultravioleta") && (
                     <span className="text-xs font-heading font-bold text-white/50 whitespace-nowrap">

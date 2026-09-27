@@ -21,7 +21,6 @@ export interface FooterLink {
 export interface Partner {
   name: string;
   logo: string | null;
-  preserveColor?: boolean;
 }
 
 export interface PartnerCategory {

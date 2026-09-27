@@ -45,27 +45,17 @@ export const PARTNER_CATEGORIES: PartnerCategory[] = [
     title: "APOYAN",
     subtitle: "Sponsors y aliados de esta edición",
     partners: [
-      {
-        name: "Moncrear",
-        logo: "/images/partners/sponsors/moncrear.png",
-        preserveColor: true,
-      },
-      { name: "Apex", logo: "/images/partners/sponsors/apex.png", preserveColor: true },
+      { name: "Moncrear", logo: "/images/partners/sponsors/moncrear.png" },
+      { name: "Apex", logo: "/images/partners/sponsors/apex.png" },
     ],
   },
   {
     title: "UNIVERSIDADES",
-    subtitle: "Universidades aliadas de MonadBlitz Medellín V2",
+    subtitle: "Universidad aliada de MonadBlitz Medellín V2",
     partners: [
-      {
-        name: "Tecnológico de Antioquia",
-        logo: "/images/partners/universities/tdea.png",
-        preserveColor: true,
-      },
       {
         name: "Politécnico Colombiano Jaime Isaza Cadavid",
         logo: "/images/partners/universities/politecnico-jic.png",
-        preserveColor: true,
       },
     ],
   },
@@ -86,6 +76,7 @@ export const PAST_PARTNERS: PartnerCategory = {
     { name: "EAFIT", logo: "/images/partners/universities/eafit.png" },
     { name: "UdeA", logo: "/images/partners/universities/udea.png" },
     { name: "ITM", logo: "/images/partners/universities/itm.png" },
+    { name: "Tecnologico de Antioquia", logo: "/images/partners/universities/tdea.png" },
     { name: "Platohedro", logo: "/images/partners/communities/platohedro.png" },
     { name: "Criptoprofesor", logo: "/images/partners/communities/criptoprofesor.png" },
     { name: "Ultravioleta DAO", logo: "/images/partners/communities/ultravioleta-dao.svg" },
