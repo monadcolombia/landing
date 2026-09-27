@@ -43,31 +43,25 @@ export const PARTNERS: Partner[] = [
 export const PARTNER_CATEGORIES: PartnerCategory[] = [
   {
     title: "APOYAN",
-    subtitle: "Sponsors y aliados que hacen posible el tour",
+    subtitle: "Sponsors y aliados de esta edición",
     partners: [
-      { name: "DevLabX3", logo: "/images/partners/sponsors/devlabx3.svg" },
-      { name: "Monad Foundation", logo: "/images/partners/sponsors/monad-foundation.png" },
-      { name: "Moncrear", logo: "/images/partners/sponsors/moncrear.png" },
+      {
+        name: "Moncrear",
+        logo: "/images/partners/sponsors/moncrear.png",
+        preserveColor: true,
+      },
+      { name: "Apex", logo: "/images/partners/sponsors/apex.png", preserveColor: true },
     ],
   },
   {
     title: "UNIVERSIDADES",
-    subtitle: "Sedes de workshops previos al hackathon",
+    subtitle: "Universidad aliada de MonadBlitz Medellín V2",
     partners: [
-      { name: "UPB", logo: "/images/partners/universities/upb.png" },
-      { name: "EAFIT", logo: "/images/partners/universities/eafit.png" },
-      { name: "UdeA", logo: "/images/partners/universities/udea.png" },
-      { name: "ITM", logo: "/images/partners/universities/itm.png" },
-      { name: "Tecnologico de Antioquia", logo: "/images/partners/universities/tdea.png" },
-    ],
-  },
-  {
-    title: "COMUNIDADES ALIADAS",
-    subtitle: "Comunidades blockchain que difunden y apoyan el evento",
-    partners: [
-      { name: "Platohedro", logo: "/images/partners/communities/platohedro.png" },
-      { name: "Criptoprofesor", logo: "/images/partners/communities/criptoprofesor.png" },
-      { name: "Ultravioleta DAO", logo: "/images/partners/communities/ultravioleta-dao.svg" },
+      {
+        name: "Politécnico Colombiano Jaime Isaza Cadavid",
+        logo: "/images/partners/universities/politecnico-jic.png",
+        preserveColor: true,
+      },
     ],
   },
   {
@@ -76,6 +70,23 @@ export const PARTNER_CATEGORIES: PartnerCategory[] = [
     partners: [{ name: "Blockvoz", logo: "/images/partners/media/blockvoz.png" }],
   },
 ];
+
+export const PAST_PARTNERS: PartnerCategory = {
+  title: "HAN CONFIADO EN NOSOTROS",
+  subtitle: "Organizaciones que acompañaron ediciones anteriores.",
+  partners: [
+    { name: "DevLabX3", logo: "/images/partners/sponsors/devlabx3.svg" },
+    { name: "Monad Foundation", logo: "/images/partners/sponsors/monad-foundation.png" },
+    { name: "UPB", logo: "/images/partners/universities/upb.png" },
+    { name: "EAFIT", logo: "/images/partners/universities/eafit.png" },
+    { name: "UdeA", logo: "/images/partners/universities/udea.png" },
+    { name: "ITM", logo: "/images/partners/universities/itm.png" },
+    { name: "Tecnologico de Antioquia", logo: "/images/partners/universities/tdea.png" },
+    { name: "Platohedro", logo: "/images/partners/communities/platohedro.png" },
+    { name: "Criptoprofesor", logo: "/images/partners/communities/criptoprofesor.png" },
+    { name: "Ultravioleta DAO", logo: "/images/partners/communities/ultravioleta-dao.svg" },
+  ],
+};
 
 export const FAQ_ITEMS: FAQItem[] = [
   {
