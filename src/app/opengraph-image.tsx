@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
 
-export const alt = "Monad Tour Colombia 2026 - Hackathons MonadBlitz";
+export const alt = "Monad Tour Colombia 2026 - MonadBlitz";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
@@ -149,7 +149,7 @@ export default async function Image() {
             letterSpacing: "2px",
           }}
         >
-          HACKATHONS MONADBLITZ 2026
+          MONADBLITZ 2026
         </span>
       </div>
     </div>,

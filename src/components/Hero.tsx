@@ -139,8 +139,8 @@ export default function Hero() {
               variants={fadeUp}
               className="text-base sm:text-lg text-white/60 max-w-md mx-auto lg:mx-0 mb-8 px-2 sm:px-0"
             >
-              Un día. Sin límites. Solo construye. Hackathon de un día en Medellín. Si puedes
-              shippear, este es tu lugar.
+              Un día. Sin límites. Solo construye. Blitz de un día en Medellín. Si puedes shippear,
+              este es tu lugar.
             </motion.p>
             <motion.div
               variants={fadeUp}

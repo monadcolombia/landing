@@ -11,7 +11,7 @@ export const CITIES: City[] = [
     confirmed: true,
     registrationUrl: "https://luma.com/f6xhhyld",
     description: "Segunda edición en Medellín. Un día, sin límites, solo construye.",
-    eventType: "MonadBlitz Hackathon",
+    eventType: "MonadBlitz",
     venue: "Indie Universe Hotel, Medellín",
     venueUrl: "https://maps.app.goo.gl/7eVLjPduu39L3iB19",
   },
@@ -25,7 +25,7 @@ export const CITIES: City[] = [
     confirmed: true,
     registrationUrl: "https://luma.com/o56ekpyb",
     description: "La capital de la montaña abre el tour. Un día, sin límites, solo construye.",
-    eventType: "MonadBlitz Hackathon",
+    eventType: "MonadBlitz",
     venue: "Indie Universe Hotel, Medellín",
     venueUrl: "https://maps.app.goo.gl/7eVLjPduu39L3iB19",
   },
@@ -120,7 +120,7 @@ export const FAQ_ITEMS: FAQItem[] = [
       "Monad es una blockchain Layer 1 de alto rendimiento, compatible con EVM. Rápida, barata y pensada para builders. Si ya conoces Ethereum, ya conoces Monad.",
   },
   {
-    question: "¿Cómo me preparo para el hackathon?",
+    question: "¿Cómo me preparo para el Blitz?",
     answer:
       "Llega con una idea o con ganas de unirte a una. Si quieres adelantar, explora docs.monad.xyz y únete al Discord de Monad. No hay restricciones de stack ni de herramientas: si es cool y corre en Monad, vale.",
   },

@@ -24,15 +24,14 @@ export default function PrivacidadPage() {
             <p>
               Esta politica se rige por la Ley 1581 de 2012 y el Decreto 1377 de 2013 de Colombia
               sobre proteccion de datos personales. El responsable del tratamiento de datos es
-              Medellin Blockchain Community, organizador de los eventos MonadBlitz Hackathon en
-              Colombia.
+              Medellin Blockchain Community, organizador de los eventos MonadBlitz en Colombia.
             </p>
           </section>
 
           <section>
             <h2 className="text-xl font-bold text-white mb-3">2. Consentimiento</h2>
             <p>
-              Al enviar un formulario de registro o postulacion en este sitio, autorizas de manera
+              Al enviar un formulario de registro o postulación en este sitio, autorizas de manera
               libre, previa, expresa e informada el tratamiento de tus datos personales conforme a
               los fines descritos en esta politica. Puedes retirar tu consentimiento en cualquier
               momento contactando al equipo organizador.
@@ -42,8 +41,8 @@ export default function PrivacidadPage() {
           <section>
             <h2 className="text-xl font-bold text-white mb-3">3. Informacion que Recopilamos</h2>
             <p>
-              Al registrarte al hackathon o postularte como mentor, jurado o voluntario, recopilamos
-              la siguiente informacion:
+              Al registrarte al Blitz o postularte como mentor, jurado o voluntario, recopilamos la
+              siguiente información:
             </p>
             <ul className="list-disc list-inside mt-3 space-y-1">
               <li>Nombre completo</li>
@@ -89,13 +88,13 @@ export default function PrivacidadPage() {
               6. Almacenamiento, Seguridad y Retencion
             </h2>
             <p>
-              Tu informacion se almacena en servidores seguros. Implementamos medidas de seguridad
+              Tu información se almacena en servidores seguros. Implementamos medidas de seguridad
               tecnicas y organizativas para proteger tus datos contra acceso no autorizado, perdida
               o alteracion.
             </p>
             <p className="mt-3">
-              Conservamos tus datos personales durante un periodo maximo de 12 meses despues del
-              ultimo evento en el que participaste. Pasado este periodo, los datos seran eliminados
+              Conservamos tus datos personales durante un periodo máximo de 12 meses después del
+              último evento en el que participaste. Pasado este periodo, los datos serán eliminados
               de forma segura, salvo que exista una obligacion legal que requiera su conservacion.
             </p>
           </section>
@@ -107,7 +106,7 @@ export default function PrivacidadPage() {
               tienes derecho a:
             </p>
             <ul className="list-disc list-inside mt-3 space-y-1">
-              <li>Conocer, actualizar y rectificar tu informacion personal</li>
+              <li>Conocer, actualizar y rectificar tu información personal</li>
               <li>
                 Solicitar la eliminacion de tus datos cuando no exista obligacion legal de
                 conservarlos
@@ -116,7 +115,7 @@ export default function PrivacidadPage() {
               <li>Presentar quejas ante la Superintendencia de Industria y Comercio (SIC)</li>
             </ul>
             <p className="mt-3">
-              Para ejercer estos derechos, contacta al equipo organizador a traves de nuestras redes
+              Para ejercer estos derechos, contacta al equipo organizador a través de nuestras redes
               sociales oficiales o en los canales de Discord de Monad.
             </p>
           </section>
@@ -124,7 +123,7 @@ export default function PrivacidadPage() {
           <section>
             <h2 className="text-xl font-bold text-white mb-3">8. Cookies</h2>
             <p>
-              Este sitio utiliza cookies esenciales para su funcionamiento (como la sesion de
+              Este sitio utiliza cookies esenciales para su funcionamiento (como la sesión de
               administracion). No utilizamos cookies de seguimiento ni publicidad de terceros. Al
               aceptar el banner de cookies, consientes el uso de estas cookies esenciales.
             </p>
@@ -153,7 +152,7 @@ export default function PrivacidadPage() {
             <h2 className="text-xl font-bold text-white mb-3">11. Contacto</h2>
             <p>
               Si tienes preguntas sobre esta politica de privacidad o deseas ejercer tus derechos
-              como titular de datos, puedes contactarnos a traves de nuestras redes sociales
+              como titular de datos, puedes contactarnos a través de nuestras redes sociales
               oficiales o en los canales de Discord de Monad.
             </p>
           </section>
