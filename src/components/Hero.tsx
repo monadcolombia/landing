@@ -84,7 +84,7 @@ export default function Hero() {
       />
 
       {/* Concentric circles - behind the map area */}
-      <div className="absolute top-[8%] right-[-5%] pointer-events-none opacity-60">
+      <div className="absolute top-[8%] right-[-5%] pointer-events-none opacity-60 hidden lg:block">
         <ConcentricCircles size={550} dark />
       </div>
 
