@@ -34,6 +34,7 @@ Content is hardcoded in Spanish. No i18n.
 - `NEXT_PUBLIC_GOOGLE_CLIENT_ID` - Google OAuth client ID (public, used both client-side for the GIS button and server-side for ID token verification)
 - `ADMIN_ALLOWED_EMAILS` - Comma-separated allowlist of emails authorized to log in via Google (read access)
 - `ADMIN_FULL_ACCESS_EMAILS` - Subset of `ADMIN_ALLOWED_EMAILS` with write permissions (approve/reject/withdraw/reactivate/resend). Emails not listed here can only view applications.
+- `ADMIN_VOLUNTEER_ACCESS_EMAILS` - Subset of `ADMIN_ALLOWED_EMAILS` that can approve/reject/confirm/resend volunteer applications only. Mentor and judge applications stay read-only for them.
 
 ## Admin Login
 
