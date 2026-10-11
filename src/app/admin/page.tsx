@@ -35,9 +35,9 @@ const EDITION_LABELS: Record<string, string> = {
 };
 
 const VOLUNTEER_AVAILABILITY_LABELS: Record<string, string> = {
-  event_day: "Solo dia del evento",
+  event_day: "Solo día del evento",
   pre_event: "Solo pre-evento",
-  both: "Pre-evento y dia del evento",
+  both: "Pre-evento y día del evento",
 };
 
 export default function AdminApplicationsPage() {
@@ -48,15 +48,18 @@ export default function AdminApplicationsPage() {
   const [selectedConfirmed, setSelectedConfirmed] = useState<ConfirmedFilter>("all");
   const [selectedEdition, setSelectedEdition] = useState<EditionFilter>("all");
   const [selectedApp, setSelectedApp] = useState<Application | null>(null);
-  const [canWrite, setCanWrite] = useState(false);
+  const [writableRoles, setWritableRoles] = useState<string[]>([]);
+  const canWrite = writableRoles.length > 0;
+  const fullAccess = writableRoles.length === 3;
+  const canEditSelected = selectedApp ? writableRoles.includes(selectedApp.role) : false;
   const [stats, setStats] = useState<Stats | null>(null);
   const [resendingId, setResendingId] = useState<string | null>(null);
 
   useEffect(() => {
     fetch("/api/admin/verify")
       .then((res) => res.json())
-      .then((data) => setCanWrite(Boolean(data.canWrite)))
-      .catch(() => setCanWrite(false));
+      .then((data) => setWritableRoles(Array.isArray(data.writableRoles) ? data.writableRoles : []))
+      .catch(() => setWritableRoles([]));
   }, []);
 
   const fetchStats = useCallback(async () => {
@@ -120,13 +123,13 @@ export default function AdminApplicationsPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ confirmed }),
       });
-      if (!response.ok) throw new Error("Error al actualizar confirmacion");
+      if (!response.ok) throw new Error("Error al actualizar confirmación");
       const { data } = await response.json();
       await Promise.all([fetchApplications(), fetchStats()]);
       if (selectedApp?.id === id) setSelectedApp(data);
     } catch (error) {
       console.error("Error updating confirmed:", error);
-      alert("Error al actualizar confirmacion");
+      alert("Error al actualizar confirmación");
     }
   };
 
@@ -152,6 +155,12 @@ export default function AdminApplicationsPage() {
       {!canWrite && (
         <div className="bg-orange-500/10 border border-orange-500/30 text-orange-300 rounded-lg px-4 py-3 text-sm font-mono">
           Solo lectura. No tienes permisos para aprobar, rechazar, confirmar o reenviar correos.
+        </div>
+      )}
+      {canWrite && !fullAccess && (
+        <div className="bg-orange-500/10 border border-orange-500/30 text-orange-300 rounded-lg px-4 py-3 text-sm font-mono">
+          Puedes aprobar, rechazar y confirmar solo voluntarios. Mentores y jurados son de solo
+          lectura.
         </div>
       )}
 
@@ -238,7 +247,7 @@ export default function AdminApplicationsPage() {
 
           <div>
             <label className="block text-sm font-mono uppercase tracking-wide text-white/90 mb-2">
-              Edicion
+              Edición
             </label>
             <select
               value={selectedEdition}
@@ -283,7 +292,7 @@ export default function AdminApplicationsPage() {
                 <tr>
                   <Th>Nombre</Th>
                   <Th>Rol</Th>
-                  <Th>Edicion</Th>
+                  <Th>Edición</Th>
                   <Th>Ciudad</Th>
                   <Th>Estado</Th>
                   <Th>Confirmado</Th>
@@ -554,13 +563,14 @@ export default function AdminApplicationsPage() {
 
               {/* Acciones */}
               <div className="flex flex-wrap gap-3 pt-6 border-t border-white/10">
-                {!canWrite && (
+                {!canEditSelected && (
                   <p className="w-full text-sm text-white/50 italic">
-                    Solo lectura. Pide a un admin con permisos completos que realice esta accion.
+                    Solo lectura para este rol. Pide a un admin con permisos completos que realice
+                    esta acción.
                   </p>
                 )}
 
-                {canWrite && selectedApp.status === "pending" && (
+                {canEditSelected && selectedApp.status === "pending" && (
                   <>
                     <button
                       onClick={() => updateStatus(selectedApp.id, "approved")}
@@ -577,7 +587,7 @@ export default function AdminApplicationsPage() {
                   </>
                 )}
 
-                {canWrite && selectedApp.status === "approved" && (
+                {canEditSelected && selectedApp.status === "approved" && (
                   <>
                     <button
                       onClick={() => setConfirmed(selectedApp.id, !selectedApp.confirmed)}
@@ -593,7 +603,7 @@ export default function AdminApplicationsPage() {
                       onClick={() => {
                         if (
                           confirm(
-                            "¿Rechazar esta aplicacion ya aprobada? El aplicante recibira el correo de rechazo y desaparece del sitio publico."
+                            "¿Rechazar esta aplicación ya aprobada? El aplicante recibirá el correo de rechazo y desaparece del sitio público."
                           )
                         ) {
                           updateStatus(selectedApp.id, "rejected");
@@ -606,12 +616,12 @@ export default function AdminApplicationsPage() {
                   </>
                 )}
 
-                {canWrite && selectedApp.status === "rejected" && (
+                {canEditSelected && selectedApp.status === "rejected" && (
                   <button
                     onClick={() => {
                       if (
                         confirm(
-                          "¿Reactivar esta aplicacion? Pasa a aprobado y se le enviara el correo de aprobacion. El estado de confirmacion arranca en false."
+                          "¿Reactivar esta aplicación? Pasa a aprobado y se le enviará el correo de aprobación. El estado de confirmación arranca en false."
                         )
                       ) {
                         updateStatus(selectedApp.id, "approved");
@@ -623,7 +633,7 @@ export default function AdminApplicationsPage() {
                   </button>
                 )}
 
-                {canWrite && selectedApp.status !== "pending" && (
+                {canEditSelected && selectedApp.status !== "pending" && (
                   <button
                     onClick={() => resendEmail(selectedApp.id)}
                     disabled={resendingId === selectedApp.id}

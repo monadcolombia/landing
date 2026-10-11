@@ -1,11 +1,16 @@
 import { NextResponse } from "next/server";
-import { getAdminEmail, isAdminWriter } from "@/lib/admin-auth";
+import { getAdminEmail, getWritableRoles } from "@/lib/admin-auth";
 
 export async function GET() {
   const email = await getAdminEmail();
   if (!email) {
-    return NextResponse.json({ authenticated: false, canWrite: false });
+    return NextResponse.json({ authenticated: false, canWrite: false, writableRoles: [] });
   }
-  const canWrite = await isAdminWriter();
-  return NextResponse.json({ authenticated: true, canWrite, email });
+  const writableRoles = await getWritableRoles();
+  return NextResponse.json({
+    authenticated: true,
+    canWrite: writableRoles.length > 0,
+    writableRoles,
+    email,
+  });
 }

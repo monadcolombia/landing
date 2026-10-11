@@ -64,7 +64,7 @@ const ROLES: { value: ApplyRole; label: string; description: string }[] = [
     value: "mentor",
     label: "Mentor",
     description:
-      "Acompañas a los equipos durante el hackathon y resuelves dudas técnicas, de producto o de pitch.",
+      "Acompañas a los equipos durante el Blitz y resuelves dudas técnicas, de producto o de pitch.",
   },
   {
     value: "judge",
@@ -74,7 +74,7 @@ const ROLES: { value: ApplyRole; label: string; description: string }[] = [
   {
     value: "volunteer",
     label: "Voluntario",
-    description: "Apoyas la logística antes del evento y durante el día del hackathon.",
+    description: "Apoyas la logística antes del evento y durante el día del Blitz.",
   },
 ];
 

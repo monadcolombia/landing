@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { isAdminAuthenticated, isAdminWriter } from "@/lib/admin-auth";
+import { canWriteRole, getWritableRoles, isAdminAuthenticated } from "@/lib/admin-auth";
 import { sendApplicantStatusEmail } from "@/lib/email";
 
 const VALID_STATUSES = ["approved", "rejected"] as const;
@@ -14,7 +14,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   if (!(await isAdminAuthenticated())) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  if (!(await isAdminWriter())) {
+  if ((await getWritableRoles()).length === 0) {
     return NextResponse.json({ error: "Forbidden: read-only access" }, { status: 403 });
   }
 
@@ -39,11 +39,17 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 
     const existing = await prisma.application.findUnique({
       where: { id },
-      select: { status: true, edition: true },
+      select: { status: true, edition: true, role: true },
     });
 
     if (!existing) {
       return NextResponse.json({ error: "Application not found" }, { status: 404 });
+    }
+    if (!(await canWriteRole(existing.role))) {
+      return NextResponse.json(
+        { error: "Forbidden: no write access for this role" },
+        { status: 403 }
+      );
     }
 
     const updates: {

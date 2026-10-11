@@ -10,9 +10,8 @@ const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], variable: "--font-space
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://monadcolombia.xyz"),
-  title: "Monad Tour Colombia 2026 | Hackathons MonadBlitz",
-  description:
-    "Recorre Colombia con Monad. Hackathon, workshops y comunidad blockchain en Medellín.",
+  title: "Monad Tour Colombia 2026 | MonadBlitz",
+  description: "Recorre Colombia con Monad. Blitz, workshops y comunidad blockchain en Medellín.",
   keywords: [
     "Monad",
     "blockchain",
@@ -41,9 +40,8 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: "Monad Tour Colombia 2026 | Hackathons MonadBlitz",
-    description:
-      "Recorre Colombia con Monad. Hackathon, workshops y comunidad blockchain en Medellín.",
+    title: "Monad Tour Colombia 2026 | MonadBlitz",
+    description: "Recorre Colombia con Monad. Blitz, workshops y comunidad blockchain en Medellín.",
     type: "website",
     locale: "es_CO",
     url: "https://monadcolombia.xyz",
@@ -51,9 +49,8 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "Monad Tour Colombia 2026 | Hackathons MonadBlitz",
-    description:
-      "Recorre Colombia con Monad. Hackathon, workshops y comunidad blockchain en Medellín.",
+    title: "Monad Tour Colombia 2026 | MonadBlitz",
+    description: "Recorre Colombia con Monad. Blitz, workshops y comunidad blockchain en Medellín.",
     creator: "@monad_xyz",
   },
 };

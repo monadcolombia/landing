@@ -122,6 +122,7 @@ export default function Highlights() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: i * 0.08, ease: EASING }}
+              data-theme="dark"
               className="tweet-card [&_.react-tweet-theme]:!bg-transparent [&_article]:!border-white/10 [&_article]:!rounded-xl"
             >
               <HighlightTweet id={tweet.id} />

@@ -30,7 +30,7 @@ export default function EventsTable() {
             La comunidad Monad está onchain - y en persona.
           </h2>
           <p className="text-base sm:text-lg text-white/50 mt-4 max-w-xl">
-            Hackathons MonadBlitz en Medellín.
+            Blitz de un día en Medellín.
           </p>
         </motion.div>
 
@@ -93,7 +93,7 @@ export default function EventsTable() {
 
                 {/* Event type */}
                 <span className="text-sm font-mono text-white/30">
-                  {city.eventType || "MonadBlitz Hackathon"}
+                  {city.eventType || "MonadBlitz"}
                 </span>
 
                 {/* CTA */}
@@ -158,7 +158,7 @@ export default function EventsTable() {
                 ) : null}
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-mono text-white/30">
-                    {city.eventType || "MonadBlitz Hackathon"}
+                    {city.eventType || "MonadBlitz"}
                   </span>
                   {isUpcoming(city) ? (
                     <a

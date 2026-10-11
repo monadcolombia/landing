@@ -22,17 +22,18 @@ export default function TerminosPage() {
           <section>
             <h2 className="text-xl font-bold text-white mb-3">1. Aceptación de los Términos</h2>
             <p>
-              Al registrarte y participar en los eventos MonadBlitz Hackathon organizados como parte
-              del Monad Tour Colombia, aceptas estos términos y condiciones en su totalidad.
+              Al registrarte y participar en los eventos MonadBlitz organizados como parte del Monad
+              Tour Colombia, aceptas estos términos y condiciones en su totalidad.
             </p>
           </section>
 
           <section>
             <h2 className="text-xl font-bold text-white mb-3">2. Descripción del Evento</h2>
             <p>
-              MonadBlitz Medellín es un hackathon de un día. La próxima edición es el 17 de octubre
-              de 2026. Los participantes desarrollan proyectos blockchain durante el evento, con el
-              apoyo de mentores y la evaluación de jurados seleccionados.
+              MonadBlitz Medellín es un Blitz: una competencia de construcción de un día. La próxima
+              edición es el 17 de octubre de 2026. Los participantes desarrollan proyectos
+              blockchain durante el evento, con el apoyo de mentores y la evaluación de jurados
+              seleccionados.
             </p>
           </section>
 
@@ -67,9 +68,7 @@ export default function TerminosPage() {
           <section>
             <h2 className="text-xl font-bold text-white mb-3">5. Propiedad Intelectual</h2>
             <ul className="list-disc list-inside space-y-1">
-              <li>
-                Los proyectos desarrollados durante el hackathon son propiedad de sus creadores
-              </li>
+              <li>Los proyectos desarrollados durante el Blitz son propiedad de sus creadores</li>
               <li>
                 Al participar, otorgas a los organizadores el derecho de mencionar y mostrar tu
                 proyecto con fines promocionales
