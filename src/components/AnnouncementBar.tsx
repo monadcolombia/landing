@@ -60,21 +60,21 @@ export default function AnnouncementBar() {
           transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
           className="fixed top-0 left-0 right-0 z-[60] h-9 bg-monad-primary text-white flex items-center px-4"
           role="region"
-          aria-label="Anuncio del proximo evento"
+          aria-label="Anuncio del próximo evento"
         >
           <div className="max-w-7xl mx-auto w-full flex items-center justify-center gap-3 sm:gap-4 text-[11px] sm:text-xs font-mono">
             <span className="hidden sm:inline whitespace-nowrap">
               {getUpcomingCity()?.date ?? "17 de Octubre, 2026"}
             </span>
             <span className="hidden sm:inline text-white/60">·</span>
-            <span className="whitespace-nowrap truncate">Indie Universe Hotel, Medellin</span>
+            <span className="whitespace-nowrap truncate">Indie Universe Hotel, Medellín</span>
             <a
               href={registrationUrl()}
               target="_blank"
               rel="noopener noreferrer"
               className="font-bold uppercase tracking-wide underline underline-offset-2 hover:no-underline whitespace-nowrap"
             >
-              Registrate
+              Regístrate
             </a>
           </div>
           <button

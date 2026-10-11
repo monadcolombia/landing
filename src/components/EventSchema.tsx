@@ -7,7 +7,7 @@ export default function EventSchema() {
     "@context": "https://schema.org",
     "@type": "Event",
     name: `MonadBlitz ${city.name}`,
-    description: `MonadBlitz Hackathon en ${city.name} - Monad Tour Colombia 2026. Un dia intensivo de hacking construyendo en Monad, la blockchain EVM de alto rendimiento.`,
+    description: `MonadBlitz ${city.name} - Monad Tour Colombia 2026. Un Blitz de un día construyendo en Monad, la blockchain EVM de alto rendimiento.`,
     startDate: city.dateISO,
     endDate: city.dateISO,
     eventStatus: "https://schema.org/EventScheduled",
@@ -54,26 +54,26 @@ export default function EventSchema() {
     mainEntity: [
       {
         "@type": "Question",
-        name: "Necesito saber programar para participar en MonadBlitz?",
+        name: "¿Necesito saber programar para participar en MonadBlitz?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "No necesariamente. MonadBlitz esta abierto a todos los perfiles: devs, disenadores, product managers, creadores de contenido y mas. Los equipos necesitan al menos un perfil tecnico, pero se valora la diversidad de habilidades.",
+          text: "No necesariamente. MonadBlitz está abierto a todos los perfiles: devs, diseñadores, product managers, creadores de contenido y más. Los equipos necesitan al menos un perfil técnico, pero se valora la diversidad de habilidades.",
         },
       },
       {
         "@type": "Question",
-        name: "El evento MonadBlitz es gratis?",
+        name: "¿El evento MonadBlitz es gratis?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Si, la participacion en MonadBlitz es completamente gratuita. Solo necesitas registrarte a traves de Luma.",
+          text: "Sí, la participación en MonadBlitz es completamente gratuita. Solo necesitas registrarte a través de Luma.",
         },
       },
       {
         "@type": "Question",
-        name: "Que es Monad?",
+        name: "¿Qué es Monad?",
         acceptedAnswer: {
           "@type": "Answer",
-          text: "Monad es una blockchain Layer 1 compatible con EVM que ofrece 10,000 transacciones por segundo, finalidad en menos de 1 segundo y gas fees minimos.",
+          text: "Monad es una blockchain Layer 1 compatible con EVM que ofrece 10,000 transacciones por segundo, finalidad en menos de 1 segundo y gas fees mínimos.",
         },
       },
     ],

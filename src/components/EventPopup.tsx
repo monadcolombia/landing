@@ -151,7 +151,7 @@ export default function EventPopup() {
               onClick={close}
               className="block w-full bg-monad-primary text-white text-center font-bold py-3 rounded-full hover:brightness-110 transition-all font-mono uppercase tracking-wide text-sm"
             >
-              Registrate gratis
+              Regístrate gratis
             </a>
             <button
               onClick={close}

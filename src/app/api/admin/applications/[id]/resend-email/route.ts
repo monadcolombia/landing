@@ -1,13 +1,13 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { isAdminAuthenticated, isAdminWriter } from "@/lib/admin-auth";
+import { canWriteRole, getWritableRoles, isAdminAuthenticated } from "@/lib/admin-auth";
 import { sendApplicantStatusEmail } from "@/lib/email";
 
 export async function POST(_request: Request, { params }: { params: Promise<{ id: string }> }) {
   if (!(await isAdminAuthenticated())) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
-  if (!(await isAdminWriter())) {
+  if ((await getWritableRoles()).length === 0) {
     return NextResponse.json({ error: "Forbidden: read-only access" }, { status: 403 });
   }
 
@@ -20,6 +20,12 @@ export async function POST(_request: Request, { params }: { params: Promise<{ id
 
   if (!app) {
     return NextResponse.json({ error: "Application not found" }, { status: 404 });
+  }
+  if (!(await canWriteRole(app.role))) {
+    return NextResponse.json(
+      { error: "Forbidden: no write access for this role" },
+      { status: 403 }
+    );
   }
 
   if (app.status !== "approved" && app.status !== "rejected") {

@@ -3,7 +3,9 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { PARTNER_CATEGORIES, PAST_PARTNERS } from "@/lib/constants";
-import type { PartnerCategory } from "@/lib/types";
+import type { Partner, PartnerCategory } from "@/lib/types";
+
+const MIN_MARQUEE_ITEMS = 5;
 
 const EASING = [0.16, 1, 0.3, 1] as const;
 
@@ -14,11 +16,44 @@ function PartnerRow({
   category: PartnerCategory;
   compact?: boolean;
 }) {
-  const items = [...category.partners, ...category.partners, ...category.partners];
+  // A marquee needs enough logos to fill the row. With only a few, scrolling just
+  // shows the same logos repeated side by side, so render a static centered row.
+  const scrolls = category.partners.length >= MIN_MARQUEE_ITEMS;
+  const items = scrolls
+    ? [...category.partners, ...category.partners, ...category.partners]
+    : category.partners;
   const slot = compact ? "w-[120px] sm:w-[140px]" : "w-[150px] sm:w-[190px]";
   const logo = compact
     ? "h-5 sm:h-6 max-w-[100px] sm:max-w-[120px]"
     : "h-8 sm:h-10 max-w-[140px] sm:max-w-[180px]";
+
+  const renderPartner = (partner: Partner, i: number, decorative: boolean) => (
+    <div
+      key={`${partner.name}-${i}`}
+      className={`flex items-center justify-center px-4 sm:px-6 flex-shrink-0 ${slot}`}
+    >
+      {partner.logo ? (
+        <div className={`flex items-center gap-2.5 justify-center ${slot}`}>
+          <Image
+            src={partner.logo}
+            alt={decorative ? "" : partner.name}
+            width={180}
+            height={40}
+            className={`${logo} w-auto object-contain opacity-80 hover:opacity-100 transition-opacity duration-300 brightness-0 invert`}
+          />
+          {partner.logo.includes("ultravioleta") && (
+            <span className="text-xs font-heading font-bold text-white/50 whitespace-nowrap">
+              {partner.name}
+            </span>
+          )}
+        </div>
+      ) : (
+        <span className="text-sm sm:text-base font-heading font-extrabold text-white/50 whitespace-nowrap tracking-tight">
+          {partner.name}
+        </span>
+      )}
+    </div>
+  );
 
   return (
     <div>
@@ -28,44 +63,32 @@ function PartnerRow({
       {category.subtitle && (
         <p className="text-xs text-white/30 text-center mb-4 px-4">{category.subtitle}</p>
       )}
-      <div
-        className="relative"
-        style={{
-          maskImage: "linear-gradient(to right, transparent, black 10%, black 90%, transparent)",
-          WebkitMaskImage:
-            "linear-gradient(to right, transparent, black 10%, black 90%, transparent)",
-        }}
-      >
-        <div className="marquee-track flex items-center gap-10 sm:gap-16 w-max" aria-hidden="true">
-          {items.map((partner, i) => (
-            <div
-              key={`${partner.name}-${i}`}
-              className={`flex items-center justify-center px-4 sm:px-6 flex-shrink-0 ${slot}`}
-            >
-              {partner.logo ? (
-                <div className={`flex items-center gap-2.5 justify-center ${slot}`}>
-                  <Image
-                    src={partner.logo}
-                    alt=""
-                    width={180}
-                    height={40}
-                    className={`${logo} w-auto object-contain opacity-80 hover:opacity-100 transition-opacity duration-300 brightness-0 invert`}
-                  />
-                  {partner.logo.includes("ultravioleta") && (
-                    <span className="text-xs font-heading font-bold text-white/50 whitespace-nowrap">
-                      {partner.name}
-                    </span>
-                  )}
-                </div>
-              ) : (
-                <span className="text-sm sm:text-base font-heading font-extrabold text-white/50 whitespace-nowrap tracking-tight">
-                  {partner.name}
-                </span>
-              )}
-            </div>
-          ))}
+      {scrolls ? (
+        <div
+          className="relative"
+          style={{
+            maskImage: "linear-gradient(to right, transparent, black 10%, black 90%, transparent)",
+            WebkitMaskImage:
+              "linear-gradient(to right, transparent, black 10%, black 90%, transparent)",
+          }}
+        >
+          <ul className="sr-only">
+            {category.partners.map((partner) => (
+              <li key={partner.name}>{partner.name}</li>
+            ))}
+          </ul>
+          <div
+            className="marquee-track flex items-center gap-10 sm:gap-16 w-max"
+            aria-hidden="true"
+          >
+            {items.map((partner, i) => renderPartner(partner, i, true))}
+          </div>
         </div>
-      </div>
+      ) : (
+        <div className="flex flex-wrap items-center justify-center gap-6 sm:gap-12 px-4">
+          {items.map((partner, i) => renderPartner(partner, i, false))}
+        </div>
+      )}
     </div>
   );
 }

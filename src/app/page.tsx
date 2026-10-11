@@ -17,6 +17,10 @@ import ExploreCards from "@/components/ExploreCards";
 import Footer from "@/components/Footer";
 import ScrollNav from "@/components/ScrollNav";
 
+// Event dates decide what the page shows as "next event" and the JSON-LD.
+// Rebuild the static page hourly so it never stays stuck on a past event.
+export const revalidate = 3600;
+
 export default function Home() {
   return (
     <main className="min-h-screen bg-white">

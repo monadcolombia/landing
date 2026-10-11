@@ -28,13 +28,13 @@ const SCHEDULE: ScheduleItem[] = [
     type: "range",
     start: "10:30",
     end: "11:00",
-    title: "Formacion de equipos",
+    title: "Formación de equipos",
     description: "Arma tu squad",
   },
   {
     type: "milestone",
     start: "11:00",
-    title: "Inicio del hackathon",
+    title: "Inicio del Blitz",
     description: "Empieza el reloj. Nada en GitHub antes de esta hora",
   },
   { type: "range", start: "11:00", end: "13:00", title: "Hacking" },
@@ -44,7 +44,7 @@ const SCHEDULE: ScheduleItem[] = [
     type: "milestone",
     start: "18:00",
     title: "Code freeze",
-    description: "No mas cambios en GitHub",
+    description: "No más cambios en GitHub",
   },
   {
     type: "range",
@@ -57,7 +57,7 @@ const SCHEDULE: ScheduleItem[] = [
     type: "milestone",
     start: "18:30",
     title: "Deadline",
-    description: "Cierre de envios",
+    description: "Cierre de envíos",
   },
   {
     type: "range",
@@ -70,12 +70,12 @@ const SCHEDULE: ScheduleItem[] = [
     type: "range",
     start: "21:00",
     end: "22:00",
-    title: "Break + deliberacion del jurado",
+    title: "Break + deliberación del jurado",
   },
   {
     type: "milestone",
     start: "22:00",
-    title: "Premiacion y cierre",
+    title: "Premiación y cierre",
     description: "Anuncio de ganadores",
   },
 ];
@@ -115,7 +115,7 @@ export default function Schedule() {
             {"// AGENDA"}
           </p>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold font-heading text-gray-900 max-w-2xl">
-            Un dia. Sin limites. Solo construye.
+            Un día. Sin límites. Solo construye.
           </h2>
           <p className="text-base sm:text-lg text-gray-500 mt-4 max-w-xl">
             Llega, forma equipo, construye lo que quieras y shippea. Si es cool y corre en Monad,
@@ -187,7 +187,7 @@ export default function Schedule() {
           className="mt-12 p-6 rounded-xl border border-gray-100 bg-gray-50/50"
         >
           <p className="text-[10px] sm:text-xs font-mono uppercase tracking-[3px] text-gray-400 mb-4">
-            {"// DURANTE EL DIA"}
+            {"// DURANTE EL DÍA"}
           </p>
           <div className="space-y-3">
             {ALL_DAY.map((item) => (
@@ -204,7 +204,7 @@ export default function Schedule() {
           </div>
           <div className="border-t border-gray-200/60 my-5" />
           <p className="text-[10px] font-mono uppercase tracking-[2px] text-gray-400 mb-3">
-            {"// TAMBIEN INCLUIDO"}
+            {"// TAMBIÉN INCLUIDO"}
           </p>
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
             {PERKS.map((item) => (
@@ -243,7 +243,7 @@ export default function Schedule() {
             $2,000 USD en premios
           </h3>
           <p className="text-sm text-gray-500 mb-8">
-            Jurado tecnico decide los ganadores. El voto de los demas participantes en la app de
+            Jurado técnico decide los ganadores. El voto de los demás participantes en la app de
             Monad cuenta como indicativo, no es decisivo.
           </p>
 
@@ -278,7 +278,7 @@ export default function Schedule() {
           transition={{ delay: 0.5 }}
           className="text-xs text-gray-300 font-mono mt-8 text-center"
         >
-          * La agenda puede variar. Horarios sujetos a confirmacion final.
+          * La agenda puede variar. Horarios sujetos a confirmación final.
         </motion.p>
       </div>
     </section>

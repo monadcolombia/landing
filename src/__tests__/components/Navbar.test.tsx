@@ -21,7 +21,7 @@ describe("Navbar", () => {
   it("renders register button", () => {
     render(<Navbar />);
 
-    const registerButtons = screen.getAllByText("Registrate");
+    const registerButtons = screen.getAllByText("Regístrate");
     expect(registerButtons.length).toBeGreaterThan(0);
   });
 });

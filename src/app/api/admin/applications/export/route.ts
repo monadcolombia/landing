@@ -34,7 +34,7 @@ const COLUMNS: ColumnSpec[] = [
   { key: "id", label: "ID", width: 38 },
   { key: "createdAt", label: "Creada", width: 22 },
   { key: "role", label: "Rol", width: 12 },
-  { key: "edition", label: "Edicion", width: 10 },
+  { key: "edition", label: "Edición", width: 10 },
   { key: "status", label: "Estado", width: 12 },
   { key: "fullName", label: "Nombre", width: 24 },
   { key: "email", label: "Email", width: 28 },
@@ -74,7 +74,7 @@ const COLUMNS: ColumnSpec[] = [
   { key: "judgeYearsBlockchain", label: "Jurado: anios blockchain", width: 12 },
   { key: "judgeYearsTotal", label: "Jurado: anios total", width: 12 },
   { key: "judgeBio", label: "Jurado: bio", width: 50 },
-  { key: "judgeTechnicalLevel", label: "Jurado: nivel tecnico", width: 18 },
+  { key: "judgeTechnicalLevel", label: "Jurado: nivel técnico", width: 18 },
   ...EXPERTISE_AREAS.map(
     (area) =>
       ({

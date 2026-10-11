@@ -50,12 +50,12 @@ export async function sendApplicationNotification(data: ApplicationData): Promis
     .join("\n");
 
   const edition = data.edition === "v1" ? "V1" : "V2";
-  const body = `Nueva aplicacion recibida\n\nEdicion: ${edition}\nRol: ${label}\nNombre: ${data.fullName}\nEmail: ${data.email}\nCiudad: ${data.city}\n\n--- Todos los campos ---\n${fields}`;
+  const body = `Nueva aplicación recibida\n\nEdición: ${edition}\nRol: ${label}\nNombre: ${data.fullName}\nEmail: ${data.email}\nCiudad: ${data.city}\n\n--- Todos los campos ---\n${fields}`;
 
   const result = await resend.emails.send({
     from: SENDER,
     to: NOTIFY_EMAIL,
-    subject: `Nueva aplicacion ${edition} de ${label}: ${data.fullName} (${data.city})`,
+    subject: `Nueva aplicación ${edition} de ${label}: ${data.fullName} (${data.city})`,
     text: body,
   });
   if (result.error) {
@@ -122,8 +122,8 @@ function approvedTemplate(fullName: string, role: AppRole, edition?: "v1" | "v2"
   const firstName = fullName.split(" ")[0];
   const intro =
     role === "volunteer"
-      ? `Que bueno contar contigo como voluntario en ${event}. Tu apoyo hace posible el hackathon. Este rol no es remunerado.`
-      : `Tu postulacion como ${label} para ${event} fue aprobada. Nos emociona contar contigo. Este rol no es remunerado.`;
+      ? `¡Qué bueno contar contigo como voluntario en ${event}! Tu apoyo hace posible el Blitz. Este rol no es remunerado.`
+      : `Tu postulación como ${label} para ${event} fue aprobada. Nos emociona contar contigo. Este rol no es remunerado.`;
 
   const text = [
     `Hola ${firstName},`,
@@ -133,7 +133,7 @@ function approvedTemplate(fullName: string, role: AppRole, edition?: "v1" | "v2"
     "Proximos pasos:",
     "1. Unete a los grupos para estar en contacto con los participantes y la comunidad.",
     "2. Confirma tu disponibilidad respondiendo a este correo.",
-    "3. Comparte el evento con tu red, invita a mas personas.",
+    "3. Comparte el evento con tu red, invita a más personas.",
     "",
     joinText,
     "",
@@ -152,7 +152,7 @@ function approvedTemplate(fullName: string, role: AppRole, edition?: "v1" | "v2"
     <ol style="margin:0;padding-left:18px;color:#334155;font-size:14px;line-height:1.6">
       <li>Unete a los grupos para estar en contacto con los participantes y la comunidad.</li>
       <li>Confirma tu disponibilidad respondiendo a este correo.</li>
-      <li>Comparte el evento con tu red, invita a mas personas.</li>
+      <li>Comparte el evento con tu red, invita a más personas.</li>
     </ol>
     ${joinHtml}
     ${socialsHtml}
@@ -161,7 +161,7 @@ function approvedTemplate(fullName: string, role: AppRole, edition?: "v1" | "v2"
   </div></body></html>`;
 
   return {
-    subject: `Tu postulacion como ${label} fue aprobada - ${event}`,
+    subject: `Tu postulación como ${label} fue aprobada - ${event}`,
     text,
     html,
   };
@@ -176,18 +176,18 @@ function rejectedTemplate(fullName: string, role: AppRole, edition?: "v1" | "v2"
 
   const altCtaText =
     role === "volunteer"
-      ? `Si quieres asistir como hacker, registrate aqui: ${HACKER_URL}`
-      : `Aun puedes postularte como voluntario aqui: ${VOLUNTEER_URL}\nO asistir como hacker registrandote aqui: ${HACKER_URL}`;
+      ? `Si quieres asistir como hacker, regístrate aquí: ${HACKER_URL}`
+      : `Aún puedes postularte como voluntario aquí: ${VOLUNTEER_URL}\nO asistir como hacker registrandote aquí: ${HACKER_URL}`;
 
   const altCtaHtml =
     role === "volunteer"
-      ? `Si quieres asistir como hacker, <a href="${HACKER_URL}" style="color:#6E54FF">registrate aqui</a>.`
-      : `Aun puedes postularte como voluntario <a href="${VOLUNTEER_URL}" style="color:#6E54FF">aqui</a> o asistir como hacker <a href="${HACKER_URL}" style="color:#6E54FF">registrandote aqui</a>.`;
+      ? `Si quieres asistir como hacker, <a href="${HACKER_URL}" style="color:#6E54FF">regístrate aquí</a>.`
+      : `Aún puedes postularte como voluntario <a href="${VOLUNTEER_URL}" style="color:#6E54FF">aquí</a> o asistir como hacker <a href="${HACKER_URL}" style="color:#6E54FF">registrandote aquí</a>.`;
 
   const text = [
     `Hola ${firstName},`,
     "",
-    `Gracias por postularte como ${label} a ${event}. Esta vez no pudimos avanzar con tu postulacion, pero valoramos mucho tu interes.`,
+    `Gracias por postularte como ${label} a ${event}. Esta vez no pudimos avanzar con tu postulación, pero valoramos mucho tu interés.`,
     "",
     altCtaText,
     "",
@@ -200,7 +200,7 @@ function rejectedTemplate(fullName: string, role: AppRole, edition?: "v1" | "v2"
   <div style="max-width:560px;margin:0 auto;padding:32px 24px;background:#ffffff">
     <p style="margin:0 0 12px;color:#0f172a;font-size:16px">Hola ${firstName},</p>
     <p style="margin:0 0 16px;color:#334155;font-size:15px;line-height:1.6">
-      Gracias por postularte como ${label} a ${event}. Esta vez no pudimos avanzar con tu postulacion, pero valoramos mucho tu interes.
+      Gracias por postularte como ${label} a ${event}. Esta vez no pudimos avanzar con tu postulación, pero valoramos mucho tu interés.
     </p>
     <p style="margin:0 0 16px;color:#334155;font-size:15px;line-height:1.6">${altCtaHtml}</p>
     ${stayConnectedHtml}
@@ -208,7 +208,7 @@ function rejectedTemplate(fullName: string, role: AppRole, edition?: "v1" | "v2"
   </div></body></html>`;
 
   return {
-    subject: `Tu postulacion como ${label} en ${event}`,
+    subject: `Tu postulación como ${label} en ${event}`,
     text,
     html,
   };

@@ -289,7 +289,7 @@ export default function BuildFeatures() {
             <div className="h-px w-16 bg-monad-primary mx-auto" />
           </motion.div>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold mb-4 font-heading text-gray-900">
-            Construye sin limites
+            Construye sin límites
           </h2>
           <p className="text-lg text-gray-500 max-w-2xl mx-auto">
             Escala sin compromisos. Monad combina rendimiento extremo con total compatibilidad EVM y

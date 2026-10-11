@@ -71,8 +71,12 @@ export async function isAdminAuthenticated(): Promise<boolean> {
   return (await getAdminEmail()) !== null;
 }
 
-function fullAccessEmails(): Set<string> {
-  const raw = process.env.ADMIN_FULL_ACCESS_EMAILS || "";
+export type AdminRole = "mentor" | "judge" | "volunteer";
+
+const ALL_ROLES: AdminRole[] = ["mentor", "judge", "volunteer"];
+
+function emailSet(name: string): Set<string> {
+  const raw = process.env[name] || "";
   return new Set(
     raw
       .split(",")
@@ -81,8 +85,20 @@ function fullAccessEmails(): Set<string> {
   );
 }
 
-export async function isAdminWriter(): Promise<boolean> {
-  const email = await getAdminEmail();
-  if (!email) return false;
-  return fullAccessEmails().has(email.toLowerCase());
+/**
+ * Roles whose applications the signed-in admin can change.
+ * ADMIN_FULL_ACCESS_EMAILS can change every role.
+ * ADMIN_VOLUNTEER_ACCESS_EMAILS can change volunteer applications only.
+ * Everyone else in ADMIN_ALLOWED_EMAILS is read-only.
+ */
+export async function getWritableRoles(): Promise<AdminRole[]> {
+  const email = (await getAdminEmail())?.toLowerCase();
+  if (!email) return [];
+  if (emailSet("ADMIN_FULL_ACCESS_EMAILS").has(email)) return [...ALL_ROLES];
+  if (emailSet("ADMIN_VOLUNTEER_ACCESS_EMAILS").has(email)) return ["volunteer"];
+  return [];
+}
+
+export async function canWriteRole(role: AdminRole): Promise<boolean> {
+  return (await getWritableRoles()).includes(role);
 }
