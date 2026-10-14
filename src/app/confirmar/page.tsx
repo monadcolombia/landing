@@ -70,7 +70,8 @@ export default async function ConfirmarPage({
       <Shell>
         <h1 className="text-2xl font-bold text-white mb-3">Enlace no válido</h1>
         <p className="text-white/70">
-          Este enlace venció o ya no está activo. Responde el correo que te enviamos y te ayudamos.
+          Este enlace venció o ya no está activo. Se podía confirmar hasta el 16 de octubre a las
+          11:59 p.m. Responde el correo que te enviamos y te ayudamos.
         </p>
       </Shell>
     );

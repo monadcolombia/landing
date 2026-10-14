@@ -131,7 +131,7 @@ function approvedTemplate(
   fullName: string,
   role: AppRole,
   edition: "v1" | "v2" | undefined,
-  confirmLink: string
+  confirmLink: string | null
 ) {
   const label = roleLabel(role);
   const event = eventName(edition);
@@ -147,7 +147,9 @@ function approvedTemplate(
     `${intro}`,
     "",
     "Próximos pasos:",
-    `1. Confirma tu asistencia en este enlace: ${confirmLink}`,
+    confirmLink
+      ? `1. Confirma tu asistencia antes del 16 de octubre en este enlace: ${confirmLink}`
+      : "1. Confirma tu asistencia respondiendo a este correo.",
     "2. Únete a los grupos para estar en contacto con los participantes y la comunidad.",
     "3. Comparte el evento con tu red, invita a más personas.",
     "",
@@ -164,12 +166,17 @@ function approvedTemplate(
   <div style="max-width:560px;margin:0 auto;padding:32px 24px;background:#ffffff">
     <p style="margin:0 0 12px;color:#0f172a;font-size:16px">Hola ${firstName},</p>
     <p style="margin:0 0 16px;color:#334155;font-size:15px;line-height:1.6">${intro}</p>
-    <p style="margin:24px 0 16px">
+    ${
+      confirmLink
+        ? `<p style="margin:24px 0 8px">
       <a href="${confirmLink}" style="display:inline-block;background:#6E54FF;color:#ffffff;text-decoration:none;font-size:15px;font-weight:600;padding:12px 24px;border-radius:999px">Confirmar mi asistencia</a>
     </p>
+    <p style="margin:0 0 16px;color:#64748b;font-size:13px">Puedes confirmar hasta el 16 de octubre a las 11:59 p.m.</p>`
+        : ""
+    }
     <p style="margin:24px 0 8px;color:#0f172a;font-size:14px;font-weight:600">Próximos pasos:</p>
     <ol style="margin:0;padding-left:18px;color:#334155;font-size:14px;line-height:1.6">
-      <li>Confirma tu asistencia con el botón de arriba.</li>
+      <li>${confirmLink ? "Confirma tu asistencia con el botón de arriba." : "Confirma tu asistencia respondiendo a este correo."}</li>
       <li>Únete a los grupos para estar en contacto con los participantes y la comunidad.</li>
       <li>Comparte el evento con tu red, invita a más personas.</li>
     </ol>
