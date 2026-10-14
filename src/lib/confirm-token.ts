@@ -4,7 +4,14 @@ import crypto from "crypto";
 // Token = base64url(applicationId.exp) + "." + HMAC. Scoped with a "confirm:" prefix so
 // it can never be swapped for an admin session cookie signed with the same secret.
 
-const TTL_SECONDS = 60 * 60 * 24 * 60;
+// Links stop working at the end of the day before the event (Colombia time, UTC-5),
+// so nobody confirms on the morning of the Blitz when the team list is already closed.
+const EVENT_DATE_ISO = "2026-10-17";
+
+export function confirmDeadline(eventDateIso = EVENT_DATE_ISO): number {
+  const eventStartUtc = Date.parse(`${eventDateIso}T00:00:00-05:00`);
+  return Math.floor(eventStartUtc / 1000) - 1;
+}
 
 function secret(): string {
   const s = process.env.SESSION_SECRET || "";
@@ -16,8 +23,7 @@ function sign(body: string): string {
   return crypto.createHmac("sha256", secret()).update(`confirm:${body}`).digest("hex");
 }
 
-export function createConfirmToken(applicationId: string, now = Date.now()): string {
-  const exp = Math.floor(now / 1000) + TTL_SECONDS;
+export function createConfirmToken(applicationId: string, exp = confirmDeadline()): string {
   const body = Buffer.from(`${applicationId}.${exp}`).toString("base64url");
   return `${body}.${sign(body)}`;
 }
@@ -40,7 +46,9 @@ export function verifyConfirmToken(token: string, now = Date.now()): string | nu
   return id;
 }
 
-export function confirmUrl(applicationId: string): string {
+/** Confirmation link, or null once the deadline has passed (a dead link helps no one). */
+export function confirmUrl(applicationId: string, now = Date.now()): string | null {
+  if (Math.floor(now / 1000) > confirmDeadline()) return null;
   const base = process.env.SITE_URL || "https://monadcolombia.xyz";
   return `${base}/confirmar?t=${createConfirmToken(applicationId)}`;
 }
