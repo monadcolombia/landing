@@ -37,6 +37,7 @@ export async function POST(_request: Request, { params }: { params: Promise<{ id
 
   try {
     await sendApplicantStatusEmail({
+      id,
       to: app.email,
       fullName: app.fullName,
       role: app.role,
