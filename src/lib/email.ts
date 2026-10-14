@@ -10,7 +10,7 @@ const WHATSAPP_URL = "https://chat.whatsapp.com/JboPU2owNWU7ysj5TEvgyO";
 const TELEGRAM_URL = "https://t.me/monadcolombia";
 const X_URL = "https://x.com/MedellinBlock";
 const INSTAGRAM_URL = "https://www.instagram.com/medellinblock";
-const TIKTOK_URL = "";
+const TIKTOK_URL = "https://www.tiktok.com/@medellinblockchain";
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
