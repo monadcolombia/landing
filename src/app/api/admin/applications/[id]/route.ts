@@ -68,6 +68,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
 
     if (status !== undefined && existing.status !== status) {
       sendApplicantStatusEmail({
+        id: data.id,
         to: data.email,
         fullName: data.fullName,
         role: data.role,

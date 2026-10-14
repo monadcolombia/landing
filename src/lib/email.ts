@@ -1,5 +1,6 @@
 import { Resend } from "resend";
 import { registrationUrl } from "./constants";
+import { confirmUrl } from "./confirm-token";
 
 const NOTIFY_EMAIL = "monadblitzcolombia@gmail.com";
 const FROM_EMAIL = process.env.RESEND_FROM || "onboarding@resend.dev";
@@ -9,6 +10,7 @@ const WHATSAPP_URL = "https://chat.whatsapp.com/JboPU2owNWU7ysj5TEvgyO";
 const TELEGRAM_URL = "https://t.me/monadcolombia";
 const X_URL = "https://x.com/MedellinBlock";
 const INSTAGRAM_URL = "https://www.instagram.com/medellinblock";
+const TIKTOK_URL = "";
 
 const resend = process.env.RESEND_API_KEY ? new Resend(process.env.RESEND_API_KEY) : null;
 
@@ -65,6 +67,7 @@ export async function sendApplicationNotification(data: ApplicationData): Promis
 }
 
 interface ApplicantStatusEmail {
+  id: string;
   to: string;
   fullName: string;
   role: AppRole;
@@ -72,15 +75,21 @@ interface ApplicantStatusEmail {
   edition?: "v1" | "v2";
 }
 
+const tiktokLi = TIKTOK_URL
+  ? `<li>TikTok: <a href="${TIKTOK_URL}" style="color:#6E54FF">${TIKTOK_URL}</a></li>`
+  : "";
+const tiktokLine = TIKTOK_URL ? `\n- TikTok: ${TIKTOK_URL}` : "";
+
 const socialsHtml = `
-  <p style="margin:24px 0 8px;color:#0f172a;font-size:14px;font-weight:600">Siguenos:</p>
+  <p style="margin:24px 0 8px;color:#0f172a;font-size:14px;font-weight:600">Síguenos:</p>
   <ul style="margin:0;padding-left:18px;color:#334155;font-size:14px;line-height:1.6">
     <li>X: <a href="${X_URL}" style="color:#6E54FF">${X_URL}</a></li>
     <li>Instagram: <a href="${INSTAGRAM_URL}" style="color:#6E54FF">${INSTAGRAM_URL}</a></li>
+    ${tiktokLi}
   </ul>
 `;
 
-const socialsText = `Siguenos:\n- X: ${X_URL}\n- Instagram: ${INSTAGRAM_URL}`;
+const socialsText = `Síguenos:\n- X: ${X_URL}\n- Instagram: ${INSTAGRAM_URL}${tiktokLine}`;
 
 const stayConnectedHtml = `
   <p style="margin:24px 0 8px;color:#0f172a;font-size:14px;font-weight:600">Sigue conectado con la comunidad:</p>
@@ -89,6 +98,7 @@ const stayConnectedHtml = `
     <li>WhatsApp: <a href="${WHATSAPP_URL}" style="color:#6E54FF">${WHATSAPP_URL}</a></li>
     <li>X: <a href="${X_URL}" style="color:#6E54FF">${X_URL}</a></li>
     <li>Instagram: <a href="${INSTAGRAM_URL}" style="color:#6E54FF">${INSTAGRAM_URL}</a></li>
+    ${tiktokLi}
   </ul>
 `;
 
@@ -98,25 +108,31 @@ const stayConnectedText = [
   `- WhatsApp: ${WHATSAPP_URL}`,
   `- X: ${X_URL}`,
   `- Instagram: ${INSTAGRAM_URL}`,
+  ...(TIKTOK_URL ? [`- TikTok: ${TIKTOK_URL}`] : []),
 ].join("\n");
 
 const joinHtml = `
-  <p style="margin:24px 0 8px;color:#0f172a;font-size:14px;font-weight:600">Unete a los grupos:</p>
+  <p style="margin:24px 0 8px;color:#0f172a;font-size:14px;font-weight:600">Únete a los grupos:</p>
   <ul style="margin:0;padding-left:18px;color:#334155;font-size:14px;line-height:1.6">
     <li>Telegram: <a href="${TELEGRAM_URL}" style="color:#6E54FF">${TELEGRAM_URL}</a></li>
     <li>WhatsApp: <a href="${WHATSAPP_URL}" style="color:#6E54FF">${WHATSAPP_URL}</a></li>
   </ul>
 `;
 
-const joinText = `Unete a los grupos:\n- Telegram: ${TELEGRAM_URL}\n- WhatsApp: ${WHATSAPP_URL}`;
+const joinText = `Únete a los grupos:\n- Telegram: ${TELEGRAM_URL}\n- WhatsApp: ${WHATSAPP_URL}`;
 
 function eventName(edition?: "v1" | "v2"): string {
   return edition === "v1"
-    ? "MonadBlitz Medellin (6 de junio de 2026)"
-    : "MonadBlitz Medellin V2 (17 de octubre de 2026)";
+    ? "MonadBlitz Medellín (6 de junio de 2026)"
+    : "MonadBlitz Medellín V2 (17 de octubre de 2026)";
 }
 
-function approvedTemplate(fullName: string, role: AppRole, edition?: "v1" | "v2") {
+function approvedTemplate(
+  fullName: string,
+  role: AppRole,
+  edition: "v1" | "v2" | undefined,
+  confirmLink: string
+) {
   const label = roleLabel(role);
   const event = eventName(edition);
   const firstName = fullName.split(" ")[0];
@@ -130,9 +146,9 @@ function approvedTemplate(fullName: string, role: AppRole, edition?: "v1" | "v2"
     "",
     `${intro}`,
     "",
-    "Proximos pasos:",
-    "1. Unete a los grupos para estar en contacto con los participantes y la comunidad.",
-    "2. Confirma tu disponibilidad respondiendo a este correo.",
+    "Próximos pasos:",
+    `1. Confirma tu asistencia en este enlace: ${confirmLink}`,
+    "2. Únete a los grupos para estar en contacto con los participantes y la comunidad.",
     "3. Comparte el evento con tu red, invita a más personas.",
     "",
     joinText,
@@ -148,10 +164,13 @@ function approvedTemplate(fullName: string, role: AppRole, edition?: "v1" | "v2"
   <div style="max-width:560px;margin:0 auto;padding:32px 24px;background:#ffffff">
     <p style="margin:0 0 12px;color:#0f172a;font-size:16px">Hola ${firstName},</p>
     <p style="margin:0 0 16px;color:#334155;font-size:15px;line-height:1.6">${intro}</p>
-    <p style="margin:24px 0 8px;color:#0f172a;font-size:14px;font-weight:600">Proximos pasos:</p>
+    <p style="margin:24px 0 16px">
+      <a href="${confirmLink}" style="display:inline-block;background:#6E54FF;color:#ffffff;text-decoration:none;font-size:15px;font-weight:600;padding:12px 24px;border-radius:999px">Confirmar mi asistencia</a>
+    </p>
+    <p style="margin:24px 0 8px;color:#0f172a;font-size:14px;font-weight:600">Próximos pasos:</p>
     <ol style="margin:0;padding-left:18px;color:#334155;font-size:14px;line-height:1.6">
-      <li>Unete a los grupos para estar en contacto con los participantes y la comunidad.</li>
-      <li>Confirma tu disponibilidad respondiendo a este correo.</li>
+      <li>Confirma tu asistencia con el botón de arriba.</li>
+      <li>Únete a los grupos para estar en contacto con los participantes y la comunidad.</li>
       <li>Comparte el evento con tu red, invita a más personas.</li>
     </ol>
     ${joinHtml}
@@ -177,12 +196,12 @@ function rejectedTemplate(fullName: string, role: AppRole, edition?: "v1" | "v2"
   const altCtaText =
     role === "volunteer"
       ? `Si quieres asistir como hacker, regístrate aquí: ${HACKER_URL}`
-      : `Aún puedes postularte como voluntario aquí: ${VOLUNTEER_URL}\nO asistir como hacker registrandote aquí: ${HACKER_URL}`;
+      : `Aún puedes postularte como voluntario aquí: ${VOLUNTEER_URL}\nO asistir como hacker registrándote aquí: ${HACKER_URL}`;
 
   const altCtaHtml =
     role === "volunteer"
       ? `Si quieres asistir como hacker, <a href="${HACKER_URL}" style="color:#6E54FF">regístrate aquí</a>.`
-      : `Aún puedes postularte como voluntario <a href="${VOLUNTEER_URL}" style="color:#6E54FF">aquí</a> o asistir como hacker <a href="${HACKER_URL}" style="color:#6E54FF">registrandote aquí</a>.`;
+      : `Aún puedes postularte como voluntario <a href="${VOLUNTEER_URL}" style="color:#6E54FF">aquí</a> o asistir como hacker <a href="${HACKER_URL}" style="color:#6E54FF">registrándote aquí</a>.`;
 
   const text = [
     `Hola ${firstName},`,
@@ -215,6 +234,7 @@ function rejectedTemplate(fullName: string, role: AppRole, edition?: "v1" | "v2"
 }
 
 export async function sendApplicantStatusEmail({
+  id,
   to,
   fullName,
   role,
@@ -230,7 +250,7 @@ export async function sendApplicantStatusEmail({
 
   const tpl =
     status === "approved"
-      ? approvedTemplate(fullName, role, edition)
+      ? approvedTemplate(fullName, role, edition, confirmUrl(id))
       : rejectedTemplate(fullName, role, edition);
 
   console.log(`[email] sending via Resend from=${SENDER} subject="${tpl.subject}"`);
@@ -251,4 +271,20 @@ export async function sendApplicantStatusEmail({
   }
 
   console.log(`[email] sent OK id=${result.data?.id}`);
+}
+
+export async function sendConfirmationNotification(data: {
+  fullName: string;
+  role: string;
+  email: string;
+}): Promise<void> {
+  if (!resend) return;
+  const label = roleLabel(data.role);
+  const result = await resend.emails.send({
+    from: SENDER,
+    to: NOTIFY_EMAIL,
+    subject: `${label} confirmó asistencia: ${data.fullName}`,
+    text: `${data.fullName} (${data.email}) confirmó su asistencia como ${label} desde el enlace del correo de aprobación.`,
+  });
+  if (result.error) throw new Error(result.error.message);
 }
