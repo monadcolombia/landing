@@ -23,6 +23,7 @@ export default function EquipoPage() {
 
   const mentors = members.filter((m) => m.role === "mentor");
   const judges = members.filter((m) => m.role === "judge");
+  const volunteers = members.filter((m) => m.role === "volunteer");
 
   return (
     <div className="min-h-screen bg-monad-dark py-20 px-4">
@@ -46,7 +47,7 @@ export default function EquipoPage() {
             Equipo
           </h1>
           <p className="text-base sm:text-lg text-white/50 max-w-xl mb-12">
-            Las personas que organizan, guían y evalúan los proyectos en MonadBlitz Colombia.
+            Las personas que organizan, guían, evalúan y hacen posible MonadBlitz Colombia.
           </p>
         </motion.div>
 
@@ -58,10 +59,12 @@ export default function EquipoPage() {
           </Section>
 
           {loading ? (
-            <p className="text-white/50 text-center py-8">Cargando mentores y jurados...</p>
+            <p className="text-white/50 text-center py-8">Cargando el equipo...</p>
           ) : members.length === 0 ? (
             <div className="text-center py-8">
-              <p className="text-white/50 text-lg mb-2">Pronto anunciaremos mentores y jurados</p>
+              <p className="text-white/50 text-lg mb-2">
+                Pronto anunciaremos mentores, jurados y voluntarios
+              </p>
               <p className="text-white/30 text-sm">
                 Estamos revisando postulaciones. Vuelve pronto.
               </p>
@@ -82,6 +85,13 @@ export default function EquipoPage() {
                   ))}
                 </Section>
               )}
+              {volunteers.length > 0 && (
+                <Section title="Voluntarios" compact>
+                  {volunteers.map((m, i) => (
+                    <TeamMemberCard key={m.id} member={m} index={i} theme="dark" compact />
+                  ))}
+                </Section>
+              )}
             </>
           )}
         </div>
@@ -90,13 +100,29 @@ export default function EquipoPage() {
   );
 }
 
-function Section({ title, children }: { title: string; children: React.ReactNode }) {
+function Section({
+  title,
+  children,
+  compact = false,
+}: {
+  title: string;
+  children: React.ReactNode;
+  compact?: boolean;
+}) {
   return (
     <div>
       <h2 className="text-sm font-mono uppercase tracking-[3px] text-white/40 mb-6">
         {`// ${title.toUpperCase()}`}
       </h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">{children}</div>
+      <div
+        className={
+          compact
+            ? "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3"
+            : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+        }
+      >
+        {children}
+      </div>
     </div>
   );
 }

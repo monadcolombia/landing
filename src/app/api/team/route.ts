@@ -8,7 +8,7 @@ export async function GET() {
         status: "approved",
         confirmed: true,
         edition: "v2",
-        role: { in: ["mentor", "judge"] },
+        role: { in: ["mentor", "judge", "volunteer"] },
       },
       select: {
         id: true,
