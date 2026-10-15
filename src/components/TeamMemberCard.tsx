@@ -6,7 +6,7 @@ const EASING = [0.16, 1, 0.3, 1] as const;
 
 export type TeamMember = {
   id: string;
-  role: "mentor" | "judge";
+  role: "mentor" | "judge" | "volunteer";
   fullName: string;
   city: string;
   edition: "v1" | "v2";
@@ -70,14 +70,24 @@ type Props = {
   member: TeamMember;
   index: number;
   theme: Theme;
+  /** Smaller card with only photo, name and links. Used for volunteers. */
+  compact?: boolean;
 };
 
-export default function TeamMemberCard({ member, index, theme }: Props) {
+export default function TeamMemberCard({ member, index, theme, compact = false }: Props) {
   const s = STYLES[theme];
   const isMentor = member.role === "mentor";
-  const bio = isMentor ? member.mentorBio : member.judgeBio;
-  const tags = isMentor ? member.mentorPrimarySkills : member.judgeExpertiseAreas;
-  const subtitle = !isMentor ? member.judgeCurrentRole : null;
+  const isJudge = member.role === "judge";
+  const bio = compact ? null : isMentor ? member.mentorBio : isJudge ? member.judgeBio : null;
+  const tags = compact
+    ? []
+    : isMentor
+      ? member.mentorPrimarySkills
+      : isJudge
+        ? member.judgeExpertiseAreas
+        : [];
+  const subtitle = isJudge && !compact ? member.judgeCurrentRole : null;
+  const avatarSize = compact ? "w-14 h-14 text-sm" : "w-20 h-20";
   const handle = twitterHandle(member.twitter);
 
   return (
@@ -86,7 +96,7 @@ export default function TeamMemberCard({ member, index, theme }: Props) {
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ duration: 0.5, delay: index * 0.05, ease: EASING }}
-      className={`group p-5 rounded-xl border ${s.card} transition-all duration-300 flex flex-col items-center text-center`}
+      className={`group ${compact ? "p-4" : "p-5"} rounded-xl border ${s.card} transition-all duration-300 flex flex-col items-center text-center`}
     >
       {handle ? (
         // eslint-disable-next-line @next/next/no-img-element
@@ -96,17 +106,21 @@ export default function TeamMemberCard({ member, index, theme }: Props) {
           width={80}
           height={80}
           loading="lazy"
-          className={`w-20 h-20 rounded-full object-cover mb-3 ring-1 ${s.avatarRing}`}
+          className={`${avatarSize} rounded-full object-cover mb-3 ring-1 ${s.avatarRing}`}
         />
       ) : (
         <div
-          className={`w-20 h-20 rounded-full mb-3 ring-1 ${s.avatarRing} flex items-center justify-center ${s.avatarFallback} font-heading font-bold`}
+          className={`${avatarSize} rounded-full mb-3 ring-1 ${s.avatarRing} flex items-center justify-center ${s.avatarFallback} font-heading font-bold`}
         >
           {initials(member.fullName)}
         </div>
       )}
 
-      <h3 className={`font-heading font-bold leading-tight mb-1 ${s.name}`}>{member.fullName}</h3>
+      <h3
+        className={`font-heading font-bold leading-tight mb-1 ${compact ? "text-sm" : ""} ${s.name}`}
+      >
+        {member.fullName}
+      </h3>
 
       {subtitle && <p className={`text-xs mb-3 truncate max-w-full ${s.subtitle}`}>{subtitle}</p>}
 
@@ -148,11 +162,13 @@ export default function TeamMemberCard({ member, index, theme }: Props) {
             @{handle}
           </a>
         )}
-        <span className={`capitalize ${s.city}`}>
-          {member.edition === "v1" ? "V1" : "V2"}
-          {" · "}
-          {member.city === "both" ? "Ambas ciudades" : member.city}
-        </span>
+        {!compact && (
+          <span className={`capitalize ${s.city}`}>
+            {member.edition === "v1" ? "V1" : "V2"}
+            {" · "}
+            {member.city === "both" ? "Ambas ciudades" : member.city}
+          </span>
+        )}
       </div>
     </motion.article>
   );
