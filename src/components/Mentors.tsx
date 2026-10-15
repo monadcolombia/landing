@@ -23,6 +23,7 @@ export default function Mentors() {
 
   const mentors = members.filter((m) => m.role === "mentor");
   const judges = members.filter((m) => m.role === "judge");
+  const volunteers = members.filter((m) => m.role === "volunteer");
 
   return (
     <section className="py-16 sm:py-20 px-6 bg-white">
@@ -38,10 +39,11 @@ export default function Mentors() {
             {"// EQUIPO"}
           </p>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold font-heading text-gray-900 max-w-2xl">
-            Mentores y jurados
+            Mentores, jurados y voluntarios
           </h2>
           <p className="text-base sm:text-lg text-gray-500 mt-4 max-w-xl">
-            Builders con experiencia real que te acompañan durante el hack y evaluan los proyectos.
+            Builders con experiencia real que te acompañan durante el Blitz y evalúan los proyectos,
+            y el equipo de voluntarios que hace posible el día.
           </p>
         </motion.div>
 
@@ -50,6 +52,12 @@ export default function Mentors() {
         {judges.length > 0 && (
           <div className="mt-14">
             <Group label="Jurados" members={judges} />
+          </div>
+        )}
+
+        {volunteers.length > 0 && (
+          <div className="mt-14">
+            <Group label="Voluntarios" members={volunteers} compact />
           </div>
         )}
 
@@ -81,15 +89,29 @@ export default function Mentors() {
   );
 }
 
-function Group({ label, members }: { label: string; members: TeamMember[] }) {
+function Group({
+  label,
+  members,
+  compact = false,
+}: {
+  label: string;
+  members: TeamMember[];
+  compact?: boolean;
+}) {
   return (
     <div>
       <p className="text-[10px] sm:text-xs font-mono uppercase tracking-[3px] text-gray-400 mb-6">
         {`// ${label.toUpperCase()} (${String(members.length).padStart(2, "0")})`}
       </p>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+      <div
+        className={
+          compact
+            ? "grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3"
+            : "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
+        }
+      >
         {members.map((m, i) => (
-          <TeamMemberCard key={m.id} member={m} index={i} theme="light" />
+          <TeamMemberCard key={m.id} member={m} index={i} theme="light" compact={compact} />
         ))}
       </div>
     </div>
