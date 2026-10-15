@@ -6,6 +6,8 @@ export const runtime = "nodejs";
 // Photos rarely change, and the upstream sources rate limit, so keep results in memory.
 const HIT_TTL_MS = 12 * 60 * 60 * 1000;
 const MISS_TTL_MS = 60 * 60 * 1000;
+// A lookup that timed out is retried soon instead of hiding the photo for an hour.
+const TRANSIENT_TTL_MS = 2 * 60 * 1000;
 const cache = new Map<string, { image: AvatarImage | null; expires: number }>();
 
 function notFound() {
@@ -25,8 +27,9 @@ export async function GET(_request: Request, { params }: { params: Promise<{ id:
       select: { twitter: true, instagram: true, telegram: true, email: true },
     });
     if (!app) return notFound();
-    const image = await findAvatar(app);
-    entry = { image, expires: now + (image ? HIT_TTL_MS : MISS_TTL_MS) };
+    const { image, transient } = await findAvatar(app);
+    const ttl = image ? HIT_TTL_MS : transient ? TRANSIENT_TTL_MS : MISS_TTL_MS;
+    entry = { image, expires: now + ttl };
     cache.set(id, entry);
   }
 
