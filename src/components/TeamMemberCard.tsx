@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import MemberAvatar from "./MemberAvatar";
 
 const EASING = [0.16, 1, 0.3, 1] as const;
 
@@ -25,7 +26,6 @@ const STYLES: Record<Theme, Record<string, string>> = {
   light: {
     card: "border-gray-100 bg-gray-50/40 hover:bg-white hover:border-gray-200 hover:shadow-sm",
     avatarRing: "ring-gray-200 bg-gray-100",
-    avatarFallback: "text-gray-400",
     name: "text-gray-900",
     subtitle: "text-gray-400",
     bio: "text-gray-500",
@@ -36,7 +36,6 @@ const STYLES: Record<Theme, Record<string, string>> = {
   dark: {
     card: "border-white/10 bg-white/5",
     avatarRing: "ring-white/10 bg-white/5",
-    avatarFallback: "text-white/40",
     name: "text-white",
     subtitle: "text-white/40",
     bio: "text-white/60",
@@ -54,16 +53,6 @@ function twitterHandle(raw: string | null): string | null {
     .replace(/\/$/, "")
     .trim();
   return handle || null;
-}
-
-function initials(name: string): string {
-  return name
-    .split(/\s+/)
-    .map((p) => p[0])
-    .filter(Boolean)
-    .slice(0, 2)
-    .join("")
-    .toUpperCase();
 }
 
 type Props = {
@@ -87,7 +76,6 @@ export default function TeamMemberCard({ member, index, theme, compact = false }
         ? member.judgeExpertiseAreas
         : [];
   const subtitle = isJudge && !compact ? member.judgeCurrentRole : null;
-  const avatarSize = compact ? "w-14 h-14 text-sm" : "w-20 h-20";
   const handle = twitterHandle(member.twitter);
 
   return (
@@ -98,23 +86,12 @@ export default function TeamMemberCard({ member, index, theme, compact = false }
       transition={{ duration: 0.5, delay: index * 0.05, ease: EASING }}
       className={`group ${compact ? "p-4" : "p-5"} rounded-xl border ${s.card} transition-all duration-300 flex flex-col items-center text-center`}
     >
-      {handle ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={`https://unavatar.io/x/${handle}`}
-          alt={member.fullName}
-          width={80}
-          height={80}
-          loading="lazy"
-          className={`${avatarSize} rounded-full object-cover mb-3 ring-1 ${s.avatarRing}`}
-        />
-      ) : (
-        <div
-          className={`${avatarSize} rounded-full mb-3 ring-1 ${s.avatarRing} flex items-center justify-center ${s.avatarFallback} font-heading font-bold`}
-        >
-          {initials(member.fullName)}
-        </div>
-      )}
+      <MemberAvatar
+        id={member.id}
+        name={member.fullName}
+        sizeClass={compact ? "w-14 h-14 text-sm" : "w-20 h-20 text-lg"}
+        ringClass={s.avatarRing}
+      />
 
       <h3
         className={`font-heading font-bold leading-tight mb-1 ${compact ? "text-sm" : ""} ${s.name}`}
