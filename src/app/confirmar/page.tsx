@@ -8,7 +8,7 @@ import { sendConfirmationNotification } from "@/lib/email";
 export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
-  title: "Confirmar asistencia - Monad Tour Colombia",
+  title: "Confirmar asistencia",
   robots: { index: false, follow: false },
 };
 

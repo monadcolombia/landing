@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import { motion, useScroll, useTransform } from "framer-motion";
 import Image from "next/image";
 import ConcentricCircles from "./ConcentricCircles";
+import DeferredMount from "./DeferredMount";
 import { registrationUrl } from "@/lib/constants";
 
 const MapColombia = dynamic(() => import("./MapColombia"), {
@@ -17,8 +18,10 @@ const staggerContainer = {
   visible: { transition: { staggerChildren: 0.15, delayChildren: 0.3 } },
 };
 
+// Hero copy is the largest thing on first paint (LCP). Keep it visible from the
+// server render and only slide it in, so it never waits for hydration.
 const fadeUp = {
-  hidden: { opacity: 0, y: 40 },
+  hidden: { opacity: 1, y: 24 },
   visible: {
     opacity: 1,
     y: 0,
@@ -194,7 +197,7 @@ export default function Hero() {
 
           {/* Right: Map */}
           <motion.div
-            className="flex-[0.4] w-full lg:max-w-none"
+            className="hidden lg:block flex-[0.4] w-full lg:max-w-none"
             variants={scaleIn}
             initial="hidden"
             animate="visible"
@@ -202,7 +205,12 @@ export default function Hero() {
             <div className="h-[350px] sm:h-[400px] lg:h-[450px] relative">
               <div className="absolute inset-0 bg-monad-primary/10 blur-[60px] rounded-full scale-75" />
               <div className="relative h-full">
-                <MapColombia />
+                <DeferredMount
+                  waitForIdle
+                  placeholder={<div className="w-full h-full bg-white/5 rounded-xl" />}
+                >
+                  <MapColombia />
+                </DeferredMount>
               </div>
             </div>
           </motion.div>

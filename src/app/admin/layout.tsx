@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import AdminShell from "./admin-shell";
 
 export const metadata: Metadata = {
-  title: "Admin - Monad Tour Colombia",
+  title: "Admin",
   robots: { index: false, follow: false },
 };
 

@@ -210,7 +210,7 @@ export default function Navbar() {
                     <div className="pt-3 pb-1 pl-4 space-y-3">
                       {BUILD_MENU_COLUMNS.map((column) => (
                         <div key={column.heading}>
-                          <p className="text-[10px] font-bold tracking-[3px] text-gray-400 font-mono uppercase mb-2">
+                          <p className="text-[10px] font-bold tracking-[3px] text-gray-500 font-mono uppercase mb-2">
                             {column.heading}
                           </p>
                           {column.items.map((item) => (

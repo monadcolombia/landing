@@ -1,7 +1,11 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 
-export const metadata = {
-  title: "Términos y Condiciones - Monad Tour Colombia",
+export const metadata: Metadata = {
+  title: "Términos y Condiciones",
+  description:
+    "Términos y condiciones para participar en los eventos MonadBlitz de Monad Tour Colombia.",
+  alternates: { canonical: "/terminos" },
 };
 
 export default function TerminosPage() {

@@ -47,6 +47,7 @@ export default function EventPopup() {
           onClick={close}
           aria-modal="true"
           role="dialog"
+          aria-labelledby="event-popup-title"
         >
           <div className="absolute inset-0 bg-monad-dark/70 backdrop-blur-sm" />
 
@@ -76,9 +77,12 @@ export default function EventPopup() {
             <p className="text-[10px] font-mono uppercase tracking-[3px] text-monad-primary mb-3">
               {"// PROXIMO MONADBLITZ"}
             </p>
-            <h3 className="text-3xl sm:text-4xl font-extrabold font-heading text-gray-900 leading-tight">
+            <h2
+              id="event-popup-title"
+              className="text-3xl sm:text-4xl font-extrabold font-heading text-gray-900 leading-tight"
+            >
               {getUpcomingCity()?.name ?? "Medellín V2"}
-            </h3>
+            </h2>
             <p className="text-sm font-mono text-gray-500 mt-2 mb-6">
               {getUpcomingCity()?.date ?? "17 de Octubre, 2026"}
             </p>
@@ -155,7 +159,7 @@ export default function EventPopup() {
             </a>
             <button
               onClick={close}
-              className="block w-full text-center text-xs text-gray-400 mt-3 hover:text-gray-600 transition-colors"
+              className="block w-full text-center text-xs text-gray-500 mt-3 hover:text-gray-700 transition-colors"
             >
               ahora no
             </button>

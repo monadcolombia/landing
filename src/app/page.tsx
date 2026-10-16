@@ -11,7 +11,7 @@ import BuildFeatures from "@/components/BuildFeatures";
 import EventsTable from "@/components/EventsTable";
 import Marquee from "@/components/Marquee";
 import Gallery from "@/components/Gallery";
-import Highlights from "@/components/Highlights";
+import LazyHighlights from "@/components/LazyHighlights";
 import FAQ from "@/components/FAQ";
 import ExploreCards from "@/components/ExploreCards";
 import Footer from "@/components/Footer";
@@ -38,7 +38,7 @@ export default function Home() {
       <Mentors />
       <BuildFeatures />
       <Gallery />
-      <Highlights />
+      <LazyHighlights />
       <FAQ />
       <ExploreCards />
       <Footer />
