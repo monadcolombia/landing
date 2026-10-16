@@ -20,7 +20,7 @@ export default function BuildMegaMenu() {
             key={column.heading}
             className={`p-6 ${colIdx === 0 ? "border-r border-gray-100" : ""}`}
           >
-            <h4 className="text-[10px] font-bold tracking-[3px] text-gray-400 mb-4 font-mono uppercase">
+            <h4 className="text-[10px] font-bold tracking-[3px] text-gray-500 mb-4 font-mono uppercase">
               {column.heading}
             </h4>
             <div className="space-y-1">

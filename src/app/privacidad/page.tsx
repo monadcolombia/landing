@@ -1,7 +1,11 @@
+import type { Metadata } from "next";
 import Link from "next/link";
 
-export const metadata = {
-  title: "Política de Privacidad - Monad Tour Colombia",
+export const metadata: Metadata = {
+  title: "Política de Privacidad",
+  description:
+    "Cómo Monad Tour Colombia y Medellín Blockchain Community tratan los datos personales de participantes, mentores, jurados y voluntarios.",
+  alternates: { canonical: "/privacidad" },
 };
 
 export default function PrivacidadPage() {

@@ -14,7 +14,7 @@ export default function Footer() {
             const col = FOOTER_NAV[key];
             return (
               <div key={key}>
-                <h4 className="text-[10px] font-bold tracking-[3px] text-white/40 font-mono uppercase mb-4">
+                <h4 className="text-[10px] font-bold tracking-[3px] text-white/60 font-mono uppercase mb-4">
                   {col.title}
                 </h4>
                 <ul className="space-y-3">
@@ -57,7 +57,7 @@ export default function Footer() {
             />
             <span className="text-sm font-extrabold tracking-tight">
               <span className="text-white">MONAD</span>
-              <span className="text-white/40 ml-1 text-xs font-medium">TOUR COLOMBIA</span>
+              <span className="text-white/60 ml-1 text-xs font-medium">TOUR COLOMBIA</span>
             </span>
           </div>
 
@@ -69,7 +69,7 @@ export default function Footer() {
                 href={link.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-xs text-white/40 hover:text-white transition-colors font-mono uppercase tracking-wider"
+                className="text-xs text-white/60 hover:text-white transition-colors font-mono uppercase tracking-wider"
               >
                 {link.label}
               </a>
@@ -77,15 +77,15 @@ export default function Footer() {
           </div>
 
           {/* Legal */}
-          <div className="flex items-center gap-4 text-xs text-white/30 font-mono">
+          <div className="flex items-center gap-4 text-xs text-white/60 font-mono">
             <span>&copy; 2026 Monad</span>
-            <Link href="/privacidad" className="hover:text-white/50 transition-colors">
+            <Link href="/privacidad" className="hover:text-white transition-colors">
               Privacidad
             </Link>
-            <Link href="/terminos" className="hover:text-white/50 transition-colors">
+            <Link href="/terminos" className="hover:text-white transition-colors">
               Términos
             </Link>
-            <Link href="/admin" className="text-white/20 hover:text-white/60 transition-colors">
+            <Link href="/admin" className="text-white/50 hover:text-white transition-colors">
               Admin
             </Link>
           </div>

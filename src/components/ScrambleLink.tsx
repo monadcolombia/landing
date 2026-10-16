@@ -33,6 +33,24 @@ export default function ScrambleLink({
     onMouseLeave?.();
   };
 
+  if (!href) {
+    // Without a destination this is a control, not a link. Crawlers and screen
+    // readers treat <a> without href as broken.
+    return (
+      <button
+        type="button"
+        className={className}
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+        onFocus={handleMouseEnter}
+        onClick={onClick}
+      >
+        <span>{display}</span>
+        {children}
+      </button>
+    );
+  }
+
   return (
     <a
       href={href}

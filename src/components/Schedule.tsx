@@ -111,7 +111,7 @@ export default function Schedule() {
           transition={{ duration: 0.7, ease: EASING }}
           className="mb-12"
         >
-          <p className="text-[10px] sm:text-xs font-mono uppercase tracking-[3px] text-gray-400 mb-4">
+          <p className="text-[10px] sm:text-xs font-mono uppercase tracking-[3px] text-gray-500 mb-4">
             {"// AGENDA"}
           </p>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold font-heading text-gray-900 max-w-2xl">
@@ -162,13 +162,13 @@ export default function Schedule() {
 
                 {/* Content */}
                 <div className="min-w-0 pb-1 flex-1">
-                  <h4
+                  <h3
                     className={`text-base sm:text-lg font-heading font-semibold transition-colors ${
                       isMilestone ? "text-gray-900" : "text-gray-900 group-hover:text-monad-primary"
                     }`}
                   >
                     {item.title}
-                  </h4>
+                  </h3>
                   {item.description && (
                     <p className="text-sm text-gray-400 mt-0.5">{item.description}</p>
                   )}
@@ -186,7 +186,7 @@ export default function Schedule() {
           transition={{ duration: 0.6, delay: 0.2, ease: EASING }}
           className="mt-12 p-6 rounded-xl border border-gray-100 bg-gray-50/50"
         >
-          <p className="text-[10px] sm:text-xs font-mono uppercase tracking-[3px] text-gray-400 mb-4">
+          <p className="text-[10px] sm:text-xs font-mono uppercase tracking-[3px] text-gray-500 mb-4">
             {"// DURANTE EL DÍA"}
           </p>
           <div className="space-y-3">
@@ -236,7 +236,7 @@ export default function Schedule() {
           transition={{ duration: 0.7, ease: EASING }}
           className="mt-16"
         >
-          <p className="text-[10px] sm:text-xs font-mono uppercase tracking-[3px] text-gray-400 mb-6">
+          <p className="text-[10px] sm:text-xs font-mono uppercase tracking-[3px] text-gray-500 mb-6">
             {"// PREMIOS"}
           </p>
           <h3 className="text-2xl sm:text-3xl font-extrabold font-heading text-gray-900 mb-2">

@@ -1,32 +1,14 @@
-import { MetadataRoute } from "next";
+import type { MetadataRoute } from "next";
+
+const BASE_URL = "https://monadcolombia.xyz";
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://monadcolombia.xyz";
-
+  const now = new Date();
   return [
-    {
-      url: baseUrl,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-      priority: 1,
-    },
-    {
-      url: `${baseUrl}/apply`,
-      lastModified: new Date(),
-      changeFrequency: "monthly",
-      priority: 0.7,
-    },
-    {
-      url: `${baseUrl}/privacidad`,
-      lastModified: new Date(),
-      changeFrequency: "yearly",
-      priority: 0.3,
-    },
-    {
-      url: `${baseUrl}/terminos`,
-      lastModified: new Date(),
-      changeFrequency: "yearly",
-      priority: 0.3,
-    },
+    { url: BASE_URL, lastModified: now, changeFrequency: "daily", priority: 1 },
+    { url: `${BASE_URL}/equipo`, lastModified: now, changeFrequency: "daily", priority: 0.8 },
+    { url: `${BASE_URL}/apply`, lastModified: now, changeFrequency: "weekly", priority: 0.7 },
+    { url: `${BASE_URL}/privacidad`, lastModified: now, changeFrequency: "yearly", priority: 0.2 },
+    { url: `${BASE_URL}/terminos`, lastModified: now, changeFrequency: "yearly", priority: 0.2 },
   ];
 }

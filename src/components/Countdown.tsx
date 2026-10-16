@@ -136,9 +136,9 @@ export default function Countdown() {
           <p className="text-[10px] sm:text-xs font-mono uppercase tracking-[3px] text-monad-dark/40 mb-2">
             {"// PRÓXIMO EVENTO"}
           </p>
-          <h3 className="text-lg sm:text-xl font-heading font-bold text-monad-dark mb-1">
+          <h2 className="text-lg sm:text-xl font-heading font-bold text-monad-dark mb-1">
             MonadBlitz {event.name}
-          </h3>
+          </h2>
           <p className="text-sm font-mono text-monad-primary mb-8">{event.date}</p>
 
           {/* Timer */}

@@ -1,15 +1,45 @@
-import { CITIES, isUpcoming } from "@/lib/constants";
+import { CITIES, FAQ_ITEMS, isUpcoming } from "@/lib/constants";
 
+const SITE_URL = "https://monadcolombia.xyz";
+const ORG_ID = `${SITE_URL}/#organization`;
+
+// Structured data for search engines: the organizer, the site, each upcoming
+// Blitz, and the FAQ. The FAQ comes from the same list rendered on the page,
+// which Google requires for FAQ rich results.
 export default function EventSchema() {
-  const confirmedEvents = CITIES.filter((c) => isUpcoming(c));
+  const organization = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "@id": ORG_ID,
+    name: "Medellín Blockchain Community",
+    alternateName: "Monad Tour Colombia",
+    url: SITE_URL,
+    logo: `${SITE_URL}/icons/icon-512.png`,
+    sameAs: [
+      "https://x.com/MedellinBlock",
+      "https://www.instagram.com/medellinblock",
+      "https://www.tiktok.com/@medellinblockchain",
+      "https://luma.com/medellinblockchain",
+    ],
+  };
 
-  const eventSchemas = confirmedEvents.map((city) => ({
+  const website = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "@id": `${SITE_URL}/#website`,
+    name: "Monad Tour Colombia",
+    url: SITE_URL,
+    inLanguage: "es-CO",
+    publisher: { "@id": ORG_ID },
+  };
+
+  const events = CITIES.filter((c) => isUpcoming(c) && c.dateISO).map((city) => ({
     "@context": "https://schema.org",
     "@type": "Event",
     name: `MonadBlitz ${city.name}`,
-    description: `MonadBlitz ${city.name} - Monad Tour Colombia 2026. Un Blitz de un día construyendo en Monad, la blockchain EVM de alto rendimiento.`,
-    startDate: city.dateISO,
-    endDate: city.dateISO,
+    description: `MonadBlitz ${city.name}, parte de Monad Tour Colombia 2026. Un Blitz de un día para construir en Monad, la blockchain EVM de alto rendimiento. Gratis, con mentores, jurados y premios.`,
+    startDate: `${city.dateISO}T09:00:00-05:00`,
+    endDate: `${city.dateISO}T22:00:00-05:00`,
     eventStatus: "https://schema.org/EventScheduled",
     eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
     location: {
@@ -17,20 +47,15 @@ export default function EventSchema() {
       name: city.venue || city.name,
       address: {
         "@type": "PostalAddress",
-        addressLocality: city.name,
+        addressLocality: "Medellín",
+        addressRegion: "Antioquia",
         addressCountry: "CO",
       },
+      geo: { "@type": "GeoCoordinates", latitude: city.lat, longitude: city.lng },
     },
-    organizer: {
-      "@type": "Organization",
-      name: "Medellín Blockchain Community",
-      url: "https://monadcolombia.xyz",
-    },
-    performer: {
-      "@type": "Organization",
-      name: "Monad Foundation",
-      url: "https://www.monad.xyz",
-    },
+    image: [`${SITE_URL}/opengraph-image`],
+    organizer: { "@id": ORG_ID },
+    performer: { "@type": "Organization", name: "Monad Foundation", url: "https://www.monad.xyz" },
     offers: city.registrationUrl
       ? {
           "@type": "Offer",
@@ -38,60 +63,34 @@ export default function EventSchema() {
           price: "0",
           priceCurrency: "USD",
           availability: "https://schema.org/InStock",
-          validFrom: "2026-01-01",
         }
       : undefined,
-    image: "https://monadcolombia.xyz/og-image.png",
-    url: "https://monadcolombia.xyz",
+    url: SITE_URL,
     inLanguage: "es",
     isAccessibleForFree: true,
   }));
 
-  // FAQ Schema
-  const faqSchema = {
+  const faq = {
     "@context": "https://schema.org",
     "@type": "FAQPage",
-    mainEntity: [
-      {
-        "@type": "Question",
-        name: "¿Necesito saber programar para participar en MonadBlitz?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "No necesariamente. MonadBlitz está abierto a todos los perfiles: devs, diseñadores, product managers, creadores de contenido y más. Los equipos necesitan al menos un perfil técnico, pero se valora la diversidad de habilidades.",
-        },
-      },
-      {
-        "@type": "Question",
-        name: "¿El evento MonadBlitz es gratis?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "Sí, la participación en MonadBlitz es completamente gratuita. Solo necesitas registrarte a través de Luma.",
-        },
-      },
-      {
-        "@type": "Question",
-        name: "¿Qué es Monad?",
-        acceptedAnswer: {
-          "@type": "Answer",
-          text: "Monad es una blockchain Layer 1 compatible con EVM que ofrece 10,000 transacciones por segundo, finalidad en menos de 1 segundo y gas fees mínimos.",
-        },
-      },
-    ],
+    mainEntity: FAQ_ITEMS.map((item) => ({
+      "@type": "Question",
+      name: item.question,
+      acceptedAnswer: { "@type": "Answer", text: item.answer },
+    })),
   };
+
+  const blocks = [organization, website, ...events, faq];
 
   return (
     <>
-      {eventSchemas.map((schema, i) => (
+      {blocks.map((schema, i) => (
         <script
-          key={`event-${i}`}
+          key={i}
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema).replace(/</g, "\\u003c") }}
         />
       ))}
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
-      />
     </>
   );
 }

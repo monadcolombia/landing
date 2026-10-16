@@ -142,7 +142,7 @@ export default function Stats() {
           {/* Left: Heading + description + CTA */}
           <div className="flex-1 min-w-0">
             <motion.p
-              className="text-[10px] sm:text-xs font-mono uppercase tracking-[3px] text-gray-400 mb-4"
+              className="text-[10px] sm:text-xs font-mono uppercase tracking-[3px] text-gray-500 mb-4"
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
