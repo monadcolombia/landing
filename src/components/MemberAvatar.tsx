@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { localPhotoFor } from "@/lib/team-photos";
 
 // Monad palette pairs. Each person gets a stable one picked from their name.
 const GRADIENTS: [string, string][] = [
@@ -63,7 +64,7 @@ export default function MemberAvatar({ id, name, sizeClass, ringClass }: Props) 
       {status !== "failed" && (
         // eslint-disable-next-line @next/next/no-img-element
         <img
-          src={`/api/avatar/${id}`}
+          src={localPhotoFor(name) ?? `/api/avatar/${id}`}
           alt={name}
           loading="lazy"
           onLoad={() => setStatus("loaded")}
