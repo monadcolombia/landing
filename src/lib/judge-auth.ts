@@ -92,3 +92,18 @@ export async function getCurrentJudge() {
   if (!payload) return null;
   return findActiveJudge(payload.email);
 }
+
+/**
+ * Public origin for redirects and shared links. Behind Railway's proxy request.url
+ * points at the internal host (localhost:8080), so prefer the public domain.
+ */
+export function publicOrigin(request: Request): string {
+  const domain = process.env.RAILWAY_PUBLIC_DOMAIN;
+  if (domain) return `https://${domain}`;
+  const host = request.headers.get("x-forwarded-host")?.split(",")[0]?.trim();
+  if (host) {
+    const proto = request.headers.get("x-forwarded-proto")?.split(",")[0]?.trim() || "https";
+    return `${proto}://${host}`;
+  }
+  return new URL(request.url).origin;
+}
