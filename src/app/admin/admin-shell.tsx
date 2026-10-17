@@ -151,7 +151,17 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
     <div className="min-h-screen bg-monad-dark">
       <header className="bg-white/5 border-b border-white/10">
         <div className="max-w-7xl mx-auto px-4 py-4 flex justify-between items-center">
-          <h1 className="text-xl font-bold text-white">MonadBlitz Admin</h1>
+          <div className="flex items-center gap-6">
+            <h1 className="text-xl font-bold text-white">MonadBlitz Admin</h1>
+            <nav className="flex gap-4 text-sm">
+              <a href="/admin" className="text-white/70 hover:text-white">
+                Aplicaciones
+              </a>
+              <a href="/admin/jurado" className="text-white/70 hover:text-white">
+                Jurado
+              </a>
+            </nav>
+          </div>
           <button
             onClick={handleLogout}
             className="text-sm text-white/70 hover:text-white transition-colors"

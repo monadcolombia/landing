@@ -107,3 +107,65 @@ model Application {
   @@index([email])
   @@map("applications")
 }
+
+// ---------------------------------------------------------------------------
+// Judging (Blitz day rubric)
+// ---------------------------------------------------------------------------
+
+enum JudgeArea {
+  business
+  technical
+  creative
+  general
+}
+
+model JudgeProfile {
+  id        String    @id @default(uuid())
+  createdAt DateTime  @default(now()) @map("created_at")
+  email     String
+  name      String
+  area      JudgeArea @default(general)
+  active    Boolean   @default(true)
+  edition   Edition   @default(v2)
+
+  @@unique([email, edition])
+  @@map("judge_profiles")
+}
+
+model JudgingProject {
+  id              String   @id @default(uuid())
+  createdAt       DateTime @default(now()) @map("created_at")
+  edition         Edition  @default(v2)
+  name            String
+  team            String?
+  description     String?
+  repoUrl         String?  @map("repo_url")
+  demoUrl         String?  @map("demo_url")
+  contractAddress String?  @map("contract_address")
+  deployed        Boolean  @default(true)
+  bonus           Float    @default(0)
+
+  scores JudgeScore[]
+
+  @@index([edition])
+  @@map("judging_projects")
+}
+
+model JudgeScore {
+  id         String         @id @default(uuid())
+  updatedAt  DateTime       @updatedAt @map("updated_at")
+  projectId  String         @map("project_id")
+  project    JudgingProject @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  judgeEmail String         @map("judge_email")
+  problem    Float?
+  blockchain Float?
+  demo       Float?
+  creativity Float?
+  technical  Float?
+  pitch      Float?
+  comment    String?
+
+  @@unique([projectId, judgeEmail])
+  @@index([judgeEmail])
+  @@map("judge_scores")
+}
