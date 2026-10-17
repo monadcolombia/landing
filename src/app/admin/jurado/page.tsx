@@ -290,6 +290,14 @@ function Projects({ canWrite }: { canWrite: boolean }) {
       setMsg(`${d.created} proyectos agregados`);
     });
 
+  const importBlitz = () =>
+    run(async () => {
+      const d = await api("/api/admin/judging/import", { method: "POST" });
+      setMsg(
+        `Blitz: ${d.found} proyectos enviados, ${d.created} nuevos, ${d.updated} actualizados`
+      );
+    });
+
   const patch = (id: string, body: object) =>
     run(() =>
       api(`/api/admin/judging/projects/${id}`, { method: "PATCH", body: JSON.stringify(body) })
@@ -374,6 +382,20 @@ function Projects({ canWrite }: { canWrite: boolean }) {
               Agregar todos
             </button>
           </div>
+        </div>
+      )}
+      {canWrite && (
+        <div className="bg-white/5 border border-white/10 rounded-lg p-4 flex flex-wrap items-center gap-3">
+          <div className="flex-1 min-w-[220px]">
+            <h3 className="font-mono uppercase text-sm text-white/80">Importar desde Blitz</h3>
+            <p className="text-xs text-white/50">
+              Trae los proyectos enviados en blitz.devnads.com. Se puede repetir: no duplica y no
+              borra lo que ya editaste.
+            </p>
+          </div>
+          <button onClick={importBlitz} className={`${btn} bg-monad-primary text-white`}>
+            Importar proyectos
+          </button>
         </div>
       )}
       {msg && <p className="text-sm text-monad-light">{msg}</p>}
