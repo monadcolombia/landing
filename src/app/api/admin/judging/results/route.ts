@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { JUDGING_EDITION, computeResults, type JudgeAreaKey } from "@/lib/judging";
+import { JUDGING_EDITION, computeResults } from "@/lib/judging";
 import { requireAdmin } from "@/lib/judging-admin";
 
 export async function GET() {
@@ -13,19 +13,15 @@ export async function GET() {
     prisma.judgeScore.findMany({ where: { project: { edition: JUDGING_EDITION } } }),
   ]);
 
-  const areaByEmail = new Map(judges.map((j) => [j.email, j.area as JudgeAreaKey]));
   const activeEmails = new Set(judges.filter((j) => j.active).map((j) => j.email));
   // Only scores from active judges count.
-  const rows = scores
-    .filter((s) => activeEmails.has(s.judgeEmail))
-    .map((s) => ({ ...s, area: areaByEmail.get(s.judgeEmail) ?? ("general" as JudgeAreaKey) }));
+  const rows = scores.filter((s) => activeEmails.has(s.judgeEmail));
 
   const results = computeResults(projects, rows);
   const nameByEmail = new Map(judges.map((j) => [j.email, j.name]));
   const detail = rows.map((s) => ({
     projectId: s.projectId,
     judge: nameByEmail.get(s.judgeEmail) ?? s.judgeEmail,
-    area: s.area,
     problem: s.problem,
     blockchain: s.blockchain,
     demo: s.demo,

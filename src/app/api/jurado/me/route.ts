@@ -6,6 +6,6 @@ export async function GET() {
   if (!judge) return NextResponse.json({ authenticated: false });
   return NextResponse.json({
     authenticated: true,
-    judge: { email: judge.email, name: judge.name, area: judge.area },
+    judge: { email: judge.email, name: judge.name },
   });
 }

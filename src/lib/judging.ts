@@ -1,8 +1,8 @@
 /**
  * Blitz judging rubric. Mirrors the "Rúbrica de evaluación" spreadsheet:
  * - 6 criteria scored 1 to 5 (half points allowed)
- * - each judge has an area; their score counts x2 on the criteria of that area
- * - per-criterion average = sum(score * mult) / sum(mult) over judges who scored it
+ * - every judge scores every criterion with the same weight
+ * - per-criterion average = plain average over judges who scored it
  * - base (/100) = sum(avg / 5 * weight), only when all 6 criteria have at least one score
  * - final = base + bonus (0 to 5), max 105
  * - ties: higher "Uso de Monad / blockchain" average wins, otherwise shared place
@@ -21,7 +21,6 @@ export type Criterion = {
   short: string;
   weight: number;
   question: string;
-  multipliers: Record<JudgeAreaKey, number>;
 };
 
 export const CRITERIA: Criterion[] = [
@@ -31,7 +30,6 @@ export const CRITERIA: Criterion[] = [
     short: "Problema",
     weight: 0.25,
     question: "¿Resuelve un problema real y claro? ¿Saben para quién es?",
-    multipliers: { business: 2, technical: 1, creative: 1, general: 1 },
   },
   {
     key: "blockchain",
@@ -40,7 +38,6 @@ export const CRITERIA: Criterion[] = [
     weight: 0.25,
     question:
       "¿El smart contract es central? ¿Aporta transparencia, propiedad, pagos o confianza que no se lograría con una base de datos?",
-    multipliers: { business: 1, technical: 2, creative: 1, general: 1 },
   },
   {
     key: "demo",
@@ -48,7 +45,6 @@ export const CRITERIA: Criterion[] = [
     short: "Demo",
     weight: 0.2,
     question: "¿Se puede probar en vivo y el contrato responde?",
-    multipliers: { business: 1, technical: 2, creative: 1, general: 1 },
   },
   {
     key: "creativity",
@@ -56,7 +52,6 @@ export const CRITERIA: Criterion[] = [
     short: "Creatividad/UX",
     weight: 0.17,
     question: "¿Es original? ¿Se entiende cómo usarlo?",
-    multipliers: { business: 1, technical: 1, creative: 2, general: 1 },
   },
   {
     key: "technical",
@@ -65,7 +60,6 @@ export const CRITERIA: Criterion[] = [
     weight: 0.08,
     question:
       "Contrato claro, validaciones básicas (require), sin errores de seguridad obvios, código en repositorio.",
-    multipliers: { business: 1, technical: 2, creative: 1, general: 1 },
   },
   {
     key: "pitch",
@@ -73,16 +67,8 @@ export const CRITERIA: Criterion[] = [
     short: "Pitch",
     weight: 0.05,
     question: "¿Se entiende qué hicieron? (No se exige pitch profesional.)",
-    multipliers: { business: 2, technical: 1, creative: 2, general: 1 },
   },
 ];
-
-export const AREA_LABELS: Record<JudgeAreaKey, string> = {
-  business: "Negocios",
-  technical: "Técnico",
-  creative: "Creativo",
-  general: "General (sin x2)",
-};
 
 export const SCALE_HELP = [
   "1 = No existe o no funciona",
@@ -104,7 +90,6 @@ export function isValidScore(v: unknown): v is number {
 export type ScoreRow = {
   projectId: string;
   judgeEmail: string;
-  area: JudgeAreaKey;
 } & Partial<Record<CriterionKey, number | null>>;
 
 export type ProjectInput = {
@@ -142,18 +127,14 @@ export function computeResults(projects: ProjectInput[], scores: ScoreRow[]): Pr
     const discrepancies: CriterionKey[] = [];
 
     for (const c of CRITERIA) {
-      const vals = rows
-        .map((r) => ({ v: r[c.key], m: c.multipliers[r.area] ?? 1 }))
-        .filter((x): x is { v: number; m: number } => typeof x.v === "number");
+      const vals = rows.map((r) => r[c.key]).filter((v): v is number => typeof v === "number");
       if (!p.deployed || vals.length === 0) {
         averages[c.key] = null;
       } else {
-        const num = vals.reduce((s, x) => s + x.v * x.m, 0);
-        const den = vals.reduce((s, x) => s + x.m, 0);
-        averages[c.key] = round(num / den, 2);
+        averages[c.key] = round(vals.reduce((s, v) => s + v, 0) / vals.length, 2);
       }
       if (vals.length >= 2) {
-        const range = Math.max(...vals.map((x) => x.v)) - Math.min(...vals.map((x) => x.v));
+        const range = Math.max(...vals) - Math.min(...vals);
         ranges[c.key] = range;
         if (p.deployed && range > DISCREPANCY_THRESHOLD) discrepancies.push(c.key);
       } else {

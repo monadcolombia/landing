@@ -1,14 +1,7 @@
 "use client";
 
 import { Fragment, useCallback, useEffect, useState } from "react";
-import {
-  AREA_LABELS,
-  CRITERIA,
-  MAX_BONUS,
-  type CriterionKey,
-  type JudgeAreaKey,
-  type ProjectResult,
-} from "@/lib/judging";
+import { CRITERIA, MAX_BONUS, type CriterionKey, type ProjectResult } from "@/lib/judging";
 
 type Project = {
   id: string;
@@ -21,11 +14,10 @@ type Project = {
   deployed: boolean;
   bonus: number;
 };
-type Judge = { id: string; email: string; name: string; area: JudgeAreaKey; active: boolean };
+type Judge = { id: string; email: string; name: string; active: boolean };
 type Detail = Partial<Record<CriterionKey, number | null>> & {
   projectId: string;
   judge: string;
-  area: JudgeAreaKey;
   comment: string | null;
 };
 
@@ -218,7 +210,6 @@ function JudgeDetail({ rows }: { rows: Detail[] }) {
       {rows.map((d, i) => (
         <div key={i} className="text-sm">
           <span className="text-white font-medium">{d.judge}</span>{" "}
-          <span className="text-white/40">({AREA_LABELS[d.area]})</span>
           <span className="ml-2 font-mono text-white/70">
             {CRITERIA.map((c) => `${c.short}: ${d[c.key] ?? "—"}`).join(" · ")}
           </span>
@@ -480,7 +471,7 @@ function Projects({ canWrite }: { canWrite: boolean }) {
 
 function Judges({ canWrite }: { canWrite: boolean }) {
   const [list, setList] = useState<Judge[]>([]);
-  const [form, setForm] = useState({ name: "", email: "", area: "general" as JudgeAreaKey });
+  const [form, setForm] = useState({ name: "", email: "" });
   const [msg, setMsg] = useState("");
   const [links, setLinks] = useState<Record<string, string>>({});
 
@@ -533,11 +524,8 @@ function Judges({ canWrite }: { canWrite: boolean }) {
             >
               Importar jurados aprobados (V2)
             </button>
-            <span className="text-xs text-white/50">
-              El área se sugiere según su nivel técnico; revísala abajo.
-            </span>
           </div>
-          <div className="grid sm:grid-cols-4 gap-2">
+          <div className="grid sm:grid-cols-3 gap-2">
             <input
               className={input}
               placeholder="Nombre"
@@ -550,17 +538,6 @@ function Judges({ canWrite }: { canWrite: boolean }) {
               value={form.email}
               onChange={(e) => setForm({ ...form, email: e.target.value })}
             />
-            <select
-              className={input}
-              value={form.area}
-              onChange={(e) => setForm({ ...form, area: e.target.value as JudgeAreaKey })}
-            >
-              {Object.entries(AREA_LABELS).map(([k, l]) => (
-                <option key={k} value={k}>
-                  {l}
-                </option>
-              ))}
-            </select>
             <button
               disabled={!form.name.trim() || !form.email.trim()}
               onClick={() =>
@@ -569,7 +546,7 @@ function Judges({ canWrite }: { canWrite: boolean }) {
                     method: "POST",
                     body: JSON.stringify(form),
                   });
-                  setForm({ name: "", email: "", area: "general" });
+                  setForm({ name: "", email: "" });
                 })
               }
               className={`${btn} bg-white/10 hover:bg-white/20 text-white disabled:opacity-40`}
@@ -581,15 +558,13 @@ function Judges({ canWrite }: { canWrite: boolean }) {
       )}
       {msg && <p className="text-sm text-monad-light">{msg}</p>}
       <p className="text-xs text-white/50">
-        ×2 por área: Negocios → Problema y Pitch · Técnico → Blockchain, Demo y Calidad técnica ·
-        Creativo → Creatividad/UX y Pitch · General → todo cuenta igual.
+        Todos los jurados califican los 6 criterios y pesan igual: el promedio es simple.
       </p>
       <div className="bg-white/5 border border-white/10 rounded-lg overflow-x-auto">
         <table className="w-full text-sm">
           <thead className="bg-white/5 border-b border-white/10 text-xs font-mono uppercase text-white/60">
             <tr>
               <th className="px-3 py-2 text-left">Jurado ({list.length})</th>
-              <th className="px-3 py-2 text-left">Área</th>
               <th className="px-3 py-2 text-center">Activo</th>
               <th className="px-3 py-2 text-left">Acceso</th>
             </tr>
@@ -600,27 +575,6 @@ function Judges({ canWrite }: { canWrite: boolean }) {
                 <td className="px-3 py-2">
                   <div className="text-white font-medium">{j.name}</div>
                   <div className="text-xs text-white/40">{j.email}</div>
-                </td>
-                <td className="px-3 py-2">
-                  <select
-                    disabled={!canWrite}
-                    value={j.area}
-                    onChange={(e) =>
-                      run(() =>
-                        api(`/api/admin/judging/judges/${j.id}`, {
-                          method: "PATCH",
-                          body: JSON.stringify({ area: e.target.value }),
-                        })
-                      )
-                    }
-                    className="bg-white/5 border border-white/10 rounded px-2 py-1 text-white"
-                  >
-                    {Object.entries(AREA_LABELS).map(([k, l]) => (
-                      <option key={k} value={k}>
-                        {l}
-                      </option>
-                    ))}
-                  </select>
                 </td>
                 <td className="px-3 py-2 text-center">
                   <input

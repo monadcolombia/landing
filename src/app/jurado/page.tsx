@@ -3,18 +3,11 @@
 import { Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Script from "next/script";
-import {
-  AREA_LABELS,
-  CRITERIA,
-  SCALE_HELP,
-  SCORE_OPTIONS,
-  type CriterionKey,
-  type JudgeAreaKey,
-} from "@/lib/judging";
+import { CRITERIA, SCALE_HELP, SCORE_OPTIONS, type CriterionKey } from "@/lib/judging";
 
 const GOOGLE_CLIENT_ID = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
 
-type Judge = { email: string; name: string; area: JudgeAreaKey };
+type Judge = { email: string; name: string };
 type Project = {
   id: string;
   name: string;
@@ -80,6 +73,11 @@ function Jurado() {
         body: JSON.stringify({ credential: response.credential }),
       });
       if (r.ok) {
+        const d = await r.json().catch(() => ({}));
+        if (d.admin) {
+          window.location.href = "/admin/jurado";
+          return;
+        }
         setError("");
         loadMe();
       } else if (r.status === 403) {
@@ -176,7 +174,6 @@ function ScoringBoard({ judge, onLogout }: { judge: Judge; onLogout: () => void 
             Monad Blitz Medellín V2 · Jurado
           </p>
           <h1 className="text-2xl font-bold mt-1">{judge.name}</h1>
-          <p className="text-white/60 text-sm">Área: {AREA_LABELS[judge.area]}</p>
         </div>
         <button onClick={logout} className="text-sm text-white/60 hover:text-white shrink-0">
           Salir
@@ -206,7 +203,7 @@ function ScoringBoard({ judge, onLogout }: { judge: Judge; onLogout: () => void 
           {SCALE_HELP.map((s) => (
             <li key={s}>{s}</li>
           ))}
-          <li>Se permiten medios puntos. ×2 = criterio de tu área: tu nota cuenta doble.</li>
+          <li>Se permiten medios puntos. Todos los jurados califican todo y pesan igual.</li>
         </ul>
       )}
 
@@ -222,7 +219,6 @@ function ScoringBoard({ judge, onLogout }: { judge: Judge; onLogout: () => void 
             <ProjectCard
               key={p.id}
               project={p}
-              area={judge.area}
               score={scores[p.id]}
               open={openId === p.id}
               onToggle={() => setOpenId(openId === p.id ? null : p.id)}
@@ -247,14 +243,12 @@ function ScoringBoard({ judge, onLogout }: { judge: Judge; onLogout: () => void 
 
 function ProjectCard({
   project: p,
-  area,
   score,
   open,
   onToggle,
   onSaved,
 }: {
   project: Project;
-  area: JudgeAreaKey;
   score?: Score;
   open: boolean;
   onToggle: () => void;
@@ -278,19 +272,17 @@ function ProjectCard({
         </div>
         <span className={`px-2 py-1 text-xs rounded-full shrink-0 ${badge.c}`}>{badge.t}</span>
       </button>
-      {open && <ScoreForm project={p} area={area} score={score} onSaved={onSaved} />}
+      {open && <ScoreForm project={p} score={score} onSaved={onSaved} />}
     </li>
   );
 }
 
 function ScoreForm({
   project: p,
-  area,
   score,
   onSaved,
 }: {
   project: Project;
-  area: JudgeAreaKey;
   score?: Score;
   onSaved: (s: Score) => void;
 }) {
@@ -346,7 +338,6 @@ function ScoreForm({
       ) : (
         <>
           {CRITERIA.map((c) => {
-            const double = c.multipliers[area] === 2;
             return (
               <div key={c.key}>
                 <div className="flex items-baseline justify-between gap-2">
@@ -356,11 +347,6 @@ function ScoreForm({
                       {Math.round(c.weight * 100)}%
                     </span>
                   </p>
-                  {double && (
-                    <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-monad-primary/30 text-monad-light">
-                      ×2 tu área
-                    </span>
-                  )}
                 </div>
                 <p className="text-xs text-white/50 mt-0.5">{c.question}</p>
                 <div className="mt-2 grid grid-cols-9 gap-1">
