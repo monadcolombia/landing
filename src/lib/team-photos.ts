@@ -6,6 +6,7 @@ const PHOTOS: Record<string, string> = {
   "yulissa restrepo": "/images/team/yulissa-restrepo.jpg",
   "andres felipe torres": "/images/team/andres-felipe-torres.jpg",
   stewar: "/images/team/stewar.jpg",
+  "maria clara avilez": "/images/team/maria-clara-avilez.jpg",
 };
 
 function normalize(name: string): string[] {
