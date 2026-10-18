@@ -111,6 +111,8 @@ export type ProjectResult = {
   base: number | null;
   bonus: number;
   final: number | null;
+  /** Score so far for projects still missing a criterion: weighted over the criteria that have scores, out of 100. */
+  provisional: number | null;
   place: number | null;
   status: "ok" | "incomplete" | "not_eligible";
   judgesComplete: number;
@@ -163,6 +165,17 @@ export function computeResults(projects: ProjectInput[], scores: ScoreRow[]): Pr
       }
     }
     const final = base === null ? null : round(Math.min(105, base + bonus), 2);
+    let provisional: number | null = null;
+    if (p.deployed && base === null) {
+      const have = CRITERIA.filter((c) => averages[c.key] !== null);
+      const w = have.reduce((s, c) => s + c.weight, 0);
+      if (w > 0) {
+        provisional = round(
+          (have.reduce((s, c) => s + ((averages[c.key] as number) / 5) * c.weight, 0) / w) * 100,
+          2
+        );
+      }
+    }
 
     return {
       id: p.id,
@@ -175,6 +188,7 @@ export function computeResults(projects: ProjectInput[], scores: ScoreRow[]): Pr
       base,
       bonus: base === null ? 0 : bonus,
       final,
+      provisional,
       place: null,
       status,
       judgesComplete,

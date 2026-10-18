@@ -1,6 +1,6 @@
 "use client";
 
-import { Fragment, useCallback, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import { CRITERIA, MAX_BONUS, type CriterionKey, type ProjectResult } from "@/lib/judging";
 
 type Project = {
@@ -93,6 +93,8 @@ function Results() {
   } | null>(null);
   const [open, setOpen] = useState<string | null>(null);
   const [updated, setUpdated] = useState<Date | null>(null);
+  // "place" = official ranking; "score" = by points, including provisional scores of incomplete projects.
+  const [sortBy, setSortBy] = useState<"place" | "score" | CriterionKey>("place");
 
   const load = useCallback(async () => {
     try {
@@ -112,6 +114,21 @@ function Results() {
     };
   }, [load]);
 
+  const rows = useMemo(() => {
+    if (!data) return [];
+    if (sortBy === "place") return data.results;
+    const val = (r: ProjectResult) =>
+      sortBy === "score" ? (r.final ?? r.provisional) : r.averages[sortBy];
+    return [...data.results].sort((a, b) => {
+      const va = val(a);
+      const vb = val(b);
+      if (va === null && vb === null) return a.name.localeCompare(b.name);
+      if (va === null) return 1;
+      if (vb === null) return -1;
+      return vb - va;
+    });
+  }, [data, sortBy]);
+
   if (!data) return <p className="text-white/60">Cargando...</p>;
   if (data.results.length === 0) return <p className="text-white/60">Aún no hay proyectos.</p>;
 
@@ -124,13 +141,31 @@ function Results() {
           {data.activeJudges} jurados activos · se actualiza cada 15 s
           {updated && ` · ${updated.toLocaleTimeString("es-CO")}`}
         </span>
-        <button onClick={load} className={`${btn} bg-white/10 hover:bg-white/20 text-white`}>
-          Actualizar
-        </button>
+        <div className="flex items-center gap-2 flex-wrap">
+          <span className="text-white/40">Ordenar:</span>
+          {(
+            [
+              ["place", "Puesto oficial"],
+              ["score", "Puntaje (incluye parciales)"],
+            ] as const
+          ).map(([k, label]) => (
+            <button
+              key={k}
+              onClick={() => setSortBy(k)}
+              className={`${btn} ${sortBy === k ? "bg-monad-primary text-white" : "bg-white/10 hover:bg-white/20 text-white"}`}
+            >
+              {label}
+            </button>
+          ))}
+          <button onClick={load} className={`${btn} bg-white/10 hover:bg-white/20 text-white`}>
+            Actualizar
+          </button>
+        </div>
       </div>
       <p className="text-xs text-white/40">
         Rojo = los jueces difieren más de 1,5 puntos en ese criterio. Desempate: mayor promedio en
-        Uso de Monad / blockchain. Toca una fila para ver las notas de cada juez.
+        Uso de Monad / blockchain. Toca una fila para ver las notas de cada juez. Toca el nombre de
+        un criterio para ordenar por ese criterio. ~ = puntaje parcial (aún falta algún criterio).
       </p>
       <div className="bg-white/5 border border-white/10 rounded-lg overflow-x-auto">
         <table className="w-full text-sm">
@@ -142,15 +177,20 @@ function Results() {
               <th className="px-3 py-2 text-right">Base</th>
               <th className="px-3 py-2 text-right">Bono</th>
               {CRITERIA.map((c) => (
-                <th key={c.key} className="px-3 py-2 text-right whitespace-nowrap">
+                <th
+                  key={c.key}
+                  onClick={() => setSortBy(c.key)}
+                  className={`px-3 py-2 text-right whitespace-nowrap cursor-pointer hover:text-white ${sortBy === c.key ? "text-monad-light" : ""}`}
+                >
                   {c.short} <span className="text-white/30">{Math.round(c.weight * 100)}%</span>
+                  {sortBy === c.key && " ↓"}
                 </th>
               ))}
               <th className="px-3 py-2 text-right">Jueces</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-white/10">
-            {data.results.map((r) => (
+            {rows.map((r) => (
               <Fragment key={r.id}>
                 <tr
                   onClick={() => setOpen(open === r.id ? null : r.id)}
@@ -167,7 +207,15 @@ function Results() {
                       <div className="text-xs text-yellow-400">Incompleto</div>
                     )}
                   </td>
-                  <td className="px-3 py-2 text-right font-bold text-white">{fmt(r.final)}</td>
+                  <td className="px-3 py-2 text-right font-bold text-white">
+                    {r.final !== null ? (
+                      fmt(r.final)
+                    ) : r.provisional !== null ? (
+                      <span className="text-white/50 font-normal">~{fmt(r.provisional)}</span>
+                    ) : (
+                      "—"
+                    )}
+                  </td>
                   <td className="px-3 py-2 text-right text-white/70">{fmt(r.base)}</td>
                   <td className="px-3 py-2 text-right text-white/70">
                     {r.base === null ? "—" : r.bonus}
