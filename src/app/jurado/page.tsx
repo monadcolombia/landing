@@ -392,9 +392,12 @@ function ScoreForm({
             {saving
               ? "Guardando..."
               : missing > 0
-                ? `Guardar (faltan ${missing})`
+                ? `Guardar avance (faltan ${missing})`
                 : "Guardar calificación"}
           </button>
+          <p className="text-xs text-white/50 text-center">
+            Puedes guardar aunque falten criterios y volver a editar cuando quieras.
+          </p>
         </>
       )}
     </div>
