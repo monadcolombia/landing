@@ -204,9 +204,10 @@ function Results() {
         </div>
       </div>
       <p className="text-xs text-white/40">
-        Rojo = los jueces difieren más de 1,5 puntos en ese criterio. Desempate: mayor promedio en
-        Uso de Monad / blockchain. Toca una fila para ver las notas de cada juez. Toca el nombre de
-        un criterio para ordenar por ese criterio. ~ = puntaje parcial (aún falta algún criterio).
+        Comunidad = votación del público en Blitz, hasta +5 sobre 100. Rojo = los jueces difieren
+        más de 1,5 puntos en ese criterio. Desempate: mayor promedio en Uso de Monad / blockchain.
+        Toca una fila para ver las notas de cada juez. Toca el nombre de un criterio para ordenar
+        por ese criterio. ~ = puntaje parcial (aún falta algún criterio).
       </p>
       <div className="bg-white/5 border border-white/10 rounded-lg overflow-x-auto">
         <table className="w-full text-sm">
@@ -216,7 +217,9 @@ function Results() {
               <th className="px-3 py-2 text-left">Proyecto</th>
               <th className="px-3 py-2 text-right">Final</th>
               <th className="px-3 py-2 text-right">Base</th>
-              <th className="px-3 py-2 text-right">Bono</th>
+              <th className="px-3 py-2 text-right whitespace-nowrap">
+                Comunidad <span className="text-white/30">+5</span>
+              </th>
               {CRITERIA.map((c) => (
                 <th
                   key={c.key}
@@ -506,7 +509,7 @@ function Projects({ canWrite }: { canWrite: boolean }) {
               <th className="px-3 py-2 text-left">Proyecto ({list.length})</th>
               <th className="px-3 py-2 text-left">Links</th>
               <th className="px-3 py-2 text-center">Contrato desplegado</th>
-              <th className="px-3 py-2 text-center">Bono (0–{MAX_BONUS})</th>
+              <th className="px-3 py-2 text-center">Comunidad (0–{MAX_BONUS})</th>
               <th className="px-3 py-2" />
             </tr>
           </thead>
@@ -563,18 +566,20 @@ function Projects({ canWrite }: { canWrite: boolean }) {
                   />
                 </td>
                 <td className="px-3 py-2 text-center">
-                  <select
+                  <input
+                    key={p.bonus}
+                    type="number"
+                    min={0}
+                    max={MAX_BONUS}
+                    step={0.01}
                     disabled={!canWrite}
-                    value={p.bonus}
-                    onChange={(e) => patch(p.id, { bonus: Number(e.target.value) })}
-                    className="bg-white/5 border border-white/10 rounded px-2 py-1 text-white"
-                  >
-                    {[0, 0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5].map((b) => (
-                      <option key={b} value={b}>
-                        {b}
-                      </option>
-                    ))}
-                  </select>
+                    defaultValue={p.bonus}
+                    onBlur={(e) => {
+                      const v = Number(e.target.value);
+                      if (Number.isFinite(v) && v !== p.bonus) patch(p.id, { bonus: v });
+                    }}
+                    className="w-20 bg-white/5 border border-white/10 rounded px-2 py-1 text-white text-right"
+                  />
                 </td>
                 <td className="px-3 py-2 text-right">
                   {canWrite && (
