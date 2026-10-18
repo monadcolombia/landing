@@ -31,9 +31,22 @@ export async function GET() {
     comment: s.comment,
   }));
 
+  const info = Object.fromEntries(
+    projects.map((p) => [
+      p.id,
+      {
+        description: p.description,
+        repoUrl: p.repoUrl,
+        demoUrl: p.demoUrl,
+        contractAddress: p.contractAddress,
+      },
+    ])
+  );
+
   return NextResponse.json({
     results,
     detail,
+    info,
     activeJudges: activeEmails.size,
   });
 }

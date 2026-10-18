@@ -15,6 +15,46 @@ type Project = {
   bonus: number;
 };
 type Judge = { id: string; email: string; name: string; active: boolean };
+type ProjectInfo = Pick<Project, "description" | "repoUrl" | "demoUrl" | "contractAddress">;
+
+const href = (u: string) => (/^https?:\/\//i.test(u) ? u : `https://${u}`);
+
+function ProjectLinks({ p }: { p: ProjectInfo }) {
+  return (
+    <div className="flex flex-wrap gap-3 text-xs">
+      {p.repoUrl && (
+        <a
+          className="text-monad-light"
+          target="_blank"
+          rel="noopener noreferrer"
+          href={href(p.repoUrl)}
+        >
+          Repo ↗
+        </a>
+      )}
+      {p.demoUrl && (
+        <a
+          className="text-monad-light"
+          target="_blank"
+          rel="noopener noreferrer"
+          href={href(p.demoUrl)}
+        >
+          Demo ↗
+        </a>
+      )}
+      {p.contractAddress && (
+        <a
+          className="text-monad-light font-mono break-all"
+          target="_blank"
+          rel="noopener noreferrer"
+          href={`https://testnet.monadvision.com/address/${p.contractAddress}`}
+        >
+          {p.contractAddress} ↗
+        </a>
+      )}
+    </div>
+  );
+}
 type Detail = Partial<Record<CriterionKey, number | null>> & {
   projectId: string;
   judge: string;
@@ -89,6 +129,7 @@ function Results() {
   const [data, setData] = useState<{
     results: ProjectResult[];
     detail: Detail[];
+    info: Record<string, ProjectInfo>;
     activeJudges: number;
   } | null>(null);
   const [open, setOpen] = useState<string | null>(null);
@@ -237,6 +278,16 @@ function Results() {
                 {open === r.id && (
                   <tr className="bg-black/20">
                     <td colSpan={6 + CRITERIA.length} className="px-3 py-3">
+                      {data.info?.[r.id] && (
+                        <div className="mb-4 space-y-2">
+                          <ProjectLinks p={data.info[r.id]} />
+                          {data.info[r.id].description && (
+                            <p className="text-sm text-white/70 whitespace-pre-line">
+                              {data.info[r.id].description}
+                            </p>
+                          )}
+                        </div>
+                      )}
                       <JudgeDetail rows={data.detail.filter((d) => d.projectId === r.id)} />
                     </td>
                   </tr>
@@ -469,6 +520,16 @@ function Projects({ canWrite }: { canWrite: boolean }) {
                     <div className="text-xs font-mono text-white/40 break-all">
                       {p.contractAddress}
                     </div>
+                  )}
+                  {p.description && (
+                    <details className="mt-1">
+                      <summary className="text-xs text-monad-light cursor-pointer">
+                        Ver descripción
+                      </summary>
+                      <p className="mt-1 text-xs text-white/70 whitespace-pre-line max-w-xl">
+                        {p.description}
+                      </p>
+                    </details>
                   )}
                 </td>
                 <td className="px-3 py-2 text-xs space-x-2 whitespace-nowrap">
