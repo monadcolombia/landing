@@ -8,7 +8,7 @@ export async function GET() {
   if (denied) return denied;
   const data = await prisma.judgingProject.findMany({
     where: { edition: JUDGING_EDITION },
-    orderBy: { name: "asc" },
+    orderBy: [{ createdAt: "asc" }, { name: "asc" }],
   });
   return NextResponse.json({ data });
 }

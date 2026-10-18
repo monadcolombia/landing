@@ -10,7 +10,7 @@ export async function GET() {
 
   const projects = await prisma.judgingProject.findMany({
     where: { edition: JUDGING_EDITION },
-    orderBy: { name: "asc" },
+    orderBy: [{ createdAt: "asc" }, { name: "asc" }],
     select: {
       id: true,
       name: true,
