@@ -1,6 +1,7 @@
 "use client";
 
 import { useSyncExternalStore, useCallback } from "react";
+import { usePathname } from "next/navigation";
 
 const COOKIE_CONSENT_KEY = "cookie_consent";
 
@@ -19,13 +20,16 @@ function subscribe(callback: () => void): () => void {
 
 export default function CookieConsent() {
   const visible = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  // The survey keeps its main button at the bottom of the screen; the notice
+  // is shown on its welcome screen instead so it never covers that button.
+  const pathname = usePathname();
 
   const accept = useCallback(() => {
     localStorage.setItem(COOKIE_CONSENT_KEY, "accepted");
     window.dispatchEvent(new StorageEvent("storage"));
   }, []);
 
-  if (!visible) return null;
+  if (!visible || pathname?.startsWith("/feedback")) return null;
 
   return (
     <div className="fixed bottom-0 left-0 right-0 z-50 p-3 sm:p-6">
