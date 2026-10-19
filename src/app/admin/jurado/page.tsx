@@ -1,6 +1,8 @@
 "use client";
 
 import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
+import EditionTabs from "@/components/EditionTabs";
+import { DEFAULT_EDITION, editionInfo, type EditionKey } from "@/lib/editions";
 import { CRITERIA, MAX_BONUS, type CriterionKey, type ProjectResult } from "@/lib/judging";
 
 type Project = {
@@ -79,6 +81,7 @@ async function api(url: string, init?: RequestInit) {
 
 export default function AdminJudgingPage() {
   const [tab, setTab] = useState<"results" | "projects" | "judges">("results");
+  const [edition, setEdition] = useState<EditionKey>(DEFAULT_EDITION);
   const [canWrite, setCanWrite] = useState(false);
 
   useEffect(() => {
@@ -91,11 +94,25 @@ export default function AdminJudgingPage() {
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between gap-3 flex-wrap">
-        <h2 className="text-2xl font-bold text-white">Jurado · Blitz V2</h2>
-        <a href="/jurado" target="_blank" className="text-sm text-monad-primary hover:underline">
-          Vista de jueces ↗
-        </a>
+        <div className="flex items-center gap-4 flex-wrap">
+          <h2 className="text-2xl font-bold text-white">
+            Jurado · Blitz {editionInfo(edition).label}
+          </h2>
+          <EditionTabs value={edition} onChange={setEdition} theme="dark" />
+        </div>
+        {edition === DEFAULT_EDITION && (
+          <a href="/jurado" target="_blank" className="text-sm text-monad-primary hover:underline">
+            Vista de jueces ↗
+          </a>
+        )}
       </div>
+      {edition !== DEFAULT_EDITION && (
+        <div className="bg-white/5 border border-white/10 text-white/60 rounded-lg px-4 py-3 text-sm">
+          Edición pasada ({editionInfo(edition).date}). Los jueces solo califican la edición actual;
+          aquí puedes revisar y editar proyectos, ganadores y jurados de la{" "}
+          {editionInfo(edition).label}.
+        </div>
+      )}
       {!canWrite && (
         <div className="bg-orange-500/10 border border-orange-500/30 text-orange-300 rounded-lg px-4 py-3 text-sm font-mono">
           Solo lectura. Necesitas acceso completo para editar proyectos y jurados.
@@ -118,16 +135,16 @@ export default function AdminJudgingPage() {
           </button>
         ))}
       </div>
-      {tab === "results" && <Results />}
-      {tab === "projects" && <Projects canWrite={canWrite} />}
-      {tab === "judges" && <Judges canWrite={canWrite} />}
+      {tab === "results" && <Results key={edition} edition={edition} />}
+      {tab === "projects" && <Projects key={edition} edition={edition} canWrite={canWrite} />}
+      {tab === "judges" && <Judges key={edition} edition={edition} canWrite={canWrite} />}
     </div>
   );
 }
 
 /* ----------------------------- Results ----------------------------- */
 
-function Results() {
+function Results({ edition }: { edition: EditionKey }) {
   const [data, setData] = useState<{
     results: ProjectResult[];
     detail: Detail[];
@@ -141,12 +158,12 @@ function Results() {
 
   const load = useCallback(async () => {
     try {
-      setData(await api("/api/admin/judging/results"));
+      setData(await api(`/api/admin/judging/results?edition=${edition}`));
       setUpdated(new Date());
     } catch {
       // keep last data
     }
-  }, []);
+  }, [edition]);
 
   useEffect(() => {
     const first = setTimeout(load, 0);
@@ -326,7 +343,7 @@ function JudgeDetail({ rows }: { rows: Detail[] }) {
 
 /* ----------------------------- Projects ----------------------------- */
 
-function Projects({ canWrite }: { canWrite: boolean }) {
+function Projects({ canWrite, edition }: { canWrite: boolean; edition: EditionKey }) {
   const [list, setList] = useState<Project[]>([]);
   const [form, setForm] = useState({
     name: "",
@@ -341,9 +358,9 @@ function Projects({ canWrite }: { canWrite: boolean }) {
   const [msg, setMsg] = useState("");
 
   const load = useCallback(async () => {
-    const d = await api("/api/admin/judging/projects");
+    const d = await api(`/api/admin/judging/projects?edition=${edition}`);
     setList(d.data || []);
-  }, []);
+  }, [edition]);
   useEffect(() => {
     const t = setTimeout(load, 0);
     return () => clearTimeout(t);
@@ -362,7 +379,10 @@ function Projects({ canWrite }: { canWrite: boolean }) {
 
   const addOne = () =>
     run(async () => {
-      await api("/api/admin/judging/projects", { method: "POST", body: JSON.stringify(form) });
+      await api("/api/admin/judging/projects", {
+        method: "POST",
+        body: JSON.stringify({ ...form, edition }),
+      });
       setForm({
         name: "",
         team: "",
@@ -388,7 +408,7 @@ function Projects({ canWrite }: { canWrite: boolean }) {
         });
       const d = await api("/api/admin/judging/projects", {
         method: "POST",
-        body: JSON.stringify({ projects }),
+        body: JSON.stringify({ projects, edition }),
       });
       setBulk("");
       setMsg(`${d.created} proyectos agregados`);
@@ -396,7 +416,7 @@ function Projects({ canWrite }: { canWrite: boolean }) {
 
   const importBlitz = () =>
     run(async () => {
-      const d = await api("/api/admin/judging/import", { method: "POST" });
+      const d = await api(`/api/admin/judging/import?edition=${edition}`, { method: "POST" });
       setMsg(
         `Blitz: ${d.found} proyectos enviados, ${d.created} nuevos, ${d.updated} actualizados`
       );
@@ -654,16 +674,16 @@ function Projects({ canWrite }: { canWrite: boolean }) {
 
 /* ----------------------------- Judges ----------------------------- */
 
-function Judges({ canWrite }: { canWrite: boolean }) {
+function Judges({ canWrite, edition }: { canWrite: boolean; edition: EditionKey }) {
   const [list, setList] = useState<Judge[]>([]);
   const [form, setForm] = useState({ name: "", email: "" });
   const [msg, setMsg] = useState("");
   const [links, setLinks] = useState<Record<string, string>>({});
 
   const load = useCallback(async () => {
-    const d = await api("/api/admin/judging/judges");
+    const d = await api(`/api/admin/judging/judges?edition=${edition}`);
     setList(d.data || []);
-  }, []);
+  }, [edition]);
   useEffect(() => {
     const t = setTimeout(load, 0);
     return () => clearTimeout(t);
@@ -700,14 +720,14 @@ function Judges({ canWrite }: { canWrite: boolean }) {
                 run(async () => {
                   const d = await api("/api/admin/judging/judges", {
                     method: "POST",
-                    body: JSON.stringify({ importApproved: true }),
+                    body: JSON.stringify({ importApproved: true, edition }),
                   });
                   setMsg(`${d.created} jurados importados de ${d.found} aplicaciones aprobadas`);
                 })
               }
               className={`${btn} bg-monad-primary text-white`}
             >
-              Importar jurados aprobados (V2)
+              Importar jurados aprobados ({editionInfo(edition).label})
             </button>
           </div>
           <div className="grid sm:grid-cols-3 gap-2">
@@ -729,7 +749,7 @@ function Judges({ canWrite }: { canWrite: boolean }) {
                 run(async () => {
                   await api("/api/admin/judging/judges", {
                     method: "POST",
-                    body: JSON.stringify(form),
+                    body: JSON.stringify({ ...form, edition }),
                   });
                   setForm({ name: "", email: "" });
                 })

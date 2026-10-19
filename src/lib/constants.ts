@@ -1,4 +1,5 @@
 import { City, Partner, PartnerCategory, FAQItem, FooterLink } from "./types";
+import type { EditionKey } from "./editions";
 
 export const CITIES: City[] = [
   {
@@ -66,21 +67,46 @@ export const PARTNER_CATEGORIES: PartnerCategory[] = [
   },
 ];
 
-export const PAST_PARTNERS: PartnerCategory = {
-  title: "EDICIONES ANTERIORES",
-  subtitle: "Logos de ediciones pasadas.",
-  partners: [
-    { name: "DevLabX3", logo: "/images/partners/sponsors/devlabx3.svg" },
-    { name: "Monad Foundation", logo: "/images/partners/sponsors/monad-foundation.png" },
-    { name: "UPB", logo: "/images/partners/universities/upb.png" },
-    { name: "EAFIT", logo: "/images/partners/universities/eafit.png" },
-    { name: "UdeA", logo: "/images/partners/universities/udea.png" },
-    { name: "ITM", logo: "/images/partners/universities/itm.png" },
-    { name: "Tecnologico de Antioquia", logo: "/images/partners/universities/tdea.png" },
-    { name: "Platohedro", logo: "/images/partners/communities/platohedro.png" },
-    { name: "Criptoprofesor", logo: "/images/partners/communities/criptoprofesor.png" },
-    { name: "Ultravioleta DAO", logo: "/images/partners/communities/ultravioleta-dao.svg" },
-  ],
+/** Sponsors and allies of the first edition (6 June 2026). */
+export const PARTNER_CATEGORIES_V1: PartnerCategory[] = [
+  {
+    title: "APOYAN",
+    subtitle: "Sponsors y aliados de la primera edición",
+    partners: [
+      { name: "DevLabX3", logo: "/images/partners/sponsors/devlabx3.svg" },
+      { name: "Monad Foundation", logo: "/images/partners/sponsors/monad-foundation.png" },
+    ],
+  },
+  {
+    title: "UNIVERSIDADES",
+    subtitle: "Sedes de workshops previos al Blitz",
+    partners: [
+      { name: "UPB", logo: "/images/partners/universities/upb.png" },
+      { name: "EAFIT", logo: "/images/partners/universities/eafit.png" },
+      { name: "UdeA", logo: "/images/partners/universities/udea.png" },
+      { name: "ITM", logo: "/images/partners/universities/itm.png" },
+      { name: "Tecnologico de Antioquia", logo: "/images/partners/universities/tdea.png" },
+    ],
+  },
+  {
+    title: "COMUNIDADES ALIADAS",
+    subtitle: "Comunidades blockchain que difundieron y apoyaron el evento",
+    partners: [
+      { name: "Platohedro", logo: "/images/partners/communities/platohedro.png" },
+      { name: "Criptoprofesor", logo: "/images/partners/communities/criptoprofesor.png" },
+      { name: "Ultravioleta DAO", logo: "/images/partners/communities/ultravioleta-dao.svg" },
+    ],
+  },
+  {
+    title: "MEDIA PARTNERS",
+    subtitle: "Medios que cubrieron y amplificaron el evento",
+    partners: [{ name: "Blockvoz", logo: "/images/partners/media/blockvoz.png" }],
+  },
+];
+
+export const PARTNERS_BY_EDITION: Record<EditionKey, PartnerCategory[]> = {
+  v2: PARTNER_CATEGORIES,
+  v1: PARTNER_CATEGORIES_V1,
 };
 
 export const FAQ_ITEMS: FAQItem[] = [

@@ -1,3 +1,5 @@
+import type { EditionKey } from "./editions";
+
 export type Organizer = {
   name: string;
   role: string;
@@ -27,3 +29,23 @@ export const ORGANIZERS: Organizer[] = [
     twitter: "https://x.com/DianaMonclou",
   },
 ];
+
+/** Organizers per edition. V1 also had design and the university route team. */
+export const ORGANIZERS_BY_EDITION: Record<EditionKey, Organizer[]> = {
+  v2: ORGANIZERS,
+  v1: [
+    ...ORGANIZERS,
+    {
+      name: "Waira",
+      role: "Diseño & Redes",
+      image: "/images/organizers/WairaT.jpg",
+      twitter: "https://x.com/WairaT",
+    },
+    {
+      name: "DevLabs",
+      role: "Ruta Universidades & Equipo Técnico",
+      image: "/images/organizers/devlabx3.jpg",
+      twitter: "https://x.com/devlabx3",
+    },
+  ],
+};

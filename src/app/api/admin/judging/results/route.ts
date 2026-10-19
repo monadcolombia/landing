@@ -2,15 +2,17 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { JUDGING_EDITION, computeResults } from "@/lib/judging";
 import { requireAdmin } from "@/lib/judging-admin";
+import { parseEdition } from "@/lib/editions";
 
-export async function GET() {
+export async function GET(request: Request) {
   const denied = await requireAdmin(false);
   if (denied) return denied;
+  const edition = parseEdition(new URL(request.url).searchParams.get("edition"), JUDGING_EDITION);
 
   const [projects, judges, scores] = await Promise.all([
-    prisma.judgingProject.findMany({ where: { edition: JUDGING_EDITION } }),
-    prisma.judgeProfile.findMany({ where: { edition: JUDGING_EDITION } }),
-    prisma.judgeScore.findMany({ where: { project: { edition: JUDGING_EDITION } } }),
+    prisma.judgingProject.findMany({ where: { edition } }),
+    prisma.judgeProfile.findMany({ where: { edition } }),
+    prisma.judgeScore.findMany({ where: { project: { edition } } }),
   ]);
 
   const activeEmails = new Set(judges.filter((j) => j.active).map((j) => j.email));

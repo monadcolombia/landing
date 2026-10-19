@@ -1,8 +1,11 @@
 "use client";
 
+import { useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
-import { PARTNER_CATEGORIES, PAST_PARTNERS } from "@/lib/constants";
+import { PARTNERS_BY_EDITION } from "@/lib/constants";
+import { DEFAULT_EDITION, type EditionKey } from "@/lib/editions";
+import EditionTabs from "./EditionTabs";
 import type { Partner, PartnerCategory } from "@/lib/types";
 
 const MIN_MARQUEE_ITEMS = 5;
@@ -94,12 +97,17 @@ function PartnerRow({
 }
 
 export default function Marquee() {
+  const [edition, setEdition] = useState<EditionKey>(DEFAULT_EDITION);
+  const categories = PARTNERS_BY_EDITION[edition];
   return (
     <section id="aliados" className="py-16 sm:py-20 bg-monad-dark overflow-hidden">
+      <div className="flex justify-center mb-12 sm:mb-16 px-4">
+        <EditionTabs value={edition} onChange={setEdition} theme="dark" />
+      </div>
       <div className="flex flex-col gap-14 sm:gap-20">
-        {PARTNER_CATEGORIES.map((category, catIndex) => (
+        {categories.map((category, catIndex) => (
           <motion.div
-            key={category.title}
+            key={`${edition}-${category.title}`}
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
@@ -108,16 +116,6 @@ export default function Marquee() {
             <PartnerRow category={category} />
           </motion.div>
         ))}
-
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.6, ease: EASING }}
-          className="border-t border-white/10 pt-12 sm:pt-16"
-        >
-          <PartnerRow category={PAST_PARTNERS} compact />
-        </motion.div>
       </div>
     </section>
   );

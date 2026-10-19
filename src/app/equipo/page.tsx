@@ -3,23 +3,27 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { ORGANIZERS } from "@/lib/organizers";
+import { ORGANIZERS_BY_EDITION } from "@/lib/organizers";
+import { DEFAULT_EDITION, editionInfo, type EditionKey } from "@/lib/editions";
+import EditionTabs from "@/components/EditionTabs";
 import OrganizerCard from "@/components/OrganizerCard";
 import TeamMemberCard, { type TeamMember } from "@/components/TeamMemberCard";
 
 const EASING = [0.16, 1, 0.3, 1] as const;
 
 export default function EquipoPage() {
-  const [members, setMembers] = useState<TeamMember[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [edition, setEdition] = useState<EditionKey>(DEFAULT_EDITION);
+  const [byEdition, setByEdition] = useState<Partial<Record<EditionKey, TeamMember[]>>>({});
+  const loading = !(edition in byEdition);
+  const members = byEdition[edition] ?? [];
 
   useEffect(() => {
-    fetch("/api/team")
+    if (!loading) return;
+    fetch(`/api/team?edition=${edition}`)
       .then((res) => res.json())
-      .then((json) => setMembers(json.data || []))
-      .catch(() => setMembers([]))
-      .finally(() => setLoading(false));
-  }, []);
+      .then((json) => setByEdition((m) => ({ ...m, [edition]: json.data || [] })))
+      .catch(() => setByEdition((m) => ({ ...m, [edition]: [] })));
+  }, [edition, loading]);
 
   const mentors = members.filter((m) => m.role === "mentor");
   const judges = members.filter((m) => m.role === "judge");
@@ -46,15 +50,18 @@ export default function EquipoPage() {
           <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold font-heading text-white mb-4">
             Equipo
           </h1>
-          <p className="text-base sm:text-lg text-white/50 max-w-xl mb-12">
+          <p className="text-base sm:text-lg text-white/50 max-w-xl mb-6">
             Las personas que organizan, guían, evalúan y hacen posible MonadBlitz Colombia.
           </p>
+          <div className="mb-12">
+            <EditionTabs value={edition} onChange={setEdition} theme="dark" />
+          </div>
         </motion.div>
 
         <div className="space-y-16">
           <Section title="Organizadores">
-            {ORGANIZERS.map((o, i) => (
-              <OrganizerCard key={o.name} organizer={o} index={i} theme="dark" />
+            {ORGANIZERS_BY_EDITION[edition].map((o, i) => (
+              <OrganizerCard key={`${edition}-${o.name}`} organizer={o} index={i} theme="dark" />
             ))}
           </Section>
 
@@ -63,7 +70,7 @@ export default function EquipoPage() {
           ) : members.length === 0 ? (
             <div className="text-center py-8">
               <p className="text-white/50 text-lg mb-2">
-                Pronto anunciaremos mentores, jurados y voluntarios
+                Pronto publicamos el equipo de la edición del {editionInfo(edition).date}
               </p>
               <p className="text-white/30 text-sm">
                 Estamos revisando postulaciones. Vuelve pronto.

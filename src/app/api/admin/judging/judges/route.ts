@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { JUDGING_EDITION, type JudgeAreaKey } from "@/lib/judging";
 import { cleanText, requireAdmin } from "@/lib/judging-admin";
+import { parseEdition } from "@/lib/editions";
 
 const AREAS: JudgeAreaKey[] = ["business", "technical", "creative", "general"];
 
@@ -12,11 +13,12 @@ function areaFromLevel(level: string | null): JudgeAreaKey {
   return "general";
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   const denied = await requireAdmin(false);
   if (denied) return denied;
+  const edition = parseEdition(new URL(request.url).searchParams.get("edition"), JUDGING_EDITION);
   const data = await prisma.judgeProfile.findMany({
-    where: { edition: JUDGING_EDITION },
+    where: { edition },
     orderBy: { name: "asc" },
   });
   return NextResponse.json({ data });
@@ -28,16 +30,17 @@ export async function POST(request: Request) {
   const denied = await requireAdmin(true);
   if (denied) return denied;
   const b = await request.json().catch(() => ({}));
+  const edition = parseEdition(b.edition, JUDGING_EDITION);
 
   if (b.importApproved) {
     const apps = await prisma.application.findMany({
-      where: { role: "judge", status: "approved", edition: JUDGING_EDITION },
+      where: { role: "judge", status: "approved", edition },
     });
     let created = 0;
     for (const a of apps) {
       const email = a.email.trim().toLowerCase();
       const exists = await prisma.judgeProfile.findUnique({
-        where: { email_edition: { email, edition: JUDGING_EDITION } },
+        where: { email_edition: { email, edition } },
       });
       if (exists) continue;
       await prisma.judgeProfile.create({
@@ -45,7 +48,7 @@ export async function POST(request: Request) {
           email,
           name: a.fullName,
           area: areaFromLevel(a.judgeTechnicalLevel),
-          edition: JUDGING_EDITION,
+          edition,
         },
       });
       created++;
@@ -60,8 +63,8 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Valid email and name required" }, { status: 400 });
   }
   const data = await prisma.judgeProfile.upsert({
-    where: { email_edition: { email, edition: JUDGING_EDITION } },
-    create: { email, name, area, edition: JUDGING_EDITION },
+    where: { email_edition: { email, edition } },
+    create: { email, name, area, edition },
     update: { name, area, active: true },
   });
   return NextResponse.json({ data });
