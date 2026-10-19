@@ -12,8 +12,17 @@ import {
   type AspectKey,
 } from "@/lib/survey";
 import { ORGANIZERS_BY_EDITION } from "@/lib/organizers";
+import { titleCaseName } from "@/lib/survey";
+import MemberAvatar from "@/components/MemberAvatar";
 
-type Person = { role: (typeof HIGHLIGHT_ROLES)[number]["key"]; name: string };
+type Person = {
+  role: (typeof HIGHLIGHT_ROLES)[number]["key"];
+  name: string;
+  /** Application id, for the team photo */
+  id?: string;
+  /** Static photo, for organizers */
+  image?: string;
+};
 const roleLabel = (r: Person["role"]) =>
   ({ organizer: "Organización", mentor: "Mentor", judge: "Jurado", volunteer: "Voluntario" })[r];
 const personKey = (p: Person) => `${roleLabel(p.role)} · ${p.name}`;
@@ -110,16 +119,24 @@ export default function FeedbackForm() {
     highlights: [],
   });
   const [people, setPeople] = useState<Person[]>(() =>
-    ORGANIZERS_BY_EDITION.v2.map((o) => ({ role: "organizer" as const, name: o.name }))
+    ORGANIZERS_BY_EDITION.v2.map((o) => ({
+      role: "organizer" as const,
+      name: titleCaseName(o.name),
+      image: o.image,
+    }))
   );
 
   useEffect(() => {
     fetch("/api/team?edition=v2")
       .then((r) => (r.ok ? r.json() : { data: [] }))
-      .then((d: { data?: { role: string; fullName: string }[] }) => {
+      .then((d: { data?: { id: string; role: string; fullName: string }[] }) => {
         const team = (d.data ?? [])
           .filter((m) => ["mentor", "judge", "volunteer"].includes(m.role))
-          .map((m) => ({ role: m.role as Person["role"], name: m.fullName.trim() }));
+          .map((m) => ({
+            role: m.role as Person["role"],
+            name: titleCaseName(m.fullName),
+            id: m.id,
+          }));
         setPeople((prev) => [...prev.filter((p) => p.role === "organizer"), ...team]);
       })
       .catch(() => {});
@@ -341,7 +358,7 @@ export default function FeedbackForm() {
               return (
                 <div key={r.key}>
                   <p className="text-xs font-mono uppercase text-white/50 mb-2">{r.label}</p>
-                  <div className="flex flex-wrap gap-2">
+                  <div className="grid grid-cols-3 sm:grid-cols-4 gap-2">
                     {group.map((p) => {
                       const k = personKey(p);
                       const on = s.highlights.includes(k);
@@ -349,15 +366,41 @@ export default function FeedbackForm() {
                         <button
                           key={k}
                           type="button"
+                          aria-pressed={on}
                           onClick={() =>
                             set(
                               "highlights",
                               on ? s.highlights.filter((h) => h !== k) : [...s.highlights, k]
                             )
                           }
-                          className={chip(on)}
+                          className={`relative flex flex-col items-center text-center rounded-xl border px-2 pt-3 pb-2 transition-colors ${
+                            on
+                              ? "border-monad-primary bg-monad-primary/15"
+                              : "border-white/10 hover:border-white/30"
+                          }`}
                         >
-                          {p.name}
+                          {p.image ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
+                              src={p.image}
+                              alt=""
+                              loading="lazy"
+                              className={`w-14 h-14 rounded-full object-cover mb-3 ring-1 ${on ? "ring-monad-primary" : "ring-white/20"}`}
+                            />
+                          ) : (
+                            <MemberAvatar
+                              id={p.id ?? ""}
+                              name={p.name}
+                              sizeClass="w-14 h-14"
+                              ringClass={on ? "ring-monad-primary" : "ring-white/20"}
+                            />
+                          )}
+                          <span className="text-xs leading-tight text-white/90">{p.name}</span>
+                          {on && (
+                            <span className="absolute top-1.5 right-1.5 w-5 h-5 rounded-full bg-monad-primary text-white text-[11px] flex items-center justify-center">
+                              ✓
+                            </span>
+                          )}
                         </button>
                       );
                     })}

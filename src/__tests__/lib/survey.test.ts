@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { summarize, surveySchema, type SurveyRow } from "@/lib/survey";
+import { summarize, surveySchema, titleCaseName, type SurveyRow } from "@/lib/survey";
 
 const row = (o: Partial<SurveyRow>): SurveyRow => ({
   overall: 5,
@@ -85,5 +85,14 @@ describe("summarize highlights", () => {
       { name: "Mentor · Ana", n: 2 },
       { name: "Jurado · Luis", n: 1 },
     ]);
+  });
+});
+
+describe("titleCaseName", () => {
+  it("capitalizes each word and keeps particles lowercase", () => {
+    expect(titleCaseName("santiago leon")).toBe("Santiago Leon");
+    expect(titleCaseName("MARIA CLARA AVILEZ GOMEZ")).toBe("Maria Clara Avilez Gomez");
+    expect(titleCaseName("juan de la cruz")).toBe("Juan de la Cruz");
+    expect(titleCaseName("  Arturo Castañon ")).toBe("Arturo Castañon");
   });
 });

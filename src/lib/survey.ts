@@ -33,6 +33,21 @@ export const KEEP_BUILDING = [
   { value: "no", label: "No" },
 ] as const;
 
+const LOWER_WORDS = new Set(["de", "del", "la", "las", "los", "y"]);
+
+/** "santiago leon" -> "Santiago Leon", keeping "de", "del"... lowercase inside a name. */
+export function titleCaseName(name: string): string {
+  return name
+    .trim()
+    .split(/\s+/)
+    .map((w, i) => {
+      const lower = w.toLocaleLowerCase("es");
+      if (i > 0 && LOWER_WORDS.has(lower)) return lower;
+      return lower.charAt(0).toLocaleUpperCase("es") + lower.slice(1);
+    })
+    .join(" ");
+}
+
 /** Roles people can be highlighted in, shown as groups in the survey. */
 export const HIGHLIGHT_ROLES = [
   { key: "organizer", label: "Organizadores" },
