@@ -200,7 +200,7 @@ function Body({ data }: { data: Data }) {
           )}
         />
         <Bars
-          title="Bootcamp virtual del 14"
+          title="Bootcamp virtual"
           total={t}
           items={BOOTCAMP.map((o) => ({ label: o.label, n: s.bootcamp[o.value] }))}
         />

@@ -272,7 +272,7 @@ export default function FeedbackForm() {
           </div>
         </Question>
 
-        <Question n={5} title="¿Fuiste al bootcamp virtual del 14 de octubre? ¿Te sirvió?">
+        <Question n={5} title="¿Fuiste al bootcamp virtual? ¿Te sirvió?">
           <div className="flex flex-wrap gap-2">
             {BOOTCAMP.map((o) => (
               <button
