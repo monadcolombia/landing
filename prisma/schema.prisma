@@ -227,6 +227,7 @@ model SurveyResponse {
   keepBuilding String   @map("keep_building")
   notifyNext   Boolean  @default(false) @map("notify_next")
   contact      String?
+  highlights   String[] @default([])
 
   @@index([edition])
   @@map("survey_responses")

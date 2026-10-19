@@ -73,3 +73,17 @@ describe("summarize", () => {
     expect(s.notifyNext).toBe(1);
   });
 });
+
+describe("summarize highlights", () => {
+  it("counts each highlighted person across answers", () => {
+    const s = summarize([
+      row({ highlights: ["Mentor · Ana", "Jurado · Luis"] }),
+      row({ highlights: ["Mentor · Ana"] }),
+      row({}),
+    ]);
+    expect(s.highlights).toEqual([
+      { name: "Mentor · Ana", n: 2 },
+      { name: "Jurado · Luis", n: 1 },
+    ]);
+  });
+});

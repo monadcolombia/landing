@@ -91,8 +91,7 @@ export default function FeedbackPopup() {
               ¿Fuiste al Blitz?
             </h2>
             <p className="text-gray-600 mt-3 mb-6">
-              Cuéntanos cómo te fue. Son 8 preguntas y toma 2 minutos. Con tus respuestas armamos el
-              próximo.
+              Cuéntanos cómo te fue. Toma 2 minutos. Con tus respuestas armamos el próximo.
             </p>
             <Link
               href="/feedback"

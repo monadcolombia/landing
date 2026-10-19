@@ -1,15 +1,22 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import {
   ASPECTS,
   ATTENDANCE,
   BOOTCAMP,
   HEARD_FROM,
+  HIGHLIGHT_ROLES,
   KEEP_BUILDING,
   type AspectKey,
 } from "@/lib/survey";
+import { ORGANIZERS_BY_EDITION } from "@/lib/organizers";
+
+type Person = { role: (typeof HIGHLIGHT_ROLES)[number]["key"]; name: string };
+const roleLabel = (r: Person["role"]) =>
+  ({ organizer: "Organización", mentor: "Mentor", judge: "Jurado", volunteer: "Voluntario" })[r];
+const personKey = (p: Person) => `${roleLabel(p.role)} · ${p.name}`;
 
 type State = {
   overall: number | null;
@@ -23,6 +30,7 @@ type State = {
   notifyNext: boolean | null;
   contact: string;
   website: string;
+  highlights: string[];
 };
 
 const chip = (on: boolean) =>
@@ -99,7 +107,23 @@ export default function FeedbackForm() {
     notifyNext: null,
     contact: "",
     website: "",
+    highlights: [],
   });
+  const [people, setPeople] = useState<Person[]>(() =>
+    ORGANIZERS_BY_EDITION.v2.map((o) => ({ role: "organizer" as const, name: o.name }))
+  );
+
+  useEffect(() => {
+    fetch("/api/team?edition=v2")
+      .then((r) => (r.ok ? r.json() : { data: [] }))
+      .then((d: { data?: { role: string; fullName: string }[] }) => {
+        const team = (d.data ?? [])
+          .filter((m) => ["mentor", "judge", "volunteer"].includes(m.role))
+          .map((m) => ({ role: m.role as Person["role"], name: m.fullName.trim() }));
+        setPeople((prev) => [...prev.filter((p) => p.role === "organizer"), ...team]);
+      })
+      .catch(() => {});
+  }, []);
   const [sending, setSending] = useState(false);
   const [done, setDone] = useState(false);
   const [error, setError] = useState("");
@@ -116,7 +140,7 @@ export default function FeedbackForm() {
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (missing) {
-      setError("Responde las preguntas 1, 2, 4, 5 y 8 para enviar.");
+      setError("Responde las preguntas 1, 2, 4, 5 y 9 para enviar.");
       return;
     }
     setSending(true);
@@ -136,6 +160,7 @@ export default function FeedbackForm() {
           keepBuilding: s.keepBuilding,
           notifyNext: s.notifyNext,
           contact: s.contact,
+          highlights: s.highlights,
           website: s.website,
         }),
       });
@@ -186,8 +211,7 @@ export default function FeedbackForm() {
             ¿Cómo te fue en el Blitz?
           </h1>
           <p className="mt-3 text-white/70">
-            Son 8 preguntas y toma 2 minutos. Es anónimo, a menos que nos dejes un contacto al
-            final.
+            Toma 2 minutos. Es anónimo, a menos que nos dejes un contacto al final.
           </p>
         </header>
 
@@ -305,7 +329,46 @@ export default function FeedbackForm() {
           </div>
         </Question>
 
-        <Question n={7} title="¿Qué mejorarías para el próximo?">
+        <Question
+          n={7}
+          title="¿A quién resaltarías del evento?"
+          hint="Marca a quienes quieras: organización, mentores, jurados o voluntarios"
+        >
+          <div className="space-y-4">
+            {HIGHLIGHT_ROLES.map((r) => {
+              const group = people.filter((p) => p.role === r.key);
+              if (group.length === 0) return null;
+              return (
+                <div key={r.key}>
+                  <p className="text-xs font-mono uppercase text-white/50 mb-2">{r.label}</p>
+                  <div className="flex flex-wrap gap-2">
+                    {group.map((p) => {
+                      const k = personKey(p);
+                      const on = s.highlights.includes(k);
+                      return (
+                        <button
+                          key={k}
+                          type="button"
+                          onClick={() =>
+                            set(
+                              "highlights",
+                              on ? s.highlights.filter((h) => h !== k) : [...s.highlights, k]
+                            )
+                          }
+                          className={chip(on)}
+                        >
+                          {p.name}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </Question>
+
+        <Question n={8} title="¿Qué mejorarías para el próximo?">
           <textarea
             value={s.improve}
             onChange={(e) => set("improve", e.target.value)}
@@ -316,7 +379,7 @@ export default function FeedbackForm() {
           />
         </Question>
 
-        <Question n={8} title="¿Vas a seguir construyendo tu proyecto?">
+        <Question n={9} title="¿Vas a seguir construyendo tu proyecto?">
           <div className="flex flex-wrap gap-2">
             {KEEP_BUILDING.map((o) => (
               <button

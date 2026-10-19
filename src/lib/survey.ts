@@ -33,6 +33,14 @@ export const KEEP_BUILDING = [
   { value: "no", label: "No" },
 ] as const;
 
+/** Roles people can be highlighted in, shown as groups in the survey. */
+export const HIGHLIGHT_ROLES = [
+  { key: "organizer", label: "Organizadores" },
+  { key: "mentor", label: "Mentores" },
+  { key: "judge", label: "Jurados" },
+  { key: "volunteer", label: "Voluntarios" },
+] as const;
+
 export const ASPECTS = [
   { key: "mentors", label: "Mentores" },
   { key: "venue", label: "Lugar y comida" },
@@ -64,6 +72,8 @@ export const surveySchema = z.object({
   keepBuilding: z.enum(values(KEEP_BUILDING)),
   notifyNext: z.boolean().default(false),
   contact: z.string().trim().max(200).optional().nullable(),
+  // "Rol · Nombre" entries picked from the team list
+  highlights: z.array(z.string().trim().min(1).max(120)).max(40).default([]),
 });
 
 export type SurveyInput = z.infer<typeof surveySchema>;
@@ -76,6 +86,7 @@ export type SurveyRow = {
   bootcamp: string;
   keepBuilding: string;
   notifyNext: boolean;
+  highlights?: string[];
 } & Record<AspectKey, number | null>;
 
 const round = (n: number) => Math.round(n * 100) / 100;
@@ -120,5 +131,12 @@ export function summarize(rows: SurveyRow[]) {
       KEEP_BUILDING
     ),
     notifyNext: rows.filter((r) => r.notifyNext).length,
+    highlights: Object.entries(
+      rows
+        .flatMap((r) => r.highlights ?? [])
+        .reduce<Record<string, number>>((acc, h) => ({ ...acc, [h]: (acc[h] ?? 0) + 1 }), {})
+    )
+      .map(([name, n]) => ({ name, n }))
+      .sort((a, b) => b.n - a.n || a.name.localeCompare(b.name)),
   };
 }

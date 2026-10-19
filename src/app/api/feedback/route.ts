@@ -37,6 +37,7 @@ export async function POST(request: Request) {
       keepBuilding: d.keepBuilding,
       notifyNext: d.notifyNext,
       contact: d.notifyNext ? d.contact || null : null,
+      highlights: Array.from(new Set(d.highlights)),
     },
   });
   return NextResponse.json({ success: true });

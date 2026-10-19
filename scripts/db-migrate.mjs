@@ -48,6 +48,7 @@ const STATEMENTS = [
     "contact" TEXT
   )`,
   `CREATE INDEX IF NOT EXISTS "survey_responses_edition_idx" ON "survey_responses"("edition")`,
+  `ALTER TABLE "survey_responses" ADD COLUMN IF NOT EXISTS "highlights" TEXT[] DEFAULT ARRAY[]::TEXT[]`,
   // First run only: the V1 posts that used to be hardcoded in Highlights.
   `INSERT INTO "site_posts" ("id", "edition", "url", "label", "sort_order")
    SELECT gen_random_uuid()::text, 'v1', v.url, v.label, v.ord FROM (VALUES

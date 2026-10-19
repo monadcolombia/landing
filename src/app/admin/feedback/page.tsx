@@ -205,6 +205,11 @@ function Body({ data }: { data: Data }) {
           items={BOOTCAMP.map((o) => ({ label: o.label, n: s.bootcamp[o.value] }))}
         />
         <Bars
+          title="¿A quién resaltan? (varias opciones)"
+          total={t}
+          items={s.highlights.slice(0, 15).map((h) => ({ label: h.name, n: h.n }))}
+        />
+        <Bars
           title="Asistencia"
           total={t}
           items={ATTENDANCE.map((o) => ({ label: o.label, n: s.attendance[o.value] }))}
