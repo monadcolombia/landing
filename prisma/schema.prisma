@@ -74,16 +74,16 @@ model Application {
   mentorTeamCommitment         String?  @map("mentor_team_commitment")
 
   // Judge-specific fields
-  judgeCurrentRole        String?          @map("judge_current_role")
-  judgeYearsBlockchain    Int?             @map("judge_years_blockchain")
-  judgeYearsTotal         Int?             @map("judge_years_total")
-  judgeBio                String?          @map("judge_bio")
-  judgeTechnicalLevel     TechnicalLevel?  @map("judge_technical_level")
-  judgeExpertiseAreas     String[]         @map("judge_expertise_areas")
-  judgeSpecificExperience String[]         @map("judge_specific_experience")
-  judgePreviousExperience  Boolean?        @map("judge_previous_experience")
-  judgePreviousDetails    String?          @map("judge_previous_details")
-  judgeCriteriaRanking    Json?            @map("judge_criteria_ranking")
+  judgeCurrentRole        String?         @map("judge_current_role")
+  judgeYearsBlockchain    Int?            @map("judge_years_blockchain")
+  judgeYearsTotal         Int?            @map("judge_years_total")
+  judgeBio                String?         @map("judge_bio")
+  judgeTechnicalLevel     TechnicalLevel? @map("judge_technical_level")
+  judgeExpertiseAreas     String[]        @map("judge_expertise_areas")
+  judgeSpecificExperience String[]        @map("judge_specific_experience")
+  judgePreviousExperience Boolean?        @map("judge_previous_experience")
+  judgePreviousDetails    String?         @map("judge_previous_details")
+  judgeCriteriaRanking    Json?           @map("judge_criteria_ranking")
   judgeConflicts          String?         @map("judge_conflicts")
   judgeOtherConflicts     String?         @map("judge_other_conflicts")
   judgeWhy                String?         @map("judge_why")
@@ -204,4 +204,30 @@ model GalleryPhoto {
 
   @@index([edition])
   @@map("gallery_photos")
+}
+
+// ---------------------------------------------------------------------------
+// Post-event feedback survey
+// ---------------------------------------------------------------------------
+
+model SurveyResponse {
+  id           String   @id @default(uuid())
+  createdAt    DateTime @default(now()) @map("created_at")
+  edition      Edition  @default(v2)
+  overall      Int
+  attendance   String
+  heardFrom    String[] @default([]) @map("heard_from")
+  builtBefore  Boolean  @map("built_before")
+  bootcamp     String
+  mentors      Int?
+  venue        Int?
+  platform     Int?
+  organization Int?
+  improve      String?
+  keepBuilding String   @map("keep_building")
+  notifyNext   Boolean  @default(false) @map("notify_next")
+  contact      String?
+
+  @@index([edition])
+  @@map("survey_responses")
 }

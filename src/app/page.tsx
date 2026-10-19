@@ -1,6 +1,7 @@
 import AnnouncementBar from "@/components/AnnouncementBar";
 import Navbar from "@/components/Navbar";
 import EventPopup from "@/components/EventPopup";
+import FeedbackPopup from "@/components/FeedbackPopup";
 import Hero from "@/components/Hero";
 import Countdown from "@/components/Countdown";
 import Stats from "@/components/Stats";
@@ -28,6 +29,7 @@ export default function Home() {
       <AnnouncementBar />
       <Navbar />
       <EventPopup />
+      <FeedbackPopup />
       <ScrollNav />
       <Hero />
       <Countdown />

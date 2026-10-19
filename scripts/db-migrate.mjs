@@ -29,6 +29,25 @@ const STATEMENTS = [
     "sort_order" INTEGER NOT NULL DEFAULT 0
   )`,
   `CREATE INDEX IF NOT EXISTS "gallery_photos_edition_idx" ON "gallery_photos"("edition")`,
+  `CREATE TABLE IF NOT EXISTS "survey_responses" (
+    "id" TEXT PRIMARY KEY,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "edition" "Edition" NOT NULL DEFAULT 'v2',
+    "overall" INTEGER NOT NULL,
+    "attendance" TEXT NOT NULL,
+    "heard_from" TEXT[] DEFAULT ARRAY[]::TEXT[],
+    "built_before" BOOLEAN NOT NULL,
+    "bootcamp" TEXT NOT NULL,
+    "mentors" INTEGER,
+    "venue" INTEGER,
+    "platform" INTEGER,
+    "organization" INTEGER,
+    "improve" TEXT,
+    "keep_building" TEXT NOT NULL,
+    "notify_next" BOOLEAN NOT NULL DEFAULT false,
+    "contact" TEXT
+  )`,
+  `CREATE INDEX IF NOT EXISTS "survey_responses_edition_idx" ON "survey_responses"("edition")`,
   // First run only: the V1 posts that used to be hardcoded in Highlights.
   `INSERT INTO "site_posts" ("id", "edition", "url", "label", "sort_order")
    SELECT gen_random_uuid()::text, 'v1', v.url, v.label, v.ord FROM (VALUES
