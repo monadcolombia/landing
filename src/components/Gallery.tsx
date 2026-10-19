@@ -1,25 +1,17 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { GalleryImage } from "@/lib/types";
+import EditionTabs from "./EditionTabs";
+import { DEFAULT_EDITION, editionInfo, type EditionKey } from "@/lib/editions";
 
 const EASING = [0.16, 1, 0.3, 1] as const;
 
-/*
- * Gallery images from past MonadBlitz events.
- *
- * HOW TO ADD IMAGES:
- * 1. Download images from Monad's event feed (Twitter/X, Discord, etc.)
- * 2. Save them to /public/images/gallery/
- * 3. Add entries below with the correct path, alt text, and city
- * 4. Recommended dimensions: at least 800x600px, JPG or WebP
- *
- * Once images are added, remove USE_PLACEHOLDERS flag.
- */
-const USE_PLACEHOLDERS = false;
-
-const GALLERY_IMAGES: GalleryImage[] = [
+// Photos for each edition are uploaded in /admin/contenido. These are the V1 photos that
+// shipped with the site; they show until V1 photos are uploaded there.
+const V1_STATIC: GalleryImage[] = [
   {
     src: "/images/gallery/medellin-v1-01.webp",
     alt: "Builders trabajando en MonadBlitz Medellín, 6 de junio de 2026",
@@ -52,22 +44,34 @@ const GALLERY_IMAGES: GalleryImage[] = [
   },
 ];
 
-const PLACEHOLDER_GRADIENTS = [
-  "linear-gradient(135deg, #6E54FF 0%, #85E6FF 100%)",
-  "linear-gradient(135deg, #85E6FF 0%, #DDD7FE 100%)",
-  "linear-gradient(135deg, #FF8EE4 0%, #FFAE45 100%)",
-  "linear-gradient(135deg, #FFAE45 0%, #6E54FF 100%)",
-  "linear-gradient(135deg, #DDD7FE 0%, #FF8EE4 100%)",
-  "linear-gradient(135deg, #6E54FF 0%, #FF8EE4 100%)",
-];
+type Photo = { id: string; src: string; alt: string | null };
+
+const INTRO: Record<EditionKey, string> = {
+  v1: "Ganaron Vertex, MonadRoad y Lorentz. Mención de honor para TrustLayer.",
+  v2: "Un día construyendo en Monad en Indie Universe.",
+};
 
 export default function Gallery() {
-  if (GALLERY_IMAGES.length === 0) return null;
+  const [edition, setEdition] = useState<EditionKey>(DEFAULT_EDITION);
+  const [byEdition, setByEdition] = useState<Partial<Record<EditionKey, Photo[]>>>({});
+  const loaded = edition in byEdition;
+  const uploaded = byEdition[edition] ?? [];
+  const photos: Photo[] =
+    uploaded.length > 0 || edition !== "v1"
+      ? uploaded
+      : V1_STATIC.map((img, i) => ({ id: `v1-${i}`, src: img.src, alt: img.alt }));
+
+  useEffect(() => {
+    if (loaded) return;
+    fetch(`/api/gallery?edition=${edition}`)
+      .then((r) => r.json())
+      .then((j) => setByEdition((m) => ({ ...m, [edition]: j.data || [] })))
+      .catch(() => setByEdition((m) => ({ ...m, [edition]: [] })));
+  }, [edition, loaded]);
 
   return (
     <section id="galeria" className="py-16 sm:py-20 px-6 bg-monad-dark overflow-hidden">
       <div className="max-w-7xl mx-auto">
-        {/* Section heading */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -82,10 +86,10 @@ export default function Gallery() {
             Así fue Medellín
           </h2>
           <p className="text-base sm:text-lg text-white/50 mt-4 max-w-xl leading-relaxed">
-            La edición del 6 de junio de 2026. Ganaron Vertex, MonadRoad y Lorentz. Mención de honor
-            para TrustLayer.
+            La edición del {editionInfo(edition).date}. {INTRO[edition]}
           </p>
-          <div className="mt-4 flex flex-wrap gap-3">
+          <div className="mt-6 flex flex-wrap items-center gap-3">
+            <EditionTabs value={edition} onChange={setEdition} theme="dark" />
             <a
               href="https://www.instagram.com/medellinblock"
               target="_blank"
@@ -105,72 +109,27 @@ export default function Gallery() {
           </div>
         </motion.div>
 
-        {/* Image grid */}
+        {loaded && photos.length === 0 && (
+          <p className="text-white/50">Pronto publicamos las fotos de esta edición.</p>
+        )}
         <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4">
-          {GALLERY_IMAGES.map((img, i) => (
+          {photos.map((img, i) => (
             <motion.div
-              key={i}
+              key={img.id}
               initial={{ opacity: 0, scale: 0.95 }}
               whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.6, delay: i * 0.1, ease: EASING }}
+              transition={{ duration: 0.6, delay: Math.min(i, 6) * 0.08, ease: EASING }}
               className="relative overflow-hidden rounded-lg group aspect-[4/3]"
             >
-              {USE_PLACEHOLDERS ? (
-                <>
-                  {/* Placeholder gradient with dot pattern */}
-                  <div
-                    className="absolute inset-0"
-                    style={{
-                      background: PLACEHOLDER_GRADIENTS[i % PLACEHOLDER_GRADIENTS.length],
-                      opacity: 0.6,
-                    }}
-                  />
-                  <div
-                    className="absolute inset-0 opacity-10"
-                    style={{
-                      backgroundImage:
-                        "radial-gradient(circle, rgba(255,255,255,0.4) 0.7px, transparent 0.7px)",
-                      backgroundSize: "16px 16px",
-                    }}
-                  />
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-center">
-                      <svg
-                        className="w-8 h-8 mx-auto text-white/30 mb-2"
-                        viewBox="0 0 24 24"
-                        fill="none"
-                        stroke="currentColor"
-                        strokeWidth="1.5"
-                      >
-                        <rect x="3" y="3" width="18" height="18" rx="2" />
-                        <circle cx="8.5" cy="8.5" r="1.5" />
-                        <path d="M21 15l-5-5L5 21" />
-                      </svg>
-                      <span className="text-[10px] font-mono uppercase tracking-[2px] text-white/40">
-                        {img.city}
-                      </span>
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <Image
-                    src={img.src}
-                    alt={img.alt}
-                    fill
-                    sizes="(max-width: 768px) 50vw, 33vw"
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                  <div className="pointer-events-none absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-2 sm:p-3">
-                    {img.city && (
-                      <span className="text-[10px] font-mono uppercase tracking-[2px] text-white/90">
-                        {img.city}
-                      </span>
-                    )}
-                  </div>
-                </>
-              )}
+              <Image
+                src={img.src}
+                alt={img.alt || `Foto de Monad Blitz Medellín ${editionInfo(edition).label}`}
+                fill
+                sizes="(max-width: 768px) 50vw, 33vw"
+                unoptimized={img.src.startsWith("/api/")}
+                className="object-cover group-hover:scale-105 transition-transform duration-500"
+              />
             </motion.div>
           ))}
         </div>

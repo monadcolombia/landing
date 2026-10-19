@@ -4,22 +4,27 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import TeamMemberCard, { type TeamMember } from "./TeamMemberCard";
+import EditionTabs from "./EditionTabs";
+import { DEFAULT_EDITION, editionInfo, type EditionKey } from "@/lib/editions";
 
 const EASING = [0.16, 1, 0.3, 1] as const;
 
 export default function Mentors() {
-  const [members, setMembers] = useState<TeamMember[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [edition, setEdition] = useState<EditionKey>(DEFAULT_EDITION);
+  const [byEdition, setByEdition] = useState<Partial<Record<EditionKey, TeamMember[]>>>({});
+  const members = byEdition[edition] ?? [];
+  const loaded = edition in byEdition;
 
   useEffect(() => {
-    fetch("/api/team")
+    if (loaded) return;
+    fetch(`/api/team?edition=${edition}`)
       .then((r) => r.json())
-      .then((j) => setMembers(j.data || []))
-      .catch(() => setMembers([]))
-      .finally(() => setLoading(false));
-  }, []);
+      .then((j) => setByEdition((m) => ({ ...m, [edition]: j.data || [] })))
+      .catch(() => setByEdition((m) => ({ ...m, [edition]: [] })));
+  }, [edition, loaded]);
 
-  if (loading || members.length === 0) return null;
+  // Hide the section only when the default edition has no team yet.
+  if (edition === DEFAULT_EDITION && (!loaded || members.length === 0)) return null;
 
   const mentors = members.filter((m) => m.role === "mentor");
   const judges = members.filter((m) => m.role === "judge");
@@ -45,7 +50,16 @@ export default function Mentors() {
             Builders con experiencia real que te acompañan durante el Blitz y evalúan los proyectos,
             y el equipo de voluntarios que hace posible el día.
           </p>
+          <div className="mt-6">
+            <EditionTabs value={edition} onChange={setEdition} />
+          </div>
         </motion.div>
+
+        {loaded && members.length === 0 && (
+          <p className="text-gray-500">
+            Pronto publicamos el equipo de la edición del {editionInfo(edition).date}.
+          </p>
+        )}
 
         {mentors.length > 0 && <Group label="Mentores" members={mentors} />}
 

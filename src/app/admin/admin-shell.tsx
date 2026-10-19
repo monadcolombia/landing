@@ -160,6 +160,9 @@ export default function AdminShell({ children }: { children: React.ReactNode }) 
               <a href="/admin/jurado" className="text-white/70 hover:text-white">
                 Jurado
               </a>
+              <a href="/admin/contenido" className="text-white/70 hover:text-white">
+                Contenido
+              </a>
             </nav>
           </div>
           <button

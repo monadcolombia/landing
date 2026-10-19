@@ -1,5 +1,4 @@
 import { NextResponse } from "next/server";
-import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { MAX_BONUS } from "@/lib/judging";
 import { cleanText, requireAdmin } from "@/lib/judging-admin";
@@ -43,7 +42,6 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   }
   try {
     const updated = await prisma.judgingProject.update({ where: { id }, data });
-    revalidatePath("/api/projects");
     return NextResponse.json({ data: updated });
   } catch {
     return NextResponse.json({ error: "Not found" }, { status: 404 });

@@ -3,6 +3,8 @@
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import type { BlitzProjectCard } from "@/lib/blitz-v2-projects";
+import { DEFAULT_EDITION, editionInfo, type EditionKey } from "@/lib/editions";
+import EditionTabs from "./EditionTabs";
 
 const EASING = [0.16, 1, 0.3, 1] as const;
 
@@ -106,17 +108,23 @@ function ProjectCard({ p, index }: { p: BlitzProjectCard; index: number }) {
 }
 
 export default function Projects() {
-  const [projects, setProjects] = useState<BlitzProjectCard[]>([]);
+  const [edition, setEdition] = useState<EditionKey>(DEFAULT_EDITION);
+  const [byEdition, setByEdition] = useState<Partial<Record<EditionKey, BlitzProjectCard[]>>>({});
   const [showAll, setShowAll] = useState(false);
+  const projects = byEdition[edition] ?? [];
+  const loaded = edition in byEdition;
+  const info = editionInfo(edition);
 
   useEffect(() => {
-    fetch("/api/projects")
+    if (loaded) return;
+    fetch(`/api/projects?edition=${edition}`)
       .then((r) => r.json())
-      .then((j) => setProjects(j.data || []))
-      .catch(() => setProjects([]));
-  }, []);
+      .then((j) => setByEdition((m) => ({ ...m, [edition]: j.data || [] })))
+      .catch(() => setByEdition((m) => ({ ...m, [edition]: [] })));
+  }, [edition, loaded]);
 
-  if (projects.length === 0) return null;
+  // Hide the section only when the default edition has nothing to show.
+  if (edition === DEFAULT_EDITION && loaded && projects.length === 0) return null;
   const winners = projects.filter((p) => p.place);
   const others = projects.filter((p) => !p.place);
   const hasWinners = winners.length > 0;
@@ -135,12 +143,23 @@ export default function Projects() {
             {"// PROYECTOS"}
           </p>
           <h2 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold font-heading text-gray-900 max-w-3xl">
-            {hasWinners ? "Ganadores Blitz Medellín V2" : "Proyectos Blitz Medellín V2"}
+            {hasWinners ? "Ganadores" : "Proyectos"} Blitz Medellín {info.label}
           </h2>
           <p className="text-base sm:text-lg text-gray-500 mt-4 max-w-2xl leading-relaxed">
-            {projects.length} proyectos construidos en Monad el 17 de octubre en Indie Universe.
+            {loaded
+              ? `${projects.length} proyectos construidos en Monad el ${info.date} en Indie Universe.`
+              : "Cargando proyectos..."}
             {hasWinners && " Así quedaron los ganadores según el jurado."}
           </p>
+          <div className="mt-6">
+            <EditionTabs
+              value={edition}
+              onChange={(e) => {
+                setEdition(e);
+                setShowAll(false);
+              }}
+            />
+          </div>
         </motion.div>
 
         {hasWinners && (
@@ -168,6 +187,9 @@ export default function Projects() {
           >
             Ver los otros {others.length} proyectos
           </button>
+        )}
+        {loaded && projects.length === 0 && (
+          <p className="text-gray-500">Pronto publicamos los proyectos de esta edición.</p>
         )}
       </div>
     </section>

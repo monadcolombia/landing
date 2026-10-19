@@ -13,6 +13,7 @@ export type BlitzProject = {
   tweet_url?: string | null;
   image_url?: string | null;
   category?: string | null;
+  winner_placement?: number | null;
   members?: { name?: string | null; role?: string | null }[] | null;
 };
 
@@ -26,6 +27,7 @@ export type ImportedProject = {
   tweetUrl: string | null;
   imageUrl: string | null;
   category: string | null;
+  place: number | null;
 };
 
 const ADDRESS = /0x[a-fA-F0-9]{40}/;
@@ -60,6 +62,7 @@ export function mapBlitzProject(p: BlitzProject): ImportedProject | null {
     tweetUrl: httpUrl(p.tweet_url)?.split("?")[0] ?? null,
     imageUrl: httpUrl(p.image_url),
     category: clean(p.category, 100),
+    place: [1, 2, 3].includes(Number(p.winner_placement)) ? Number(p.winner_placement) : null,
   };
 }
 

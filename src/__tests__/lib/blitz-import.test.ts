@@ -12,6 +12,7 @@ describe("mapBlitzProject", () => {
       tweet_url: "https://x.com/a/status/9?s=20",
       image_url: "https://img.example/p.png",
       category: " DeFi ",
+      winner_placement: 2,
       members: [{ name: "Ana" }, { name: "x@y.com" }, { name: "" }, { name: "Luis" }],
     });
     expect(r).toEqual({
@@ -24,6 +25,7 @@ describe("mapBlitzProject", () => {
       tweetUrl: "https://x.com/a/status/9",
       imageUrl: "https://img.example/p.png",
       category: "DeFi",
+      place: 2,
     });
   });
 

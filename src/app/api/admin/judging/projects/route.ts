@@ -1,13 +1,15 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { JUDGING_EDITION } from "@/lib/judging";
+import { parseEdition } from "@/lib/editions";
 import { cleanText, requireAdmin } from "@/lib/judging-admin";
 
-export async function GET() {
+export async function GET(request: Request) {
   const denied = await requireAdmin(false);
   if (denied) return denied;
+  const edition = parseEdition(new URL(request.url).searchParams.get("edition"), JUDGING_EDITION);
   const data = await prisma.judgingProject.findMany({
-    where: { edition: JUDGING_EDITION },
+    where: { edition },
     orderBy: [{ createdAt: "asc" }, { name: "asc" }],
   });
   return NextResponse.json({ data });
@@ -18,10 +20,11 @@ export async function POST(request: Request) {
   const denied = await requireAdmin(true);
   if (denied) return denied;
   const body = await request.json().catch(() => ({}));
+  const edition = parseEdition(body.edition, JUDGING_EDITION);
   const list = Array.isArray(body.projects) ? body.projects : [body];
   const rows = list
     .map((p: Record<string, unknown>) => ({
-      edition: JUDGING_EDITION,
+      edition,
       name: cleanText(p.name, 200) || "",
       team: cleanText(p.team),
       description: cleanText(p.description, 2000),

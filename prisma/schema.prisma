@@ -174,3 +174,34 @@ model JudgeScore {
   @@index([judgeEmail])
   @@map("judge_scores")
 }
+
+// ---------------------------------------------------------------------------
+// Public content per edition, managed in /admin/contenido
+// ---------------------------------------------------------------------------
+
+model SitePost {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  edition   Edition  @default(v2)
+  url       String
+  label     String?
+  sortOrder Int      @default(0) @map("sort_order")
+
+  @@index([edition])
+  @@map("site_posts")
+}
+
+model GalleryPhoto {
+  id        String   @id @default(uuid())
+  createdAt DateTime @default(now()) @map("created_at")
+  edition   Edition  @default(v2)
+  alt       String?
+  mime      String
+  data      Bytes
+  width     Int?
+  height    Int?
+  sortOrder Int      @default(0) @map("sort_order")
+
+  @@index([edition])
+  @@map("gallery_photos")
+}

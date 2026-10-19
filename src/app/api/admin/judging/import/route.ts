@@ -1,30 +1,36 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
 import { JUDGING_EDITION } from "@/lib/judging";
+import { editionInfo, parseEdition } from "@/lib/editions";
 import { requireAdmin } from "@/lib/judging-admin";
-import {
-  BLITZ_EVENT_SLUG,
-  fetchBlitzProjects,
-  mapBlitzProject,
-  normalizeName,
-} from "@/lib/blitz-import";
+import { fetchBlitzProjects, mapBlitzProject, normalizeName } from "@/lib/blitz-import";
 
 // Imports submitted projects from blitz.devnads.com. Safe to run many times:
 // projects already here (same name or same repo) are not duplicated, and only
 // their empty fields get filled in, so manual edits are kept.
-export async function POST() {
+// ?edition=v1 imports the June event; default is the current edition.
+export async function POST(request: Request) {
   const denied = await requireAdmin(true);
   if (denied) return denied;
+  const edition = parseEdition(new URL(request.url).searchParams.get("edition"), JUDGING_EDITION);
+  const slug = editionInfo(edition).blitzSlug;
+
+  // Winners come from Blitz only for past editions. The current edition's winners are
+  // decided by our jury and marked in the admin.
+  const takeWinners = edition !== JUDGING_EDITION;
 
   let incoming;
   try {
-    incoming = (await fetchBlitzProjects()).map(mapBlitzProject).filter((p) => p !== null);
+    incoming = (await fetchBlitzProjects(slug))
+      .map(mapBlitzProject)
+      .filter((p) => p !== null)
+      .map(({ place, ...p }) => ({ ...p, place: takeWinners ? place : null }));
   } catch (e) {
     const msg = e instanceof Error ? e.message : "error";
     return NextResponse.json({ error: `No se pudo leer Blitz: ${msg}` }, { status: 502 });
   }
 
-  const existing = await prisma.judgingProject.findMany({ where: { edition: JUDGING_EDITION } });
+  const existing = await prisma.judgingProject.findMany({ where: { edition } });
   const byName = new Map(existing.map((p) => [normalizeName(p.name), p]));
   const byRepo = new Map(
     existing.filter((p) => p.repoUrl).map((p) => [p.repoUrl!.toLowerCase(), p])
@@ -36,13 +42,13 @@ export async function POST() {
     const match =
       byName.get(normalizeName(p.name)) || (p.repoUrl && byRepo.get(p.repoUrl.toLowerCase()));
     if (!match) {
-      const row = await prisma.judgingProject.create({ data: { edition: JUDGING_EDITION, ...p } });
+      const row = await prisma.judgingProject.create({ data: { edition, ...p } });
       byName.set(normalizeName(row.name), row);
       if (row.repoUrl) byRepo.set(row.repoUrl.toLowerCase(), row);
       created++;
       continue;
     }
-    const fill: Record<string, string> = {};
+    const fill: Record<string, string | number> = {};
     for (const k of [
       "team",
       "description",
@@ -55,6 +61,7 @@ export async function POST() {
     ] as const) {
       if (!match[k] && p[k]) fill[k] = p[k] as string;
     }
+    if (!match.place && p.place) fill.place = p.place;
     if (Object.keys(fill).length) {
       await prisma.judgingProject.update({ where: { id: match.id }, data: fill });
       updated++;
@@ -62,7 +69,7 @@ export async function POST() {
   }
 
   return NextResponse.json({
-    event: BLITZ_EVENT_SLUG,
+    event: slug,
     found: incoming.length,
     created,
     updated,

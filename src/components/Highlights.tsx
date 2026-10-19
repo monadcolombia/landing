@@ -1,11 +1,11 @@
 "use client";
 
-import { Component, useState, type ReactNode } from "react";
+import { Component, useEffect, useState, type ReactNode } from "react";
 import { motion } from "framer-motion";
 import { EmbeddedTweet, TweetSkeleton, useTweet } from "react-tweet";
 import type { Tweet } from "react-tweet/api";
-
-const INITIAL_COUNT = 4;
+import EditionTabs from "./EditionTabs";
+import { DEFAULT_EDITION, editionInfo, type EditionKey } from "@/lib/editions";
 
 const EASING = [0.16, 1, 0.3, 1] as const;
 
@@ -68,32 +68,74 @@ function HighlightTweet({ id }: { id: string }) {
   );
 }
 
-/**
- * Curated tweets from MonadBlitz events around the world.
- *
- * HOW TO ADD TWEETS:
- * 1. Find a tweet URL like https://x.com/monad/status/2028534499458404671
- * 2. Extract the numeric ID at the end
- * 3. Add it below with a label
- */
-const HIGHLIGHT_TWEETS = [
-  { id: "2064370221058568234", label: "Recap Monad Blitz Medellín" },
-  { id: "2064481863033311374", label: "Ganadores Medellín" },
-  { id: "2064104613020582172", label: "Equipos Medellín" },
-  { id: "2064056162417303775", label: "Mentores y staff Medellín" },
+type Post = { id: string; url: string; label: string | null; tweetId: string | null };
+
+// Blitz in other cities, for reference. Each Medellín edition's posts live in the
+// database and are managed in /admin/contenido.
+const OTHER_CITIES = [
   { id: "2049177585527951710", label: "Monad Blitz México" },
   { id: "2028534499458404671", label: "Monad Blitz Denver" },
   { id: "1972727436501807574", label: "Monad Blitz Bangkok" },
 ];
 
+function PostCard({ post }: { post: Post }) {
+  if (post.tweetId) return <HighlightTweet id={post.tweetId} />;
+  let host = post.url;
+  try {
+    host = new URL(post.url).hostname.replace(/^www\./, "");
+  } catch {
+    // keep the raw url
+  }
+  return (
+    <a
+      href={post.url}
+      target="_blank"
+      rel="noopener noreferrer"
+      className="flex min-h-40 flex-col justify-center gap-2 rounded-xl border border-white/10 px-5 py-6 hover:border-monad-primary/60"
+    >
+      <span className="text-[10px] font-mono uppercase tracking-[2px] text-white/40">{host}</span>
+      <span className="text-white">{post.label || "Ver publicación"} ↗</span>
+    </a>
+  );
+}
+
+function Grid({ children }: { children: ReactNode }) {
+  return <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">{children}</div>;
+}
+
+function Cell({ index, children }: { index: number; children: ReactNode }) {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      transition={{ duration: 0.5, delay: Math.min(index, 6) * 0.08, ease: EASING }}
+      data-theme="dark"
+      className="tweet-card [&_.react-tweet-theme]:!bg-transparent [&_article]:!border-white/10 [&_article]:!rounded-xl"
+    >
+      {children}
+    </motion.div>
+  );
+}
+
 export default function Highlights() {
-  const [showAll, setShowAll] = useState(false);
-  const visibleTweets = showAll ? HIGHLIGHT_TWEETS : HIGHLIGHT_TWEETS.slice(0, INITIAL_COUNT);
+  const [edition, setEdition] = useState<EditionKey>(DEFAULT_EDITION);
+  const [byEdition, setByEdition] = useState<Partial<Record<EditionKey, Post[]>>>({});
+  const [showOthers, setShowOthers] = useState(false);
+  const posts = byEdition[edition] ?? [];
+  const loaded = edition in byEdition;
+
+  useEffect(() => {
+    if (loaded) return;
+    fetch(`/api/posts?edition=${edition}`)
+      .then((r) => r.json())
+      .then((j) => setByEdition((m) => ({ ...m, [edition]: j.data || [] })))
+      .catch(() => setByEdition((m) => ({ ...m, [edition]: [] })));
+  }, [edition, loaded]);
 
   return (
     <section id="highlights" className="py-16 sm:py-20 px-6 bg-monad-dark overflow-hidden">
       <div className="max-w-7xl mx-auto">
-        {/* Section heading */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -108,32 +150,42 @@ export default function Highlights() {
             Lo que pasó en Medellín
           </h2>
           <p className="text-base sm:text-lg text-white/50 mt-4 max-w-xl leading-relaxed">
-            Recap, ganadores y equipos del 6 de junio, publicados por @MedellinBlock. El botón de
-            abajo abre Blitz de otras ciudades.
+            Recap, ganadores y equipos del {editionInfo(edition).date}, publicados por
+            @MedellinBlock y los equipos.
           </p>
+          <div className="mt-6">
+            <EditionTabs value={edition} onChange={setEdition} theme="dark" />
+          </div>
         </motion.div>
 
-        {/* Tweet grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {visibleTweets.map((tweet, i) => (
-            <motion.div
-              key={tweet.id}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.5, delay: i * 0.08, ease: EASING }}
-              data-theme="dark"
-              className="tweet-card [&_.react-tweet-theme]:!bg-transparent [&_article]:!border-white/10 [&_article]:!rounded-xl"
-            >
-              <HighlightTweet id={tweet.id} />
-            </motion.div>
+        {loaded && posts.length === 0 && (
+          <p className="text-white/50">Pronto publicamos los posts de esta edición.</p>
+        )}
+        <Grid>
+          {posts.map((p, i) => (
+            <Cell key={p.id} index={i}>
+              <PostCard post={p} />
+            </Cell>
           ))}
-        </div>
+        </Grid>
 
-        {!showAll && HIGHLIGHT_TWEETS.length > INITIAL_COUNT && (
+        {showOthers ? (
+          <div className="mt-14">
+            <p className="text-[10px] sm:text-xs font-mono uppercase tracking-[3px] text-white/40 mb-6">
+              {"// BLITZ DE OTRAS CIUDADES"}
+            </p>
+            <Grid>
+              {OTHER_CITIES.map((t, i) => (
+                <Cell key={t.id} index={i}>
+                  <HighlightTweet id={t.id} />
+                </Cell>
+              ))}
+            </Grid>
+          </div>
+        ) : (
           <div className="mt-8 text-center">
             <button
-              onClick={() => setShowAll(true)}
+              onClick={() => setShowOthers(true)}
               className="px-8 py-3 border border-white/20 text-white/70 rounded-full font-mono text-sm uppercase tracking-wide hover:bg-white/5 hover:text-white transition-all"
             >
               Blitz de otras ciudades

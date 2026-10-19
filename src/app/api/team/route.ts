@@ -1,13 +1,19 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
+import { parseEdition } from "@/lib/editions";
 
-export async function GET() {
+export const dynamic = "force-dynamic";
+
+// Approved team for one edition. V2 shows people who confirmed attendance; V1 happened
+// before confirmations existed, so every approved person is shown.
+export async function GET(request: Request) {
+  const edition = parseEdition(new URL(request.url).searchParams.get("edition"));
   try {
     const applications = await prisma.application.findMany({
       where: {
         status: "approved",
-        confirmed: true,
-        edition: "v2",
+        ...(edition === "v2" ? { confirmed: true } : {}),
+        edition,
         role: { in: ["mentor", "judge", "volunteer"] },
       },
       select: {
