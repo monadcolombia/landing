@@ -8,6 +8,7 @@ const sections = [
   { id: "countdown", label: "Countdown" },
   { id: "stats", label: "Stats" },
   { id: "eventos", label: "Eventos" },
+  { id: "proyectos", label: "Proyectos" },
   { id: "agenda", label: "Agenda" },
   { id: "equipo", label: "Equipo" },
   { id: "construir", label: "Construir" },
