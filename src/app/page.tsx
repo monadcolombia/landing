@@ -10,7 +10,6 @@ import Mentors from "@/components/Mentors";
 import BuildFeatures from "@/components/BuildFeatures";
 import EventsTable from "@/components/EventsTable";
 import Projects from "@/components/Projects";
-import { getMedellinV2Projects } from "@/lib/blitz-v2-projects";
 import Marquee from "@/components/Marquee";
 import Gallery from "@/components/Gallery";
 import LazyHighlights from "@/components/LazyHighlights";
@@ -23,8 +22,7 @@ import ScrollNav from "@/components/ScrollNav";
 // Rebuild the static page hourly so it never stays stuck on a past event.
 export const revalidate = 3600;
 
-export default async function Home() {
-  const projects = await getMedellinV2Projects();
+export default function Home() {
   return (
     <main className="min-h-screen bg-white">
       <AnnouncementBar />
@@ -36,7 +34,7 @@ export default async function Home() {
       <Marquee />
       <Stats />
       <EventsTable />
-      <Projects projects={projects} />
+      <Projects />
       <Schedule />
       <Organizers />
       <Mentors />

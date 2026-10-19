@@ -10,6 +10,9 @@ export type BlitzProject = {
   description?: string | null;
   github_url?: string | null;
   demo_url?: string | null;
+  tweet_url?: string | null;
+  image_url?: string | null;
+  category?: string | null;
   members?: { name?: string | null; role?: string | null }[] | null;
 };
 
@@ -20,6 +23,9 @@ export type ImportedProject = {
   repoUrl: string | null;
   demoUrl: string | null;
   contractAddress: string | null;
+  tweetUrl: string | null;
+  imageUrl: string | null;
+  category: string | null;
 };
 
 const ADDRESS = /0x[a-fA-F0-9]{40}/;
@@ -28,6 +34,11 @@ function clean(v: unknown, max: number): string | null {
   if (typeof v !== "string") return null;
   const t = v.trim();
   return t ? t.slice(0, max) : null;
+}
+
+function httpUrl(v: unknown): string | null {
+  const u = clean(v, 500);
+  return u && /^https?:\/\//i.test(u) ? u : null;
 }
 
 /** Maps one Blitz submission to our judging project. Uses member names only, never emails. */
@@ -46,6 +57,9 @@ export function mapBlitzProject(p: BlitzProject): ImportedProject | null {
     repoUrl: clean(p.github_url, 500),
     demoUrl: clean(p.demo_url, 500),
     contractAddress: contract,
+    tweetUrl: httpUrl(p.tweet_url)?.split("?")[0] ?? null,
+    imageUrl: httpUrl(p.image_url),
+    category: clean(p.category, 100),
   };
 }
 

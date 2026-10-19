@@ -43,7 +43,16 @@ export async function POST() {
       continue;
     }
     const fill: Record<string, string> = {};
-    for (const k of ["team", "description", "repoUrl", "demoUrl", "contractAddress"] as const) {
+    for (const k of [
+      "team",
+      "description",
+      "repoUrl",
+      "demoUrl",
+      "contractAddress",
+      "tweetUrl",
+      "imageUrl",
+      "category",
+    ] as const) {
       if (!match[k] && p[k]) fill[k] = p[k] as string;
     }
     if (Object.keys(fill).length) {

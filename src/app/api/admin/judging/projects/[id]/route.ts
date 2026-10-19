@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { prisma } from "@/lib/db";
 import { MAX_BONUS } from "@/lib/judging";
 import { cleanText, requireAdmin } from "@/lib/judging-admin";
@@ -9,13 +10,30 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   const { id } = await params;
   const b = await request.json().catch(() => ({}));
   const data: Record<string, unknown> = {};
-  for (const k of ["name", "team", "description", "repoUrl", "demoUrl", "contractAddress"]) {
+  for (const k of [
+    "name",
+    "team",
+    "description",
+    "repoUrl",
+    "demoUrl",
+    "contractAddress",
+    "tweetUrl",
+    "imageUrl",
+    "category",
+  ]) {
     if (k in b) data[k] = cleanText(b[k], k === "description" ? 2000 : 500);
   }
   if ("name" in data && !data.name) {
     return NextResponse.json({ error: "Name required" }, { status: 400 });
   }
   if ("deployed" in b) data.deployed = Boolean(b.deployed);
+  if ("place" in b) {
+    const n = b.place === null || b.place === "" ? null : Number(b.place);
+    if (n !== null && ![1, 2, 3].includes(n)) {
+      return NextResponse.json({ error: "Place must be 1, 2, 3 or empty" }, { status: 400 });
+    }
+    data.place = n;
+  }
   if ("bonus" in b) {
     const n = Number(b.bonus);
     if (!Number.isFinite(n) || n < 0 || n > MAX_BONUS) {
@@ -25,6 +43,7 @@ export async function PATCH(request: Request, { params }: { params: Promise<{ id
   }
   try {
     const updated = await prisma.judgingProject.update({ where: { id }, data });
+    revalidatePath("/api/projects");
     return NextResponse.json({ data: updated });
   } catch {
     return NextResponse.json({ error: "Not found" }, { status: 404 });

@@ -9,6 +9,9 @@ describe("mapBlitzProject", () => {
       description: "Game. Contract 0x6edb1b98b01a95808c1c0f0f8c06ad96bd15eba6 on testnet",
       github_url: "https://github.com/a/b",
       demo_url: "https://demo.app",
+      tweet_url: "https://x.com/a/status/9?s=20",
+      image_url: "https://img.example/p.png",
+      category: " DeFi ",
       members: [{ name: "Ana" }, { name: "x@y.com" }, { name: "" }, { name: "Luis" }],
     });
     expect(r).toEqual({
@@ -18,6 +21,9 @@ describe("mapBlitzProject", () => {
       repoUrl: "https://github.com/a/b",
       demoUrl: "https://demo.app",
       contractAddress: "0x6edb1b98b01a95808c1c0f0f8c06ad96bd15eba6",
+      tweetUrl: "https://x.com/a/status/9",
+      imageUrl: "https://img.example/p.png",
+      category: "DeFi",
     });
   });
 

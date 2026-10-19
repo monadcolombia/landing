@@ -13,6 +13,8 @@ type Project = {
   contractAddress: string | null;
   deployed: boolean;
   bonus: number;
+  place: number | null;
+  tweetUrl: string | null;
 };
 type Judge = { id: string; email: string; name: string; active: boolean };
 type ProjectInfo = Pick<Project, "description" | "repoUrl" | "demoUrl" | "contractAddress">;
@@ -501,6 +503,10 @@ function Projects({ canWrite }: { canWrite: boolean }) {
         </div>
       )}
       {msg && <p className="text-sm text-monad-light">{msg}</p>}
+      <p className="text-xs text-white/50">
+        Los ganadores y los tweets que marques aquí se muestran en la sección Proyectos de
+        monadcolombia.xyz. Se permiten empates.
+      </p>
 
       <div className="bg-white/5 border border-white/10 rounded-lg overflow-x-auto">
         <table className="w-full text-sm">
@@ -510,6 +516,7 @@ function Projects({ canWrite }: { canWrite: boolean }) {
               <th className="px-3 py-2 text-left">Links</th>
               <th className="px-3 py-2 text-center">Contrato desplegado</th>
               <th className="px-3 py-2 text-center">Comunidad (0–{MAX_BONUS})</th>
+              <th className="px-3 py-2 text-center">Ganador</th>
               <th className="px-3 py-2" />
             </tr>
           </thead>
@@ -556,6 +563,29 @@ function Projects({ canWrite }: { canWrite: boolean }) {
                       Demo
                     </a>
                   )}
+                  {p.tweetUrl && (
+                    <a
+                      className="text-monad-primary"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      href={href(p.tweetUrl)}
+                    >
+                      Tweet
+                    </a>
+                  )}
+                  {canWrite && (
+                    <input
+                      key={p.tweetUrl ?? ""}
+                      type="url"
+                      placeholder="Link del tweet"
+                      defaultValue={p.tweetUrl ?? ""}
+                      onBlur={(e) => {
+                        const v = e.target.value.trim();
+                        if (v !== (p.tweetUrl ?? "")) patch(p.id, { tweetUrl: v });
+                      }}
+                      className="mt-1 block w-48 bg-white/5 border border-white/10 rounded px-2 py-1 text-white"
+                    />
+                  )}
                 </td>
                 <td className="px-3 py-2 text-center">
                   <input
@@ -580,6 +610,25 @@ function Projects({ canWrite }: { canWrite: boolean }) {
                     }}
                     className="w-20 bg-white/5 border border-white/10 rounded px-2 py-1 text-white text-right"
                   />
+                </td>
+                <td className="px-3 py-2 text-center">
+                  <select
+                    disabled={!canWrite}
+                    value={p.place ?? ""}
+                    onChange={(e) =>
+                      patch(p.id, { place: e.target.value ? Number(e.target.value) : null })
+                    }
+                    className={`border rounded px-2 py-1 ${
+                      p.place
+                        ? "bg-monad-primary/20 border-monad-primary text-white"
+                        : "bg-white/5 border-white/10 text-white/70"
+                    }`}
+                  >
+                    <option value="">—</option>
+                    <option value="1">1er puesto</option>
+                    <option value="2">2do puesto</option>
+                    <option value="3">3er puesto</option>
+                  </select>
                 </td>
                 <td className="px-3 py-2 text-right">
                   {canWrite && (
