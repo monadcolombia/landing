@@ -187,3 +187,28 @@ export function getUpcomingCity(): City | undefined {
 export function registrationUrl(): string {
   return getUpcomingCity()?.registrationUrl ?? "https://luma.com/f6xhhyld";
 }
+
+export const COMMUNITY_LINKS = {
+  telegram: "https://t.me/monadcolombia",
+  whatsapp: "https://chat.whatsapp.com/JboPU2owNWU7ysj5TEvgyO",
+};
+
+/** Main call to action: register while an event is upcoming, otherwise join the community. */
+export function primaryCta(): { href: string; label: string } {
+  const upcoming = getUpcomingCity();
+  return upcoming?.registrationUrl
+    ? { href: upcoming.registrationUrl, label: "Regístrate" }
+    : { href: COMMUNITY_LINKS.telegram, label: "Únete a la comunidad" };
+}
+
+/** Footer links, without the volunteer/mentor call when no event is upcoming. */
+export function footerNav(): typeof FOOTER_NAV {
+  if (getUpcomingCity()) return FOOTER_NAV;
+  return {
+    ...FOOTER_NAV,
+    programas: {
+      ...FOOTER_NAV.programas,
+      links: FOOTER_NAV.programas.links.filter((l) => l.href !== "/apply"),
+    },
+  };
+}

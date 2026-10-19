@@ -16,6 +16,7 @@ export default function EventPopup() {
   }, []);
 
   useEffect(() => {
+    if (!getUpcomingCity()) return;
     if (localStorage.getItem(STORAGE_KEY) === "1") return;
     const t = setTimeout(() => setOpen(true), SHOW_AFTER_MS);
     return () => clearTimeout(t);

@@ -22,6 +22,7 @@ function notify() {
 
 function isVisible(): boolean {
   if (typeof window === "undefined") return false;
+  if (!getUpcomingCity()) return false;
   const stored = window.localStorage.getItem(STORAGE_KEY);
   const until = stored ? Number(stored) : 0;
   if (Number.isFinite(until) && until > Date.now()) return false;

@@ -6,7 +6,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import Image from "next/image";
 import ConcentricCircles from "./ConcentricCircles";
 import DeferredMount from "./DeferredMount";
-import { registrationUrl } from "@/lib/constants";
+import { getUpcomingCity } from "@/lib/constants";
 
 const MapColombia = dynamic(() => import("./MapColombia"), {
   ssr: false,
@@ -40,6 +40,7 @@ const scaleIn = {
 
 export default function Hero() {
   const sectionRef = useRef(null);
+  const upcoming = getUpcomingCity();
   const { scrollYProgress } = useScroll({
     target: sectionRef,
     offset: ["start start", "end start"],
@@ -142,22 +143,25 @@ export default function Hero() {
               variants={fadeUp}
               className="text-base sm:text-lg text-white/60 max-w-md mx-auto lg:mx-0 mb-8 px-2 sm:px-0"
             >
-              Un día. Sin límites. Solo construye. Blitz de un día en Medellín. Si puedes shippear,
-              este es tu lugar.
+              {upcoming
+                ? "Un día. Sin límites. Solo construye. Blitz de un día en Medellín. Si puedes shippear, este es tu lugar."
+                : "Dos ediciones del Monad Blitz en Medellín, decenas de proyectos shippeados en un día. Mira lo que construyó la comunidad y prepárate para el próximo Blitz."}
             </motion.p>
             <motion.div
               variants={fadeUp}
               className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start px-2 sm:px-0"
             >
               <motion.a
-                href={registrationUrl()}
-                target="_blank"
-                rel="noopener noreferrer"
+                href={upcoming?.registrationUrl ?? "#proyectos"}
+                {...(upcoming?.registrationUrl && {
+                  target: "_blank",
+                  rel: "noopener noreferrer",
+                })}
                 className="bg-monad-primary text-white font-bold px-6 sm:px-8 py-3 rounded-full hover:brightness-110 transition-all text-center font-mono uppercase tracking-wide btn-glow text-sm sm:text-base"
                 whileHover={{ scale: 1.03 }}
                 whileTap={{ scale: 0.98 }}
               >
-                Regístrate
+                {upcoming ? "Regístrate" : "Ver ganadores"}
               </motion.a>
               <motion.a
                 href="https://chat.whatsapp.com/JboPU2owNWU7ysj5TEvgyO"
@@ -180,19 +184,21 @@ export default function Hero() {
                 Comunidad Telegram
               </motion.a>
             </motion.div>
-            <motion.div
-              variants={fadeUp}
-              className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start px-2 sm:px-0 mt-4"
-            >
-              <motion.a
-                href="/apply"
-                className="border border-white/20 text-white font-medium px-5 sm:px-6 py-3 rounded-full hover:border-monad-primary/50 transition-colors text-center font-mono text-xs sm:text-sm whitespace-nowrap"
-                whileHover={{ scale: 1.03 }}
-                whileTap={{ scale: 0.98 }}
+            {upcoming && (
+              <motion.div
+                variants={fadeUp}
+                className="flex flex-col sm:flex-row gap-3 justify-center lg:justify-start px-2 sm:px-0 mt-4"
               >
-                Colabora
-              </motion.a>
-            </motion.div>
+                <motion.a
+                  href="/apply"
+                  className="border border-white/20 text-white font-medium px-5 sm:px-6 py-3 rounded-full hover:border-monad-primary/50 transition-colors text-center font-mono text-xs sm:text-sm whitespace-nowrap"
+                  whileHover={{ scale: 1.03 }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  Colabora
+                </motion.a>
+              </motion.div>
+            )}
           </motion.div>
 
           {/* Right: Map */}

@@ -1,12 +1,44 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { CITIES, isUpcoming } from "@/lib/constants";
+import { CITIES, getUpcomingCity, isUpcoming } from "@/lib/constants";
+import type { City } from "@/lib/types";
 import ConcentricCircles from "./ConcentricCircles";
 
 const EASING = [0.16, 1, 0.3, 1] as const;
 
+// Placeholder row shown between editions so the table always points to what is next.
+const NEXT_EDITION: City = {
+  id: "next",
+  name: "Próxima edición",
+  lat: 0,
+  lng: 0,
+  date: null,
+  dateISO: null,
+  confirmed: false,
+  registrationUrl: null,
+  description: "",
+  eventType: "MonadBlitz",
+  venue: "Por anunciar",
+};
+
+function PastBadge({ mobile = false }: { mobile?: boolean }) {
+  return (
+    <a
+      href="#proyectos"
+      className={
+        mobile
+          ? "text-xs font-mono text-white/50 hover:text-monad-primary uppercase tracking-wider"
+          : "inline-flex items-center border border-white/15 text-white/50 rounded-full px-5 py-2 text-[10px] sm:text-xs font-mono uppercase tracking-[2px] hover:border-monad-primary hover:text-monad-primary transition-colors"
+      }
+    >
+      Ver resultados
+    </a>
+  );
+}
+
 export default function EventsTable() {
+  const rows = getUpcomingCity() ? CITIES : [NEXT_EDITION, ...CITIES];
   return (
     <section id="eventos" className="py-16 sm:py-20 px-6 bg-monad-dark relative overflow-hidden">
       {/* Decorative circles */}
@@ -30,13 +62,13 @@ export default function EventsTable() {
             La comunidad Monad está onchain - y en persona.
           </h2>
           <p className="text-base sm:text-lg text-white/50 mt-4 max-w-xl">
-            Blitz de un día en Medellín.
+            Dos ediciones del Monad Blitz en Medellín. La próxima está en camino.
           </p>
         </motion.div>
 
         {/* Event rows */}
         <div>
-          {CITIES.map((city, i) => (
+          {rows.map((city, i) => (
             <motion.div
               key={city.id}
               initial={{ opacity: 0, y: 20 }}
@@ -115,9 +147,11 @@ export default function EventsTable() {
                       />
                     </svg>
                   </a>
+                ) : city.dateISO ? (
+                  <PastBadge />
                 ) : (
                   <span className="inline-flex items-center border border-white/15 text-white/30 rounded-full px-5 py-2 text-[10px] sm:text-xs font-mono uppercase tracking-[2px]">
-                    {city.dateISO ? "Realizado" : "Próximamente"}
+                    Próximamente
                   </span>
                 )}
               </div>
@@ -169,9 +203,11 @@ export default function EventsTable() {
                     >
                       Regístrate
                     </a>
+                  ) : city.dateISO ? (
+                    <PastBadge mobile />
                   ) : (
                     <span className="text-xs font-mono text-white/30 uppercase tracking-wider">
-                      {city.dateISO ? "Realizado" : "Próximamente"}
+                      Próximamente
                     </span>
                   )}
                 </div>

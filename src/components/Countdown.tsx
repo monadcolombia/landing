@@ -2,7 +2,7 @@
 
 import { useSyncExternalStore } from "react";
 import { motion } from "framer-motion";
-import { getUpcomingCity } from "@/lib/constants";
+import { COMMUNITY_LINKS, getUpcomingCity } from "@/lib/constants";
 
 interface TimeLeft {
   days: number;
@@ -104,7 +104,7 @@ export default function Countdown() {
 
   const timeLeft: TimeLeft = JSON.parse(timeLeftJson);
 
-  if (!event?.dateISO) return null;
+  if (!event?.dateISO) return <NextBlitzTeaser />;
 
   const isOver =
     timeLeft.days === 0 && timeLeft.hours === 0 && timeLeft.minutes === 0 && timeLeft.seconds === 0;
@@ -246,5 +246,55 @@ function AddToCalendarButton({
       </svg>
       Agregar al Calendario
     </a>
+  );
+}
+
+/** Shown between editions: keeps the expectation of the next Blitz alive. */
+function NextBlitzTeaser() {
+  return (
+    <section id="countdown" className="py-12 sm:py-16 px-6 bg-white relative overflow-hidden">
+      <div className="absolute inset-0 opacity-10">
+        <div
+          className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[300px] rounded-full blur-[120px]"
+          style={{ background: "radial-gradient(circle, #6E54FF, transparent 70%)" }}
+        />
+      </div>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.7, ease: EASING }}
+        className="max-w-2xl mx-auto relative z-10 text-center"
+      >
+        <p className="text-[10px] sm:text-xs font-mono uppercase tracking-[3px] text-monad-dark/40 mb-2">
+          {"// PRÓXIMO BLITZ"}
+        </p>
+        <h2 className="text-2xl sm:text-3xl font-heading font-extrabold text-monad-dark mb-3">
+          Se viene la próxima edición
+        </h2>
+        <p className="text-sm sm:text-base text-monad-dark/60 mb-8">
+          Ya van dos Monad Blitz en Medellín. Estamos preparando el siguiente: únete a la comunidad
+          para enterarte primero de la fecha, la sede y cómo participar.
+        </p>
+        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+          <a
+            href={COMMUNITY_LINKS.telegram}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-monad-primary text-white font-bold px-8 py-3 rounded-full hover:brightness-110 transition-all text-center font-mono uppercase tracking-wide btn-glow text-sm"
+          >
+            Únete en Telegram
+          </a>
+          <a
+            href={COMMUNITY_LINKS.whatsapp}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="border border-monad-dark/15 text-monad-dark font-medium px-8 py-3 rounded-full hover:border-monad-primary/50 transition-colors text-center font-mono text-sm"
+          >
+            Comunidad WhatsApp
+          </a>
+        </div>
+      </motion.div>
+    </section>
   );
 }

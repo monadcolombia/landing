@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { FOOTER_NAV, SOCIAL_LINKS } from "@/lib/constants";
+import { footerNav, SOCIAL_LINKS } from "@/lib/constants";
 
 const COLUMNS = ["principal", "construir", "programas", "comunidad"] as const;
 
@@ -11,7 +11,7 @@ export default function Footer() {
         {/* Navigation columns */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8 sm:gap-12 mb-12">
           {COLUMNS.map((key) => {
-            const col = FOOTER_NAV[key];
+            const col = footerNav()[key];
             return (
               <div key={key}>
                 <h4 className="text-[10px] font-bold tracking-[3px] text-white/60 font-mono uppercase mb-4">
