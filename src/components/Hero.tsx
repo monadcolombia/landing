@@ -6,7 +6,7 @@ import { motion, useScroll, useTransform } from "framer-motion";
 import Image from "next/image";
 import ConcentricCircles from "./ConcentricCircles";
 import DeferredMount from "./DeferredMount";
-import { getUpcomingCity } from "@/lib/constants";
+import { COMMUNITY_LINKS, getUpcomingCity } from "@/lib/constants";
 
 const MapColombia = dynamic(() => import("./MapColombia"), {
   ssr: false,
@@ -164,7 +164,7 @@ export default function Hero() {
                 {upcoming ? "Regístrate" : "Ver ganadores"}
               </motion.a>
               <motion.a
-                href="https://chat.whatsapp.com/JboPU2owNWU7ysj5TEvgyO"
+                href={COMMUNITY_LINKS.whatsapp}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="border border-white/20 text-white font-medium px-6 sm:px-8 py-3 rounded-full hover:border-monad-primary/50 transition-colors text-center font-mono text-sm sm:text-base"
@@ -174,7 +174,7 @@ export default function Hero() {
                 Comunidad WhatsApp
               </motion.a>
               <motion.a
-                href="https://t.me/monadcolombia"
+                href={COMMUNITY_LINKS.telegram}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="border border-white/20 text-white font-medium px-6 sm:px-8 py-3 rounded-full hover:border-monad-primary/50 transition-colors text-center font-mono text-sm sm:text-base"

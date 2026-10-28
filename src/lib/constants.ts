@@ -215,8 +215,8 @@ export function registrationUrl(): string {
 }
 
 export const COMMUNITY_LINKS = {
-  telegram: "https://t.me/monadcolombia",
-  whatsapp: "https://chat.whatsapp.com/JboPU2owNWU7ysj5TEvgyO",
+  telegram: "https://t.me/MedellinBlockchain",
+  whatsapp: "https://chat.whatsapp.com/E3oXdlkAQJW6lRqJvOWecp",
 };
 
 /** Main call to action: register while an event is upcoming, otherwise join the community. */

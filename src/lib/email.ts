@@ -1,13 +1,13 @@
 import { Resend } from "resend";
-import { registrationUrl } from "./constants";
+import { COMMUNITY_LINKS, registrationUrl } from "./constants";
 import { confirmUrl } from "./confirm-token";
 
 const NOTIFY_EMAIL = "monadblitzcolombia@gmail.com";
 const FROM_EMAIL = process.env.RESEND_FROM || "onboarding@resend.dev";
 const SENDER = `MonadBlitz Colombia <${FROM_EMAIL}>`;
 
-const WHATSAPP_URL = "https://chat.whatsapp.com/JboPU2owNWU7ysj5TEvgyO";
-const TELEGRAM_URL = "https://t.me/monadcolombia";
+const WHATSAPP_URL = COMMUNITY_LINKS.whatsapp;
+const TELEGRAM_URL = COMMUNITY_LINKS.telegram;
 const X_URL = "https://x.com/MedellinBlock";
 const INSTAGRAM_URL = "https://www.instagram.com/medellinblock";
 const TIKTOK_URL = "https://www.tiktok.com/@medellinblockchain";

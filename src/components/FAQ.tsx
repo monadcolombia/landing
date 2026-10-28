@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { FAQ_ITEMS } from "@/lib/constants";
+import { COMMUNITY_LINKS, FAQ_ITEMS } from "@/lib/constants";
 
 const EASING = [0.16, 1, 0.3, 1] as const;
 
@@ -109,7 +109,7 @@ export default function FAQ() {
           <p className="text-sm text-gray-400 mb-3">¿Tienes otra pregunta?</p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
             <a
-              href="https://chat.whatsapp.com/JboPU2owNWU7ysj5TEvgyO"
+              href={COMMUNITY_LINKS.whatsapp}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 border border-gray-300 rounded-full px-6 py-2.5 text-[10px] sm:text-xs font-mono uppercase tracking-[2px] text-gray-500 hover:border-monad-primary hover:text-monad-primary transition-all duration-300"
@@ -126,7 +126,7 @@ export default function FAQ() {
               </svg>
             </a>
             <a
-              href="https://t.me/monadcolombia"
+              href={COMMUNITY_LINKS.telegram}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2 border border-gray-300 rounded-full px-6 py-2.5 text-[10px] sm:text-xs font-mono uppercase tracking-[2px] text-gray-500 hover:border-monad-primary hover:text-monad-primary transition-all duration-300"
